@@ -222,11 +222,44 @@ class GameTests(unittest.TestCase):
                 target = self.town[0]['pid']
                 self.room['players'][target]['alive'] = True
                 self.room['players'][target]['name'] = '<Alex & Sam>'
+                self.room['story_used'] = {}
                 with patch.object(game.random, 'randrange', return_value=index):
                     game.record_death(self.room, target, cause)
                 event = self.room['death_events'][-1]
                 self.assertEqual(event['story'], template.format(name='<Alex & Sam>'))
                 self.assertEqual(event['tone'], tone)
+
+    def test_stories_do_not_repeat_until_the_pool_is_exhausted(self):
+        self.start(False)
+        target = self.town[0]['pid']
+        for cause, templates in game.DEATH_STORIES.items():
+            seen = set()
+            for _ in templates:
+                self.room['players'][target]['alive'] = True
+                game.record_death(self.room, target, cause)
+                story = self.room['death_events'][-1]['story']
+                self.assertNotIn(story, seen)
+                seen.add(story)
+            self.room['players'][target]['alive'] = True
+            game.record_death(self.room, target, cause)
+            self.assertIn(self.room['death_events'][-1]['story'], seen)
+        self.post('restart', self.host)
+        self.assertEqual(self.room['story_used'], {})
+
+    def test_bundled_music_matches_licensed_manifest(self):
+        import hashlib
+        import json
+        from pathlib import Path
+        root = Path(game.__file__).parent
+        manifest = json.loads((root / 'static/audio/sources.json').read_text())
+        self.assertEqual(manifest['license'], 'CC0-1.0')
+        for entry in manifest['files']:
+            data = (root / entry['file']).read_bytes()
+            self.assertEqual(hashlib.sha256(data).hexdigest(), entry['sha256'])
+            self.assertEqual(len(data), entry['bytes'])
+            response = self.client.get('/' + entry['file'])
+            self.assertEqual(response.status_code, 200)
+            response.close()
 
 
 if __name__ == '__main__':

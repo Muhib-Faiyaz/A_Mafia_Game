@@ -794,3 +794,22 @@ body[data-atmosphere] .phase-card {
   width: 100%;
   min-height: 50px;
 }
+
+.music-credits {
+  font-size: 13px;
+  color: var(--muted);
+}
+.music-credits summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 12px 0;
+  color: var(--gold);
+}
+.music-credits p {
+  margin-bottom: 12px;
+}
+.music-credits a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 10px 0;
+}

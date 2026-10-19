@@ -1,0 +1,47 @@
+{
+  "artist": "AERIS MUSIC",
+  "license": "CC0-1.0",
+  "repository": "https://github.com/farmmer938-lgtm/aeris-cc0-music",
+  "commit": "51ab767ca32558ae5686344fc3b29c7a4498b145",
+  "files": [
+    {
+      "file": "static/audio/signal-lost.mp3",
+      "source": "https://raw.githubusercontent.com/farmmer938-lgtm/aeris-cc0-music/51ab767ca32558ae5686344fc3b29c7a4498b145/tracks/signal-lost.mp3",
+      "upstream_bytes": 3202604,
+      "upstream_sha256": "9cdde114358cf6551aeaf36ed88774ecf158ae76ba89704f4277e513e0b483ed",
+      "bytes": 1281087,
+      "sha256": "2588b9c23c5fffdf47808c3484d5696130c26d566f8d87683a9b8c625903bbe0",
+      "modification": "Transcoded from original to 128 kbps MP3 at 44.1 kHz for mobile delivery; composition unchanged."
+    },
+    {
+      "file": "static/audio/beneath.mp3",
+      "source": "https://raw.githubusercontent.com/farmmer938-lgtm/aeris-cc0-music/51ab767ca32558ae5686344fc3b29c7a4498b145/tracks/beneath.mp3",
+      "upstream_bytes": 3202604,
+      "upstream_sha256": "e9e7fc1f9e788e4a837d9e125485b2bc4cee341ae438ee3d7e8e8d51c9786654",
+      "bytes": 1281087,
+      "sha256": "e013a7d1c5af5160bd26794b8d779788708ae03ea78fe5d5e4566d2d2c1f6fc9",
+      "modification": "Transcoded from original to 128 kbps MP3 at 44.1 kHz for mobile delivery; composition unchanged."
+    },
+    {
+      "file": "static/audio/quiet-room.mp3",
+      "source": "https://raw.githubusercontent.com/farmmer938-lgtm/aeris-cc0-music/51ab767ca32558ae5686344fc3b29c7a4498b145/tracks/quiet-room.mp3",
+      "upstream_bytes": 2287724,
+      "upstream_sha256": "dfa5b6c372eeb079b9eb76c30cfb8229fb95c0ba0f4ee8f58636d46344ec971a",
+      "bytes": 915373,
+      "sha256": "e3cb82fda21289c9e68569bb08e7b772b30ec93b801fd0ed16e483076884fdf8",
+      "modification": "Transcoded from original to 128 kbps MP3 at 44.1 kHz for mobile delivery; composition unchanged."
+    },
+    {
+      "file": "static/audio/AERIS-LICENSE",
+      "source": "https://raw.githubusercontent.com/farmmer938-lgtm/aeris-cc0-music/51ab767ca32558ae5686344fc3b29c7a4498b145/LICENSE",
+      "bytes": 455,
+      "sha256": "170e3b177791614567a81679ad1e20ee0197c57377cbff7f8d52030d1e8abfe9"
+    },
+    {
+      "file": "static/audio/AERIS-README.md",
+      "source": "https://raw.githubusercontent.com/farmmer938-lgtm/aeris-cc0-music/51ab767ca32558ae5686344fc3b29c7a4498b145/README.md",
+      "bytes": 3418,
+      "sha256": "c7b739e45d9e4d27b1a04da12233b11636cbbddf184e516c277125ce50bc679a"
+    }
+  ]
+}

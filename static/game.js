@@ -446,7 +446,7 @@ function openMenu() {
   const active = state && ["day", "night"].includes(state.phase),
     host = state?.me.host;
   $("#menu-body").innerHTML =
-    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">A tense Mafia score, quieter role themes, and soft discussion music. Sound effects share this volume and mute control. Music pauses when you leave this tab.</p>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
+    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">Cinematic tension for Mafia and voting. Calm ambient music for discussion and Doctor turns. Sound effects share this volume and mute control. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Music credits</summary><p>“Signal Lost”, “Beneath” and “Quiet Room” by AERIS MUSIC. Released under CC0 1.0; compressed for mobile playback.</p><a href="https://github.com/farmmer938-lgtm/aeris-cc0-music" target="_blank" rel="noopener noreferrer">Artist’s collection ↗</a> · <a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">License details ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
   $("#menu-music").onclick = async () => {
     await music.toggle();
     $("#menu-music").textContent =
@@ -467,15 +467,26 @@ function confirmHostAction(action) {
   };
   $("#cancel-host").onclick = openMenu;
 }
-// Original procedural soundtrack. Audio is created only after a deliberate user tap.
+// Downloaded CC0 recordings, decoded only after a deliberate user tap.
+// Sources, license and checksums: /static/audio/sources.json and CREDITS.md.
+const SOUNDTRACKS = {
+  mafia: "/static/audio/signal-lost.mp3",
+  detective: "/static/audio/beneath.mp3",
+  voting: "/static/audio/beneath.mp3",
+  doctor: "/static/audio/quiet-room.mp3",
+  discussion: "/static/audio/quiet-room.mp3",
+};
 const music = {
   enabled: false,
   volume: 0.3,
   context: null,
   bus: null,
-  timer: null,
   mode: "",
-  step: 0,
+  buffers: new Map(),
+  activeTrack: null,
+  requestedTrack: "",
+  trackVersion: 0,
+  voices: new Set(),
   async toggle() {
     try {
       if (!this.context) {
@@ -526,37 +537,73 @@ const music = {
       g.disconnect();
     };
   },
-  beat() {
-    if (!this.enabled || document.hidden || !this.mode) return;
-    const t = this.context.currentTime + 0.04,
-      k = this.step++;
-    if (this.mode === "mafia") {
-      // Tight semitone ostinato, a double heartbeat, and a low rising drone.
-      const notes = [110, 116.54, 110, 103.83, 110, 123.47, 116.54, 103.83];
-      this.note(notes[k % 8], t, 0.42, 0.13, "triangle");
-      this.note(48, t, 0.17, 0.24);
-      this.note(42, t + 0.18, 0.2, 0.18);
-      if (k % 4 === 0) {
-        this.note(55, t, 1.8, 0.12, "triangle");
-        this.note(233.08, t + 0.12, 1.5, 0.035, "sawtooth");
-      }
-    } else if (this.mode === "doctor") {
-      this.note([261.63, 392, 329.63, 392][k % 4], t, 2.2, 0.09);
-      if (k % 4 === 0) this.note(130.81, t, 3, 0.06);
-    } else if (this.mode === "detective") {
-      this.note([146.83, 220, 164.81, 155.56][k % 4], t, 1.4, 0.09, "triangle");
-      if (k % 2 === 0) this.note(293.66, t + 0.25, 0.8, 0.04);
-    } else if (this.mode === "voting") {
-      this.note([98, 110, 116.54, 110][k % 4], t, 0.7, 0.12, "triangle");
-      this.note(49, t, 0.25, 0.12);
-    } else {
-      const notes = [261.63, 329.63, 392, 493.88, 440, 392, 329.63, 293.66];
-      this.note(notes[k % 8], t, 2.6, 0.11);
-      if (k % 4 === 0) {
-        this.note(130.81, t, 3.5, 0.08);
-        this.note(196, t + 0.1, 3.5, 0.05);
-      }
+  async loadTrack(path) {
+    if (!this.buffers.has(path)) {
+      const promise = fetch(path, { signal: AbortSignal.timeout(30000) })
+        .then((response) => {
+          if (!response.ok) throw new Error("Music file unavailable");
+          return response.arrayBuffer();
+        })
+        .then((bytes) => this.context.decodeAudioData(bytes));
+      this.buffers.set(path, promise);
+      promise.catch(() => this.buffers.delete(path));
     }
+    return this.buffers.get(path);
+  },
+  fadeOut(voice, seconds = 0.7) {
+    if (!voice) return;
+    const now = this.context.currentTime;
+    const stopAt = now + seconds + 0.05;
+    // Muting/hiding must shorten a crossfade that is already in progress.
+    if (voice.stopAt && voice.stopAt <= stopAt) return;
+    voice.stopping = true;
+    voice.stopAt = stopAt;
+    voice.gain.gain.cancelAndHoldAtTime(now);
+    voice.gain.gain.linearRampToValueAtTime(0, now + seconds);
+    voice.source.stop(stopAt);
+  },
+  syncTrack(mode) {
+    const path =
+      this.enabled && !document.hidden ? SOUNDTRACKS[mode] || "" : "";
+    if (path === this.requestedTrack) return;
+    this.requestedTrack = path;
+    const version = ++this.trackVersion;
+    if (!path) {
+      for (const voice of this.voices) this.fadeOut(voice, 0.15);
+      this.activeTrack = null;
+      return;
+    }
+    this.loadTrack(path)
+      .then((buffer) => {
+        // Never start a stale download after a phase change, mute or tab hide.
+        if (version !== this.trackVersion || !this.enabled || document.hidden)
+          return;
+        const source = this.context.createBufferSource(),
+          gain = this.context.createGain();
+        source.buffer = buffer;
+        source.loop = true;
+        gain.gain.setValueAtTime(0, this.context.currentTime);
+        gain.gain.linearRampToValueAtTime(0.9, this.context.currentTime + 0.7);
+        source.connect(gain);
+        gain.connect(this.bus);
+        const voice = { path, source, gain, stopping: false };
+        this.voices.add(voice);
+        source.onended = () => {
+          source.disconnect();
+          gain.disconnect();
+          this.voices.delete(voice);
+        };
+        for (const previous of this.voices)
+          if (previous !== voice) this.fadeOut(previous);
+        this.activeTrack = voice;
+        source.start();
+      })
+      .catch(() => {
+        if (version !== this.trackVersion) return;
+        for (const voice of this.voices) this.fadeOut(voice, 0.15);
+        this.activeTrack = null;
+        toast("Music could not load. Tap sound off and on to retry.");
+      });
   },
   deathStrike() {
     if (
@@ -626,19 +673,8 @@ const music = {
         this.context.currentTime,
         0.15,
       );
-    if (this.mode !== mode || !this.enabled || document.hidden) {
-      clearInterval(this.timer);
-      this.timer = null;
-      this.mode = mode;
-      this.step = 0;
-    }
-    if (this.enabled && !document.hidden && mode && !this.timer) {
-      this.beat();
-      this.timer = setInterval(
-        () => this.beat(),
-        mode === "mafia" ? 460 : mode === "voting" ? 700 : 1100,
-      );
-    }
+    this.mode = mode;
+    this.syncTrack(mode);
     this.updateButton();
   },
 };
