@@ -2,7 +2,7 @@
 State lives in memory, so run a single worker (see Procfile)."""
 import math, os, random, string, threading, time, uuid
 from flask import Flask, jsonify, request, send_from_directory
-from death_stories import DEATH_STORIES
+from death_stories import DEATH_STORIES, RESCUE_STORIES
 
 app = Flask(__name__, static_folder="static")
 rooms, lock = {}, threading.RLock()
@@ -49,7 +49,7 @@ def add_player(room, name, host=False, bot=False):
     if any(p["name"].lower() == name.lower() for p in room["players"].values()):
         raise Bad("That name is taken in this room.")
     pid = uuid.uuid4().hex
-    room["players"][pid] = dict(name=name, role=None, alive=True, host=host, notes=[], bot=bot)
+    room["players"][pid] = dict(name=name, role=None, alive=True, host=host, notes=[], bot=bot, score=0, pending_points=0, round_points=0, investigated=set())
     return pid
 
 
@@ -100,12 +100,27 @@ def timers(room):
     return 0, 0
 
 
+def settle_scores(room):
+    """Publish points once, only when a game ends; keep totals for this room."""
+    if room.get("scores_settled"):
+        return
+    for player in room["players"].values():
+        won = ((room.get("winner") == "mafia" and player["role"] == "mafia") or
+               (room.get("winner") == "town" and player["role"] != "mafia" and player["alive"]))
+        points = player.get("pending_points", 0) + int(won)
+        player["score"] = player.get("score", 0) + points
+        player["round_points"] = points
+        player["pending_points"] = 0
+    room["scores_settled"] = True
+
+
 def check_win(room):
     m = len(alive(room, "mafia"))
     t = len(alive(room)) - m
     w = "town" if m == 0 else "mafia" if m >= t else None
     if w:
         room["phase"], room["winner"] = "over", w
+        settle_scores(room)
         say(room, "The town wins — every Mafia member is gone." if w == "town"
             else "The Mafia wins — they now match the town in numbers.")
     return bool(w)
@@ -137,21 +152,50 @@ def record_death(room, pid, cause):
     event = dict(id=uuid.uuid4().hex, day=room["day"], name=player["name"],
                  player_id=pid, cause=cause, tone=tone, story=story)
     room.setdefault("death_events", []).append(event)
+    room.setdefault("notices", []).append(dict(event, kind="death"))
+    say(room, story)
+
+
+def record_rescue(room, pid):
+    # No Doctor ID, name, pronouns or scoring information goes into public events.
+    used = room.setdefault("story_used", {}).setdefault("rescue", [])
+    available = [i for i in range(len(RESCUE_STORIES)) if i not in used]
+    if not available:
+        used.clear()
+        available = list(range(len(RESCUE_STORIES)))
+    index = available[random.randrange(len(available))]
+    used.append(index)
+    name = room["players"][pid]["name"]
+    story = RESCUE_STORIES[index].format(name=name)
+    event = dict(id=uuid.uuid4().hex, kind="rescue", day=room["day"], name=name,
+                 player_id=pid, tone="hopeful", story=story)
+    room.setdefault("notices", []).append(event)
     say(room, story)
 
 
 def resolve_night(room):
     n, P = room["night"], room["players"]
+    if n.get("resolved"):
+        return
+    n["resolved"] = True
     for i in alive(room, "detective"):
         t = P.get(n["detective"])
         if t:
+            if t["role"] == "mafia" and n["detective"] not in P[i]["investigated"]:
+                P[i]["pending_points"] += 1
+                P[i]["investigated"].add(n["detective"])
             P[i]["notes"].append(f"Night {room['day']}: {t['name']} is {'Mafia' if t['role'] == 'mafia' else 'not Mafia'}.")
     victim = n["victim"]
     if victim and victim != n["doctor"]:
         record_death(room, victim, "night")
         room["dawn"] = f"{P[victim]['name']} was killed."
+    elif victim:
+        for doctor in alive(room, "doctor"):
+            P[doctor]["pending_points"] += 1
+        record_rescue(room, victim)
+        room["dawn"] = f"{P[victim]['name']} was saved by the Doctor. The Doctor's identity remains secret."
     else:
-        room["dawn"] = "Nobody was killed last night."  # nobody learns if the doctor saved someone
+        room["dawn"] = "Nobody was killed last night."
     say(room, f"Night {room['day']}: {room['dawn']}")
     if not check_win(room):
         room["phase"] = "day"
@@ -269,7 +313,8 @@ def view(room, pid):
     for i, p in P.items():
         known = over or i == pid or (me["role"] == "mafia" and p["role"] == "mafia")
         players.append(dict(id=i, name=p["name"], bot=p["bot"], alive=p["alive"], host=p["host"], you=i == pid,
-                            role=p["role"] if known else None, votes=vc.get(i, 0)))
+                            role=p["role"] if known else None, votes=vc.get(i, 0), score=p.get("score", 0),
+                            round_points=p.get("round_points", 0) if over else 0))
     mode = None
     if room["phase"] == "day":
         mode = "town" if me["alive"] else None
@@ -278,6 +323,7 @@ def view(room, pid):
     chat = [dict(c) for c in room["chat"] if c["ch"] == "town"][-80:]
     mafia_chat = [dict(c) for c in room["chat"] if c["ch"] == "mafia"][-80:] if me["role"] == "mafia" else []
     return dict(code=room["code"], chat=chat, chat_mode=mode, phase=room["phase"], day=room["day"], winner=room.get("winner"),
+                notices=room.get("notices", []), scores_settled=room.get("scores_settled", False),
                 death_events=room.get("death_events", []), round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
                 mafia_chat_open=me["role"] == "mafia" and me["alive"] and room["phase"] in ("day", "night"),
                 can_skip=me["host"] and (room["phase"] == "day" or (room["phase"] == "night" and room["night_step"] != "mafia")),
@@ -405,8 +451,8 @@ def start_game(room):
     roles = ["mafia"] * m + sp + ["town"] * (n - m - len(sp))
     random.shuffle(roles)
     for p, r in zip(P.values(), roles):
-        p.update(role=r, alive=True, notes=[], last=0)
-    room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[], story_used={})
+        p.update(role=r, alive=True, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
+    room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[], story_used={}, notices=[], scores_settled=False)
     say(room, "The game begins. Night falls on the town.")
     start_night(room)
     run_bots(room)
@@ -429,6 +475,7 @@ def end():
         if not room["players"][pid]["host"] or room["phase"] not in ("night", "day"):
             raise Bad("Only the host can end an active game.")
         room.update(phase="over", winner=None, ended=True)
+        settle_scores(room)
         say(room, "The host ended the game. All roles are revealed.")
         return jsonify(ok=True)
 
@@ -549,9 +596,9 @@ def reset():
         room, pid = ctx(request.get_json(force=True))
         if not room["players"][pid]["host"] or room["phase"] != "over":
             raise Bad("Only the host can restart.")
-        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set(), ended=False, death_events=[], story_used={})
+        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set(), ended=False, death_events=[], story_used={}, notices=[], scores_settled=False)
         for p in room["players"].values():
-            p.update(role=None, alive=True, notes=[], last=0)
+            p.update(role=None, alive=True, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
         return jsonify(ok=True)
 
 

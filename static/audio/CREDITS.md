@@ -1,13 +1,15 @@
 # Music credits
 
-All three recordings are by **AERIS MUSIC**, dedicated to the public domain
+All five recordings are by **AERIS MUSIC**, dedicated to the public domain
 under **CC0 1.0 Universal** by the publisher.
 
 | Track | Game use | Duration |
 | --- | --- | --- |
 | Signal Lost | Mafia turn — cinematic tension | 80 seconds |
-| Beneath | Detective turn and voting — brooding suspense | 80 seconds |
-| Quiet Room | Doctor turn and discussion — calm ambient | 57 seconds |
+| Beneath | Detective turn — brooding suspense | 80 seconds |
+| Ash | Voting — dark, minimal tension | 87 seconds |
+| Quiet Room | Doctor turn — calm ambient | 57 seconds |
+| Afterglow Vast | Discussion — warm, relaxed ambience | 91 seconds |
 
 Source: https://github.com/farmmer938-lgtm/aeris-cc0-music
 Pinned revision: `51ab767ca32558ae5686344fc3b29c7a4498b145`.

@@ -813,3 +813,44 @@ body[data-atmosphere] .phase-card {
   min-height: 44px;
   padding: 10px 0;
 }
+
+.player-score {
+  display: block;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--gold);
+}
+.score-hint {
+  margin: 0 0 14px;
+}
+.rescue-notice {
+  border-color: #53bda6;
+  background: radial-gradient(ellipse at top, #17483d, #0d1a1c 75%);
+  box-shadow: 0 0 80px #2f9a7033;
+}
+.rescue-notice::before {
+  background: none;
+}
+.rescue-notice::backdrop {
+  background: #031a16df;
+}
+.rescue-notice #death-title {
+  color: #b4f1d9;
+  text-shadow: 0 2px 20px #3da57d55;
+}
+.rescue-notice .death-symbol {
+  color: #8ae1c1;
+  text-shadow: 0 0 22px #3da57d66;
+}
+.rescue-notice #death-story {
+  color: #d0e9df;
+}
+.rescue-notice #death-tone {
+  color: #a9ddca;
+  border-color: #397263;
+}
+.rescue-notice #dismiss-death {
+  background: #214b3f;
+  color: #d4ffeb;
+  border-color: #4b8d72;
+}

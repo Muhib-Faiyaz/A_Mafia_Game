@@ -138,7 +138,7 @@ function lobby() {
     needed = Math.max(3, count * 2 + 1);
   return `<section id="top" class="stack"><div><p class="eyebrow">The gathering</p><h1 style="margin-top:8px">Take your seat.</h1></div>
 <div class="card row spread"><div><p class="eyebrow">Invite your accomplices</p><p class="room-code">${esc(state.code)}</p></div><span class="pill">Lobby</span></div>
-<div class="card stack"><div class="row spread"><h2>The guest list</h2><span class="pill">${n}/20</span></div><div class="members">${state.players.map((p) => `<span class="member">${esc(p.name)} ${p.host ? "♛" : ""}${p.you ? " · You" : ""}${p.bot ? " · Bot" : ""}</span>`).join("")}</div>${host ? '<div class="row"><button id="add-bot" style="flex:1">+ Add bot</button><button id="fill" style="flex:1">Fill to 7</button></div>' : ""}</div>
+<div class="card stack"><div class="row spread"><h2>The guest list</h2><span class="pill">${n}/20</span></div><div class="members">${state.players.map((p) => `<span class="member"><b>${esc(p.name)}</b> ${p.host ? "♛" : ""}${p.you ? " · You" : ""}${p.bot ? " · Bot" : ""}<small class="player-score">${p.score || 0} session points</small></span>`).join("")}</div>${host ? '<div class="row"><button id="add-bot" style="flex:1">+ Add bot</button><button id="fill" style="flex:1">Fill to 7</button></div>' : ""}</div>
 <div class="card stack"><h2>Set the stakes</h2><label class="field">NUMBER OF MAFIA<select id="count" ${host ? "" : "disabled"}>${[1, 2, 3].map((i) => `<option value="${i}" ${count === i ? "selected" : ""}>${i} Mafia${i === 1 ? " · default" : ""}</option>`).join("")}</select></label><label class="field">SPECIAL CHARACTERS<select id="special" ${host ? "" : "disabled"}><option value="yes" ${state.settings.special_roles ? "selected" : ""}>Doctor & Detective</option><option value="no" ${!state.settings.special_roles ? "selected" : ""}>Mafia & Villagers only</option></select></label><p class="hint">1–3 Mafia. Start with at least ${needed} players for this setup. Special characters are added as space allows.</p></div>
 ${host ? `<button id="start" class="primary" ${n < needed ? "disabled" : ""}>Begin the night →</button>` : '<p class="muted">The host will begin when everyone is ready.</p>'}<button id="leave" class="ghost">Leave this room</button></section>`;
 }
@@ -230,7 +230,7 @@ ${
     : ""
 }
 ${state.notes.length ? `<div class="card"><p class="eyebrow">Detective’s case file</p><p>${state.notes.map(esc).join("<br>")}</p></div>` : ""}
-<section id="players"><div class="section-title"><h2>The town</h2><span class="pill">${state.players.length} seats</span></div><div class="players">${state.players.map((p) => `<button class="player ${!p.alive ? "dead" : ""} ${pick === p.id ? "selected" : ""}" data-player="${p.id}" ${canAct(p) ? "" : "disabled"} aria-pressed="${pick === p.id}"><span class="avatar">${esc(p.name[0])}</span><b>${esc(p.name)}</b><small>${p.you ? "You · " : ""}${p.role ? roleName(p.role) : p.alive ? "Identity unknown" : "Eliminated"}${p.bot ? " · Bot" : ""}</small>${p.votes ? `<span class="votes">${p.votes} vote${p.votes === 1 ? "" : "s"}</span>` : ""}</button>`).join("")}</div>
+<section id="players"><p class="hint score-hint">Session scores stay with each player. Points update when the game ends.</p><div class="section-title"><h2>The town</h2><span class="pill">${state.players.length} seats</span></div><div class="players">${state.players.map((p) => `<button class="player ${!p.alive ? "dead" : ""} ${pick === p.id ? "selected" : ""}" data-player="${p.id}" ${canAct(p) ? "" : "disabled"} aria-pressed="${pick === p.id}"><span class="avatar">${esc(p.name[0])}</span><b>${esc(p.name)}</b><span class="player-score">${p.score || 0} point${p.score === 1 ? "" : "s"}${over && p.round_points ? ` · +${p.round_points} this game` : ""}</span><small>${p.you ? "You · " : ""}${p.role ? roleName(p.role) : p.alive ? "Identity unknown" : "Eliminated"}${p.bot ? " · Bot" : ""}</small>${p.votes ? `<span class="votes">${p.votes} vote${p.votes === 1 ? "" : "s"}</span>` : ""}</button>`).join("")}</div>
 ${label && m.alive ? `<div class="action">${state.voting ? '<button id="skip-vote" class="ghost">Skip vote (' + state.skips + ")</button>" : ""}<button id="confirm-action" class="primary" ${pick ? "" : "disabled"}>${label}${pickName ? ": " + esc(pickName) : ""}</button><p class="hint">${state.pick ? "Your choice is recorded. You may change it while the turn stays open." : "Tap a player, then confirm your choice."}</p></div>` : ""}
 ${state.voting && m.host ? '<button id="tally" class="ghost" style="width:100%;margin-top:12px">Close voting & count votes</button>' : ""}</section>
 <div id="chats" class="stack">${chat("town")}${m.role === "mafia" ? chat("mafia") : ""}</div>
@@ -273,7 +273,7 @@ function showDeathNotice() {
     }
   }
   if ($("#death-notice").open) return;
-  const event = (state.death_events || []).find(
+  const event = (state.notices || state.death_events || []).find(
     (event) => !deathSeen.has(event.id),
   );
   if (!event) return;
@@ -284,19 +284,31 @@ function showDeathNotice() {
       JSON.stringify({ round: state.round_id, seen: [...deathSeen] }),
     );
   } catch (_) {}
+  const rescued = event.kind === "rescue";
+  $("#death-notice").classList.toggle("rescue-notice", rescued);
+  $("#notice-eyebrow").textContent = rescued
+    ? "A life brought back from the brink"
+    : "A seat at the table falls silent";
+  $("#notice-symbol").textContent = rescued ? "+" : "†";
   $("#death-title").textContent =
     event.name +
-    (event.cause === "night" ? " has been killed" : " has been voted out");
-  $("#death-tone").textContent =
-    {
-      sad: "A tragic farewell",
-      goofy: "A ridiculous end",
-      eerie: "A chilling tale",
-    }[event.tone] || "Town tale";
+    (rescued
+      ? " has been saved"
+      : event.cause === "night"
+        ? " has been killed"
+        : " has been voted out");
+  $("#death-tone").textContent = rescued
+    ? "The Doctor remains anonymous"
+    : {
+        sad: "A tragic farewell",
+        goofy: "A ridiculous end",
+        eerie: "A chilling tale",
+      }[event.tone] || "Town tale";
   $("#death-story").textContent = event.story;
   $("#game-menu").close();
   $("#death-notice").showModal();
-  music.deathStrike();
+  if (rescued) music.rescueChime();
+  else music.deathStrike();
 }
 $("#dismiss-death").onclick = () => $("#death-notice").close();
 $("#death-notice").addEventListener("close", () => {
@@ -446,7 +458,7 @@ function openMenu() {
   const active = state && ["day", "night"].includes(state.phase),
     host = state?.me.host;
   $("#menu-body").innerHTML =
-    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">Cinematic tension for Mafia and voting. Calm ambient music for discussion and Doctor turns. Sound effects share this volume and mute control. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Music credits</summary><p>“Signal Lost”, “Beneath” and “Quiet Room” by AERIS MUSIC. Released under CC0 1.0; compressed for mobile playback.</p><a href="https://github.com/farmmer938-lgtm/aeris-cc0-music" target="_blank" rel="noopener noreferrer">Artist’s collection ↗</a> · <a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">License details ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
+    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">A different track for every turn: cinematic Mafia tension, brooding Detective music, dark voting music, calm Doctor ambience and warm discussion music. Sound effects share this volume and mute control. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Session scoring</summary><p>Each Mafia member gets 1 point for a Mafia win. Surviving town members get 1 for a town win. Doctors earn 1 for each actual rescue, and Detectives earn 1 for each different Mafia member correctly identified.</p><p>Points appear only after the game ends. Totals stay with the player through restarts. Restarting an unfinished game discards its unclaimed points.</p></details><details class="music-credits"><summary>Music credits</summary><p>“Signal Lost”, “Beneath”, “Ash”, “Quiet Room” and “Afterglow Vast” by AERIS MUSIC. Released under CC0 1.0; compressed for mobile playback.</p><a href="https://github.com/farmmer938-lgtm/aeris-cc0-music" target="_blank" rel="noopener noreferrer">Artist’s collection ↗</a> · <a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">License details ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
   $("#menu-music").onclick = async () => {
     await music.toggle();
     $("#menu-music").textContent =
@@ -472,9 +484,9 @@ function confirmHostAction(action) {
 const SOUNDTRACKS = {
   mafia: "/static/audio/signal-lost.mp3",
   detective: "/static/audio/beneath.mp3",
-  voting: "/static/audio/beneath.mp3",
+  voting: "/static/audio/ash.mp3",
   doctor: "/static/audio/quiet-room.mp3",
-  discussion: "/static/audio/quiet-room.mp3",
+  discussion: "/static/audio/afterglow-vast.mp3",
 };
 const music = {
   enabled: false,
@@ -604,6 +616,19 @@ const music = {
         this.activeTrack = null;
         toast("Music could not load. Tap sound off and on to retry.");
       });
+  },
+  rescueChime() {
+    if (
+      !this.enabled ||
+      !this.context ||
+      this.context.state !== "running" ||
+      document.hidden
+    )
+      return;
+    const t = this.context.currentTime + 0.02;
+    [261.63, 329.63, 392, 523.25].forEach((frequency, i) =>
+      this.note(frequency, t + i * 0.16, 1.4, 0.1),
+    );
   },
   deathStrike() {
     if (

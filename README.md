@@ -45,12 +45,14 @@ to the lobby to change settings.
 Tap the music button to enable downloaded **CC0 recordings by AERIS MUSIC**:
 
 - **Signal Lost:** tense cinematic music for the Mafia turn.
-- **Beneath:** brooding suspense for Detective turns and daytime voting.
-- **Quiet Room:** calm ambient music for Doctor turns and discussion.
+- **Beneath:** brooding suspense for Detective turns.
+- **Ash:** dark, minimal tension for daytime voting.
+- **Quiet Room:** calm ambient music for Doctor turns.
+- **Afterglow Vast:** warm, relaxed music for discussion.
 
 Tracks are hosted locally, loop, and crossfade when the mood changes. They are
 loaded only after sound is enabled, cached for the session, and compressed to
-128 kbps MP3 (about 3.5 MB total). No external streaming service or credentials
+128 kbps MP3 (about 6.3 MB total). No external streaming service or credentials
 are required. Music and death effects share mute and volume controls; playback
 stops in hidden tabs and at game end. Mobile browsers require an initial tap.
 The death impact/splash is still synthesized locally with Web Audio.
@@ -84,6 +86,32 @@ The active frontend is `static/index.html`, `static/game.css`, and
 `static/game.js`. The root `index.html` mirrors the entry document as a server
 fallback. No frontend build step is required.
 
+## Session scoring
+
+Scores appear directly beneath each player's name in the lobby and game, with
+no ranking or rearrangement. They follow player identity through new role deals,
+restarts, and a return to the lobby. Totals last for the in-memory room session;
+a new room, room expiry, or server restart starts a new session.
+
+- Mafia victory: **+1 to each Mafia member**, including eliminated Mafia.
+- Town victory: **+1 to each surviving non-Mafia player**, including special roles.
+- Doctor: **+1 per actual prevented kill**, including self-protection. Protecting
+  someone who was not attacked earns nothing.
+- Detective: **+1 per distinct Mafia member correctly identified in a game**.
+  Re-investigating the same Mafia or investigating non-Mafia earns nothing.
+
+Action points are held privately until the game ends, so changing totals cannot
+reveal the Doctor or Detective. Settlement happens once. Skill points are kept
+even if their earner dies later. A host-ended game settles earned action points
+without a victory bonus; restarting an unfinished game discards pending points
+and preserves previously settled totals.
+
+Actual rescues create a green notification, a gentle chime (when sound is on),
+and one of six shared rescue stories in the town record. The saved player is
+named, but no Doctor identity or private scoring data is published. Stories are
+also compatible with self-protection. A save is announced only at dawn, and does
+not create a death notification.
+
 ## Tests
 
 ```sh
@@ -93,4 +121,5 @@ node --check static/game.js
 
 The regression suite covers settings, role counts, split and unanimous votes,
 timeouts, private chat permissions, Doctor protection, host end/restart, shared
-death stories, non-repetition, notification timing, and bundled audio integrity.
+death stories, non-repetition, notification timing, bundled audio integrity,
+private scoring, one-time settlement, session retention, and anonymous rescues.

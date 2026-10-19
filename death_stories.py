@@ -38,3 +38,15 @@ DEATH_STORIES = {
         ("eerie", "{name} asked the town to leave the hall door open after the verdict. They would not explain why. Once the sentence was carried out, the clerk shut it anyway. Three knocks came from the other side. When the door was opened, the corridor was empty, and every coat on the rack was facing the wall."),
     ],
 }
+
+
+# Deliberately compatible with self-protection: nothing describes who performed
+# the treatment or implies that the saved player cannot be the Doctor.
+RESCUE_STORIES = [
+    "The Mafia left {name} beneath the station awning, certain the night was finished. But the Doctor's treatment held. At sunrise, a hand closed around the railing and a familiar voice asked whether the first train had gone. The town gained another morning. No name was written on the medical kit.",
+    "Someone had already set {name}'s cup aside when news reached the square: the Doctor's care had worked. A little later, the cup was taken back down. It rattled against its saucer as {name} sat at the table, alive. Questions about the rescue went unanswered. For once, the town let a secret stay a secret.",
+    "The Mafia expected an empty chair. Instead, {name} arrived at the meeting wrapped in a blanket, annoyed that breakfast was cold. The Doctor's treatment had turned a certain death into a very ordinary complaint. Nobody named the Doctor. Everyone moved over to make room.",
+    "Through the last hour of darkness, the town waited for bad news about {name}. At dawn, a light appeared in the upstairs window. The Doctor's treatment had succeeded. Then the curtains opened and somebody waved. By the time the square began to cheer, the medical notes had been folded away, unsigned.",
+    "{name}'s name had nearly been added to the morning's list of the dead. The Doctor's care changed that. A messenger reached the square just as the chalk touched the board, and the name was rubbed away. One dusty streak remained. Nobody asked whose hands had made the rescue possible.",
+    "The attack should have left {name}'s doorstep silent. Instead, dawn brought the sound of a kettle and a stubborn argument with a jammed window. The Doctor's treatment had worked. The window finally opened; fresh air entered a room the Mafia had expected to be empty. The rescue remained unsigned.",
+]

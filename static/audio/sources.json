@@ -42,6 +42,24 @@
       "source": "https://raw.githubusercontent.com/farmmer938-lgtm/aeris-cc0-music/51ab767ca32558ae5686344fc3b29c7a4498b145/README.md",
       "bytes": 3418,
       "sha256": "c7b739e45d9e4d27b1a04da12233b11636cbbddf184e516c277125ce50bc679a"
+    },
+    {
+      "file": "static/audio/ash.mp3",
+      "source": "https://raw.githubusercontent.com/farmmer938-lgtm/aeris-cc0-music/51ab767ca32558ae5686344fc3b29c7a4498b145/tracks/ash.mp3",
+      "upstream_bytes": 3493484,
+      "upstream_sha256": "672e5e17c78ba8bda95b1a369336b6e8daf59009ff9e26e9ccbdd65c448bdf00",
+      "bytes": 1397280,
+      "sha256": "16f2ba446a7c92a706eb9a1a8e6f27685765f506c0d90ded60bf9ad2f47da22c",
+      "modification": "Transcoded from original to 128 kbps MP3 at 44.1 kHz for mobile delivery; composition unchanged."
+    },
+    {
+      "file": "static/audio/afterglow-vast.mp3",
+      "source": "https://raw.githubusercontent.com/farmmer938-lgtm/aeris-cc0-music/51ab767ca32558ae5686344fc3b29c7a4498b145/tracks/afterglow-vast.mp3",
+      "upstream_bytes": 3659564,
+      "upstream_sha256": "7830116b105bd635faf95a8710229ff44de37c9558529c5dcf8dbda96cf80ab2",
+      "bytes": 1464154,
+      "sha256": "fd63b84298c91238b115adae9e58ce3c0cbed230ee5b29825662ef3bab4744ea",
+      "modification": "Transcoded from original to 128 kbps MP3 at 44.1 kHz for mobile delivery; composition unchanged."
     }
   ]
 }
