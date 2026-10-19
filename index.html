@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mafia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Playfair+Display:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDEFF3;--surface:#fff;--ink:#1A2236;--muted:#677088;--line:#D9DDE6;--accent:#2F5D62;--on:#fff;--danger:#B4374F;--orb:#F2B84B;--orb-s:transparent;
+--serif:"Playfair Display",Georgia,serif;--sans:"Hanken Grotesk",system-ui,-apple-system,sans-serif}
+body.night{--bg:#121829;--surface:#1B2340;--ink:#E8EBF5;--muted:#8D96B3;--line:#2B3558;--accent:#F0D58C;--on:#1A1A12;--danger:#E27A8F;--orb:transparent;--orb-s:#F0D58C}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%}
+body{font:16px/1.5 var(--sans);background:var(--bg);color:var(--ink);transition:background .9s,color .9s;
+padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1,h2{font-family:var(--serif);font-weight:400;line-height:1.05}
+h1{font-size:clamp(3rem,10vw,4.5rem)} h2{font-size:1.6rem;font-weight:700}
+p.muted,.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;transition:background .9s,border-color .9s}
+.stack{display:grid;gap:14px}
+.narrow{max-width:420px;margin:8vh auto 0}
+input{width:100%;font:inherit;color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;min-height:48px}
+input:focus,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button{font:inherit;font-weight:600;cursor:pointer;border:0;border-radius:12px;min-height:48px;padding:0 18px;background:var(--accent);color:var(--on);transition:transform .1s,opacity .2s}
+button:active{transform:scale(.97)} button:disabled{opacity:.4;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.row{display:flex;gap:10px;align-items:center}.row>*{flex:1}
+.code{font-family:var(--serif);font-weight:900;font-size:3.4rem;letter-spacing:.14em;padding-left:.14em;text-align:center;line-height:1}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.orb{width:44px;height:44px;border-radius:50%;flex:none;background:var(--orb);box-shadow:inset -13px -5px 0 0 var(--orb-s);transition:all 1s}
+.layout{display:grid;gap:16px}
+@media(min-width:900px){.layout{grid-template-columns:1.6fr 1fr;align-items:start}}
+.role{width:100%;text-align:left;background:var(--ink);color:var(--bg);border-radius:18px;padding:18px 20px;min-height:84px}
+.role b{font-family:var(--serif);font-weight:700;font-size:1.6rem;display:block;line-height:1.1}
+.role span{opacity:.75;font-weight:400;font-size:.95rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.p{position:relative;text-align:left;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);min-height:76px;padding:12px 14px;display:block;font-weight:500}
+.p small{display:block;color:var(--muted);font-weight:400;font-size:.82rem}
+.p.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.p.dead{opacity:.5;background:transparent}.p.dead b{text-decoration:line-through}
+.p:disabled{opacity:1}.p.dead:disabled{opacity:.5}
+.badge{position:absolute;top:10px;right:10px;background:var(--accent);color:var(--on);border-radius:99px;font-size:.78rem;padding:0 8px;min-width:24px;text-align:center}
+.log{list-style:none;padding:0;display:grid;gap:10px;max-height:380px;overflow:auto}
+.log li{padding-left:12px;border-left:2px solid var(--line);font-size:.95rem}
+.note{padding:12px 14px;border-radius:12px;border:1.5px dashed var(--line);font-size:.95rem}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--danger);color:#fff;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;max-width:90vw}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+body.noir{--bg:#14091F;--surface:rgba(255,255,255,.07);--ink:#F3ECFA;--muted:#BBAED0;--line:rgba(255,255,255,.16);--accent:#F4C257;--on:#1A1020;--danger:#FF7A8A;
+background:radial-gradient(900px 520px at 12% -10%,rgba(108,59,170,.55),transparent),radial-gradient(800px 520px at 100% 100%,rgba(230,57,80,.35),transparent),#14091F}
+body.noir .card{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+body.noir input{background:rgba(255,255,255,.06)} body.noir input::placeholder{color:var(--muted)}
+body.noir .code{background:linear-gradient(135deg,#F4C257,#FF8A5B);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cta{background:linear-gradient(135deg,#E63950,#F4803C);color:#fff;box-shadow:0 8px 28px rgba(230,57,80,.4)}
+.cta:hover:not(:disabled){filter:brightness(1.1)}
+button.ghost:hover{border-color:var(--accent)}
+.home{display:grid;gap:22px;max-width:960px;margin:2vh auto 0;align-items:center}
+@media(min-width:860px){.home{grid-template-columns:1.1fr 1fr;gap:48px;margin-top:8vh}}
+.hero{position:relative;overflow:hidden;border-radius:26px;box-shadow:0 30px 80px rgba(230,57,80,.3),0 0 0 1px rgba(255,255,255,.12)}
+.hero svg{display:block;width:100%;height:auto}
+.fog{position:absolute;left:-20%;right:-20%;bottom:-6%;height:38%;background:radial-gradient(closest-side,rgba(255,255,255,.28),transparent);filter:blur(16px);animation:drift 14s ease-in-out infinite alternate}
+.w{animation:fl 4s ease-in-out infinite}
+.brand{font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:clamp(3.6rem,13vw,6rem);line-height:1;letter-spacing:.02em;
+background:linear-gradient(135deg,#FFE29A,#F4C257 45%,#E63950);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{color:var(--muted);margin-top:6px}
+.rise{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}.d1{animation-delay:.12s}.d2{animation-delay:.24s}.d3{animation-delay:.36s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes drift{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+@keyframes fl{0%,100%{opacity:.95}50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.rise,.fog,.w{animation:none!important}}
+
+:root{--glow:rgba(244,184,75,.3)} body.night{--glow:rgba(108,59,170,.45)}
+body{background-image:radial-gradient(800px 460px at 0 0,var(--glow),transparent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line)}
+.rl{display:inline-flex;align-items:center;gap:4px;font-size:.75rem;font-weight:600;color:var(--rc);margin-right:4px}.rl svg{width:13px;height:13px}
+.rc{perspective:1000px;height:156px;cursor:pointer;outline-offset:4px}
+.rc .in{position:relative;height:100%;transition:transform .7s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d}
+.rc.flipped .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:18px;display:flex;align-items:center;gap:18px;box-shadow:0 14px 40px rgba(0,0,0,.22)}
+.face .ic{width:92px;height:92px;flex:none;border-radius:24px;background:#fff;color:var(--rc);padding:16px;display:grid;place-items:center}
+.face .ic svg{width:100%;height:100%}
+.face b{font-family:var(--serif);font-size:1.9rem;line-height:1.1;display:block}
+.face span{opacity:.85;font-size:.95rem;display:block;margin-top:4px}
+.front{transform:rotateY(180deg);background:linear-gradient(135deg,var(--rc),#1a0b2a 130%);color:#fff}
+.back{background:linear-gradient(135deg,#2a1442,#0f0519);color:#F3ECFA;border:1.5px solid rgba(244,194,87,.55)}
+.back .ic{background:transparent;color:#F4C257;font:900 3.6rem/1 var(--serif);border:2px dashed rgba(244,194,87,.5)}
+.pc{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);min-height:68px;padding:10px 12px;font-weight:500}
+.pc.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.pc.dead{opacity:.5}.pc.dead b{text-decoration:line-through}.pc:disabled{opacity:1}.pc.dead:disabled{opacity:.5}
+.av{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:700}
+.nm{min-width:0}.nm b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nm small{color:var(--muted);font-weight:500;font-size:.78rem}
+.tick{position:absolute;right:10px;bottom:8px;color:var(--accent);font-weight:700}
+.pc .badge{top:8px;right:8px}.vb{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);transition:width .4s}
+.timer{display:flex;align-items:center;gap:18px}
+.ring{width:84px;height:84px;flex:none;transform:rotate(-90deg)}.ring circle{fill:none;stroke-width:7}.trk{stroke:var(--line)}.prg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .3s linear}
+.timer b{font:700 2.2rem/1 var(--serif);font-variant-numeric:tabular-nums}
+.sm{min-height:38px;padding:0 14px;font-size:.9rem;margin-top:8px}
+.sleep{display:flex;gap:14px;align-items:center}.sleep .orb{width:34px;height:34px;animation:fl 4s ease-in-out infinite}
+.win{display:flex;gap:16px;align-items:center;background:linear-gradient(135deg,var(--rc),#1a0b2a 140%);color:#fff;border:0}
+.win .ic{width:72px;height:72px;border-radius:20px;background:#fff;color:var(--rc);padding:12px;flex:none}.win .ic svg{width:100%;height:100%}
+.actbar{position:sticky;bottom:0;z-index:5;display:grid;gap:8px;padding:14px 0 6px;background:linear-gradient(transparent,var(--bg) 35%)}
+.log li svg{width:13px;height:13px;vertical-align:-2px;margin-right:4px}
+.dawn{border-left:5px solid var(--accent)}.dawn h2{font-size:1.4rem;margin-bottom:4px}
+.hero img{display:block;width:100%;height:auto}.hero:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(20,9,31,.75))}
+.rc{height:184px}
+.pt{width:112px;height:148px;flex:none;object-fit:cover;object-position:50% 12%;border-radius:16px;background:#fff;border:3px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+img.av{object-fit:cover;object-position:50% 18%;background:#fff;border:2.5px solid var(--line)}
+.win .pt{border-radius:14px}
+.msgs{display:grid;gap:6px;max-height:300px;overflow:auto;align-content:start}
+.m{padding:7px 11px;border-radius:12px;background:var(--bg);font-size:.95rem;overflow-wrap:anywhere}.m b{font-weight:600}
+.m.sys{background:transparent;color:var(--muted);font-size:.86rem;text-align:center;padding:2px}
+.m.mafia{border-left:3px solid #E63950}
+.men{font-weight:600;padding:0 4px;border-radius:6px;background:color-mix(in srgb,var(--accent) 24%,transparent)}.men.me{background:var(--accent);color:var(--on)}
+.mchips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}.mchips .sm{margin:0;min-height:34px;padding:0 10px;flex:none;font-size:.85rem}
+</style>
+</head>
+<body>
+<main id="app"></main><div id="toast" role="alert"></div>
+<script>
+const $=s=>document.querySelector(s), app=$('#app');
+let S=JSON.parse(localStorage.getItem('mafia')||'null'),st=null,sel=null,peek=false,last='',key='',dEnd=0,lastChat='';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ROLES={mafia:['Mafia','You and your team pick one victim each night.'],town:['Villager','Find the Mafia through discussion and votes.'],
+doctor:['Doctor','Each night, protect one player. You can protect yourself.'],detective:['Detective','Each night, learn whether one player is Mafia.']};
+const label=r=>ROLES[r][0];
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t.h);t.h=setTimeout(()=>t.classList.remove('on'),3000)}
+async function api(p,b={}){const r=await fetch('/api/'+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...S,...b})});
+ const j=await r.json();if(!r.ok){const e=new Error(j.error||'Something went wrong.');e.code=r.status;throw e}return j}
+async function run(p,b){try{const j=await api(p,b);if(j.pid){S={code:j.code,pid:j.pid};localStorage.setItem('mafia',JSON.stringify(S))}await poll(true)}catch(e){toast(e.message)}}
+async function poll(force){
+ if(!S)return;
+ try{const j=await api('state');const s=JSON.stringify({...j,chat:0,timer_left:j.timer_left>0?1:0}),c=JSON.stringify(j.chat);dEnd=j.timer_left>0?Date.now()+j.timer_left*1000:0;
+  const k=j.phase+j.day;if(k!==key){key=k;sel=null}
+  if(s!==last||force){last=s;lastChat=c;st=j;render()}
+  else if(c!==lastChat){lastChat=c;st=j;const m=$('#ms');if(m){const end=m.scrollTop+m.clientHeight>=m.scrollHeight-30;m.innerHTML=msgs();if(end)m.scrollTop=m.scrollHeight}}}
+ catch(e){if(e.code===404){leave()}}
+}
+const REC=7;
+function leave(){localStorage.removeItem('mafia');S=st=null;last=key='';render()}
+const act=()=>st.phase==='night'?(st.night_step===st.me.role?{mafia:'Lock in kill',doctor:'Protect',detective:'Investigate'}[st.me.role]:null):st.phase==='day'?(st.voting?'Cast vote':null):null;
+function ok(p){const m=st.me;if(!m.alive||!act())return false;
+ if(st.phase==='day')return st.voting&&p.alive&&!p.you;
+ if(!p.alive)return false;
+ return m.role==='mafia'?p.role!=='mafia':m.role==='detective'?!p.you:m.role==='doctor'}
+function art(){let seed=7;const r=()=>(seed=(seed*9301+49297)%233280)/233280;let o='';
+ [[20,60,140],[90,50,170],[170,60,130],[230,55,160],[310,70,150]].forEach(([x,w,hh])=>o+=`<rect x="${x}" y="${260-hh}" width="${w}" height="${hh}" fill="#3A1458" opacity=".75"/>`);
+ [[0,50,110],[45,40,150],[85,55,95],[135,45,170],[250,45,140],[290,60,100],[345,55,160]].forEach(([x,w,hh])=>{o+=`<rect x="${x}" y="${260-hh}" width="${w}" height="${hh}" fill="#0F0519"/>`;
+  for(let y=260-hh+10;y<235;y+=14)for(let i=x+6;i<x+w-8;i+=11)if(r()>.55)o+=`<rect class="w" style="animation-delay:${(r()*5).toFixed(1)}s" x="${i}" y="${y}" width="5" height="7" fill="#F4C257"/>`});
+ return `<svg viewBox="0 0 400 260" role="img" aria-label="A fedora-wearing figure in front of a night skyline"><defs>
+<linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A0F45"/><stop offset=".6" stop-color="#8A1E4A"/><stop offset="1" stop-color="#F0654C"/></linearGradient>
+<linearGradient id="sp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+<rect width="400" height="260" fill="url(#sk)"/><circle cx="305" cy="62" r="62" fill="#FBE7A8" opacity=".18"/><circle cx="305" cy="62" r="32" fill="#FBE7A8"/>${o}
+<polygon points="200,0 120,260 280,260" fill="url(#sp)"/>
+<path d="M105 260Q116 200 200 194Q284 200 295 260Z" fill="#07020C"/><polygon points="184,197 200,226 216,197" fill="#EDE6F7"/><polygon points="196,214 204,214 207,250 200,257 193,250" fill="#E63950"/>
+<ellipse cx="200" cy="162" rx="26" ry="32" fill="#0A0410"/><rect x="184" y="160" width="12" height="3" rx="1.5" fill="#F4C257"/><rect x="204" y="160" width="12" height="3" rx="1.5" fill="#F4C257"/>
+<path d="M161 140Q163 98 200 96Q237 98 239 140Z" fill="#07020C"/><path d="M162 128Q200 140 238 128L239 138Q200 150 161 138Z" fill="#E63950"/><ellipse cx="200" cy="141" rx="60" ry="11" fill="#07020C"/></svg>`}
+function home(){app.innerHTML=`<div class="home"><div class="hero rise"><img src="/static/hero.jpg" alt="Mafia role cards: detective, doctor, civilians and mafia"></div>
+<div class="stack"><div class="rise d1"><h1 class="brand">Mafia</h1><p class="tag">Trust no one. Every device is a seat at the table.</p></div>
+<div class="card stack rise d2"><input id="nm" placeholder="Your name" maxlength="16" autocomplete="nickname">
+<button class="cta" id="mk">Create room</button><div class="row"><input id="cd" placeholder="Room code" maxlength="4" autocapitalize="characters" style="text-transform:uppercase"><button class="ghost" id="jn">Join room</button></div></div>
+<p class="muted rise d3">Best with ${REC} to 15 players. The app is your Moderator.</p></div></div>`;
+ $('#mk').onclick=()=>run('create',{name:$('#nm').value});
+ $('#jn').onclick=()=>run('join',{name:$('#nm').value,code:$('#cd').value})}
+function lobby(){const n=st.players.length,host=st.me.host;
+ app.innerHTML=`<div class="stack narrow"><div class="card stack"><p class="muted" style="text-align:center">Room code. Friends join with this</p><div class="code">${st.code}</div></div>
+<div class="card stack"><h2>${n} at the table</h2><div class="grid">${st.players.map(p=>`<div class="card p" style="min-height:0"><b>${esc(p.name)}</b><small>${p.bot?'Test bot ':''}${p.host?'Host ':''}${p.you?'You':''}</small></div>`).join('')}</div></div>
+${host?`<div class="row"><button class="ghost" id="ab">Add test bot</button><button class="ghost" id="fb" ${n>=REC?'disabled':''}>Fill to ${REC}</button></div><button class="cta" id="go" ${n<st.min?'disabled':''}>Start game</button>`:'<p class="muted">Waiting for the host to start.</p>'}
+<p class="muted">${n<st.min?`Need at least ${st.min} players. Add test bots to try it alone.`:n<REC?`Best with ${REC} to 15 players. You have ${n}.`:'Ready when you are.'}</p>
+<button class="ghost" id="lv">Leave room</button></div>`;
+ if(host){$('#go').onclick=()=>run('start');$('#ab').onclick=()=>run('bot',{count:1});$('#fb').onclick=()=>run('bot',{count:REC-n})}
+ $('#lv').onclick=async()=>{try{await api('leave')}catch(e){}leave()}}
+const RC={mafia:'#E63950',town:'#2FB585',doctor:'#3A9BFF',detective:'#F2A93B'};
+const ICON={mafia:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="43" rx="27" ry="7" fill="currentColor"/><path d="M16 41Q17 14 32 13Q47 14 48 41Z" fill="currentColor"/><path d="M16 33Q32 41 48 33L48 38Q32 46 16 38Z" fill="#fff" opacity=".9"/></svg>',
+town:'<svg viewBox="0 0 64 64"><circle cx="32" cy="21" r="11" fill="currentColor"/><path d="M10 57Q12 36 32 34Q52 36 54 57Z" fill="currentColor"/></svg>',
+doctor:'<svg viewBox="0 0 64 64"><path d="M32 5L55 14V32Q55 51 32 59Q9 51 9 32V14Z" fill="currentColor"/><path d="M27 19H37V28H46V37H37V46H27V37H18V28H27Z" fill="#fff"/></svg>',
+detective:'<svg viewBox="0 0 64 64"><circle cx="26" cy="26" r="16" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="7"/><path d="M38 38L57 57" stroke="currentColor" stroke-width="9" stroke-linecap="round"/></svg>'};
+const ART={mafia:['mafia'],detective:['detective'],doctor:['doctor'],town:['civilian1','civilian2']};
+const pic=(r,n)=>{const a=ART[r];return '/static/roles/'+a[[...String(n)].reduce((x,c)=>x+c.charCodeAt(0),0)%a.length]+'.jpg'};
+const hue=n=>{let x=0;for(const c of n)x=(x*31+c.charCodeAt(0))%360;return `hsl(${x} 52% 46%)`};
+const chip=r=>`<span class="rl" style="--rc:${RC[r]}">${ICON[r]}${label(r)}</span>`;
+function tick(){const e=$('#cd2');if(!e)return;const left=dEnd?Math.max(0,Math.ceil((dEnd-Date.now())/1000)):0;
+ e.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+ const g=$('#rg');if(g)g.style.strokeDashoffset=(213.6*(1-left/st.timer_total)).toFixed(1);
+ if(dEnd&&left===0){dEnd=0;poll(true)}}
+const escRe=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+function fmt(t){const names=st.players.map(p=>p.name).sort((x,y)=>y.length-x.length);let o=esc(t);
+ if(names.length)o=o.replace(new RegExp('@('+names.map(n=>escRe(esc(n))).join('|')+')','gi'),(x,n)=>`<span class="men ${n.toLowerCase()===st.me.name.toLowerCase()?'me':''}">${x}</span>`);return o}
+function msgs(){return st.chat.length?st.chat.map(c=>c.k==='sys'?`<div class="m sys">${esc(c.t)}</div>`:`<div class="m ${c.ch==='mafia'?'mafia':''}"><b>${esc(c.n)}${c.ch==='mafia'?' (Mafia)':''}</b> ${fmt(c.t)}</div>`).join(''):'<p class="muted">No messages yet. Say who you suspect.</p>'}
+function chatCard(){const mode=st.chat_mode;
+ return `<div class="card stack"><h2>${mode==='mafia'?'Mafia chat':'Town chat'}</h2><div class="msgs" id="ms">${msgs()}</div>
+ ${mode?`<div class="mchips">${st.players.filter(p=>p.alive&&!p.you).map(p=>`<button class="ghost sm" data-mn="${esc(p.name)}">@${esc(p.name)}</button>`).join('')}</div>
+ <div class="row"><input id="ci" maxlength="200" autocomplete="off" placeholder="${st.voting?'/vote Name, or @Name I think he is Mafia':'@Name I think he is Mafia'}"><button class="cta" id="cs" style="flex:none">Send</button></div>
+ <p class="muted" style="font-size:.85rem">Mention someone with @name. Type /vote name or /skip to vote once voting opens.</p>`
+ :`<p class="muted">${st.me.alive?'Chat is closed while the town sleeps.':'Eliminated players cannot chat.'}</p>`}</div>`}
+function game(){const oi=$('#ci'),keep=oi?{v:oi.value,f:document.activeElement===oi,s:oi.selectionStart}:null,om=$('#ms'),atEnd=!om||om.scrollTop+om.clientHeight>=om.scrollHeight-30,oTop=om?om.scrollTop:0;
+ const m=st.me,role=m.role,over=st.phase==='over',night=st.phase==='night',day=st.phase==='day',a=act(),vote=day&&st.voting,
+ picked=sel||st.pick,left=dEnd?Math.max(0,Math.ceil((dEnd-Date.now())/1000)):0,
+ nAlive=st.players.filter(p=>p.alive).length,names=id=>id==='skip'?'Skip':esc((st.players.find(p=>p.id===id)||{}).name||'');
+ const title=over?(st.winner==='town'?'Town wins':'Mafia wins'):(night?'Night ':'Day ')+st.day;
+ let msg;
+ if(over)msg='Every role is revealed. Well played.';
+ else if(!m.alive)msg='You are out. Keep watching, but stay quiet.';
+ else if(night)msg=a?{mafia:'Choose a victim with your team.',doctor:'Choose who to protect tonight.',detective:'Choose who to investigate.'}[role]:`${label(st.night_step)} is awake. Keep your eyes closed.`;
+ else msg=vote?'Voting is open. Pick who to eliminate, or skip.':'Talk it out. Voting opens when the timer ends.';
+ const card=p=>{const can=ok(p),r=p.role,pct=nAlive?p.votes/nAlive*100:0;
+  return `<button class="pc ${p.alive?'':'dead'} ${picked===p.id?'sel':''}" data-id="${p.id}" ${can?'':'disabled'}>${r?`<img class="av" style="border-color:${RC[r]}" src="${pic(r,p.name)}" alt="">`:`<span class="av" style="background:${hue(p.name)}">${esc(p.name[0].toUpperCase())}</span>`}
+  <span class="nm"><b>${esc(p.name)}</b><small>${r?chip(r):''}${p.you?'You ':''}${p.host&&!p.you?'Host ':''}${p.bot?'Bot':''}</small></span>
+  ${p.votes?`<span class="badge">${p.votes}</span>`:''}${picked===p.id?'<span class="tick">&#10003;</span>':''}<i class="vb" style="width:${pct}%"></i></button>`};
+ const team=role==='mafia'?st.players.filter(p=>p.role==='mafia'&&!p.you).map(p=>esc(p.name)).join(', '):'';
+ app.innerHTML=`<div class="head"><div class="orb"></div><div><h2>${title}</h2><p class="muted">${msg}</p>
+ <div class="chips"><span class="chip">${nAlive} alive</span><span class="chip">${st.players.length-nAlive} out</span>${vote&&st.votes_left?`<span class="chip">${st.votes_left} still to vote</span>`:''}</div></div></div>
+<div class="layout"><div class="stack">
+${over?`<div class="card win" style="--rc:${st.winner==='town'?RC.town:RC.mafia}"><img class="pt" style="width:72px;height:88px" src="${pic(st.winner==='town'?'town':'mafia','x')}" alt=""><div><h2>${st.winner==='town'?'The town wins':'The Mafia wins'}</h2><p style="opacity:.85">${st.winner==='town'?'Every Mafia member was found.':'The Mafia now match the town in numbers.'}</p></div></div>`:''}
+<div class="rc ${peek?'flipped':''}" id="rl" role="button" tabindex="0" aria-label="Your role card. Press to flip."><div class="in">
+ <div class="face back"><div class="ic">?</div><div><b>Your role</b><span>Tap to reveal. Tap again to hide.</span></div></div>
+ <div class="face front" style="--rc:${RC[role]}"><img class="pt" src="${pic(role,m.name)}" alt="${label(role)} character"><div><b>${label(role)}</b><span>${ROLES[role][1]}</span></div></div></div></div>
+${day&&st.dawn?`<div class="card dawn"><h2>Everyone, open your eyes</h2><p>${esc(st.dawn)}</p></div>`:''}
+${night||(day&&!st.voting)?`<div class="card timer"><svg class="ring" viewBox="0 0 80 80"><circle class="trk" cx="40" cy="40" r="34"/><circle id="rg" class="prg" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="${(213.6*(1-left/st.timer_total)).toFixed(1)}"/></svg>
+ <div><b id="cd2"></b>${night?`<p>${chip(st.night_step)}</p><p class="muted">${a?'Open your eyes and make your choice.':st.night_step===role?'':'Everyone else, keep your eyes closed.'}</p>`:'<p class="muted">Discussion time. Share your suspicions out loud.</p>'}
+ ${m.host?`<button class="ghost sm" id="sk2">${night?'Skip step':'Skip to voting'}</button>`:''}</div></div>`:''}
+${st.notes.length?`<div class="card"><p class="rl" style="--rc:${RC.detective}">${ICON.detective}Case file</p><p>${st.notes.map(esc).join('<br>')}</p></div>`:''}
+${role==='mafia'&&!over&&m.alive?`<div class="card"><p class="rl" style="--rc:${RC.mafia}">${ICON.mafia}Your team</p><p>${team||'You are alone.'}</p>${st.mafia_picks.length?`<p class="muted">Their picks: ${st.mafia_picks.map(esc).join(', ')}</p>`:''}</div>`:''}
+<div class="grid">${st.players.map(card).join('')}</div>
+${(a||vote)&&m.alive?`<div class="actbar"><div class="row">${vote?`<button class="ghost" id="sk" ${picked==='skip'?'style="border-color:var(--accent)"':''}>Skip vote${st.skips?` (${st.skips})`:''}</button>`:''}<button class="cta" id="ok" ${picked?'':'disabled'}>${a}${picked?': '+names(picked):''}</button></div>${st.pick?'<p class="muted">Locked in. You can change it until the timer ends.</p>':''}</div>`:''}
+${vote&&m.host?'<button class="ghost" id="tl">End vote now</button>':''}
+${over&&m.host?'<button class="cta" id="again">Play again</button>':''}${over&&!m.host?'<p class="muted">Waiting for the host to restart.</p>':''}
+</div><div class="stack">${chatCard()}<div class="card stack"><h2>Town record</h2><ul class="log">${st.log.map(l=>`<li>${esc(l.t)}</li>`).join('')}</ul></div></div></div>`;
+ const flip=()=>{peek=!peek;$('#rl').classList.toggle('flipped',peek)};
+ $('#rl').onclick=flip;$('#rl').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flip()}};
+ app.querySelectorAll('.pc[data-id]').forEach(b=>b.onclick=()=>{sel=b.dataset.id;game()});
+ const q=id=>$(id);
+ if(q('#sk'))q('#sk').onclick=()=>{sel='skip';game()};
+ if(q('#sk2'))q('#sk2').onclick=()=>run('skip');
+ if(q('#ok'))q('#ok').onclick=()=>run(night?'act':'vote',{target:sel||st.pick});
+ if(q('#tl'))q('#tl').onclick=()=>run('tally');
+ if(q('#again'))q('#again').onclick=()=>{peek=false;run('reset')};
+ const ci=$('#ci');
+ if(ci){const send=async()=>{const v=ci.value.trim();if(!v)return;ci.value='';try{await api('chat',{text:v});await poll()}catch(e){toast(e.message);ci.value=v}ci.focus()};
+  $('#cs').onclick=send;ci.onkeydown=e=>{if(e.key==='Enter')send()};
+  app.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{ci.value+=(ci.value&&!ci.value.endsWith(' ')?' ':'')+'@'+b.dataset.mn+' ';ci.focus()});
+  if(keep){ci.value=keep.v;if(keep.f){ci.focus();try{ci.setSelectionRange(keep.s,keep.s)}catch(e){}}}}
+ const ms=$('#ms');if(ms)ms.scrollTop=atEnd?ms.scrollHeight:oTop;
+ tick()}
+function render(){const noir=!S||(st&&st.phase==='lobby');
+ document.body.classList.toggle('noir',noir);
+ document.body.classList.toggle('night',!noir&&!!st&&(st.phase==='night'||(st.phase==='over'&&st.winner==='mafia')));
+ !S?home():!st?(app.innerHTML=''):st.phase==='lobby'?lobby():game()}
+render();poll();setInterval(poll,1300);setInterval(tick,250);
+</script>
+</body>
+</html>
