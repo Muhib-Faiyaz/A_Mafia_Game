@@ -171,6 +171,63 @@ class GameTests(unittest.TestCase):
         self.assertEqual(self.room['settings']['mafia_count'], 2)
         self.assertTrue(all(p['role'] is None for p in self.room['players'].values()))
 
+    def test_death_story_is_shared_and_only_published_at_dawn(self):
+        self.start(True)
+        target = self.town[0]['pid']
+        for user in self.mafia:
+            self.post('act', dict(user, target=target))
+        self.assertEqual(self.post('state', self.host)['death_events'], [])
+        self.post('skip', self.host)
+        self.post('skip', self.host)
+        event = self.post('state', self.host)['death_events'][0]
+        self.assertEqual(event['player_id'], target)
+        self.assertEqual(event['cause'], 'night')
+        self.assertIn(event['tone'], {'sad', 'goofy', 'eerie'})
+        self.assertIn(event['name'], event['story'])
+        for user in self.users:
+            self.assertEqual(self.post('state', user)['death_events'], [event])
+        self.assertTrue(any(entry['t'] == event['story'] for entry in self.room['log']))
+        self.post('restart', self.host)
+        self.assertEqual(self.post('state', self.host)['death_events'], [])
+
+    def test_saved_players_have_no_death_notification(self):
+        self.start(True)
+        target = self.town[0]['pid']
+        for user in self.mafia:
+            self.post('act', dict(user, target=target))
+        doctor = next(u for u in self.users if self.room['players'][u['pid']]['role'] == 'doctor')
+        self.post('act', dict(doctor, target=target))
+        self.post('skip', self.host)
+        self.post('skip', self.host)
+        self.assertEqual(self.post('state', self.host)['death_events'], [])
+
+    def test_vote_elimination_has_its_own_story_and_no_duplicate(self):
+        self.start(False)
+        self.room['step_until'] = 0
+        self.post('state', self.host)
+        self.post('skip', self.host)
+        target = self.town[0]['pid']
+        self.post('vote', dict(self.mafia[0], target=target))
+        self.post('tally', self.host)
+        event = self.room['death_events'][0]
+        self.assertEqual(event['cause'], 'vote')
+        self.assertEqual(event['player_id'], target)
+        game.record_death(self.room, target, 'vote')
+        self.assertEqual(len(self.room['death_events']), 1)
+
+    def test_all_story_templates_accept_player_names(self):
+        self.start(False)
+        for cause, templates in game.DEATH_STORIES.items():
+            for index, (tone, template) in enumerate(templates):
+                target = self.town[0]['pid']
+                self.room['players'][target]['alive'] = True
+                self.room['players'][target]['name'] = '<Alex & Sam>'
+                with patch.object(game.random, 'randrange', return_value=index):
+                    game.record_death(self.room, target, cause)
+                event = self.room['death_events'][-1]
+                self.assertEqual(event['story'], template.format(name='<Alex & Sam>'))
+                self.assertEqual(event['tone'], tone)
+
 
 if __name__ == '__main__':
     unittest.main()

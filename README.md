@@ -43,10 +43,22 @@ Both actions ask for confirmation. After a game ends, the host can also return
 to the lobby to change settings.
 
 Tap the music button to enable the original procedural soundtrack: a suspense
-pattern at night and softer ambient notes during the day. Music is generated
+heartbeat and tense melody during the Mafia turn, quieter Doctor/Detective
+themes, soft ambient discussion notes, and a suspense pattern during voting. Music is generated
 locally with Web Audio; no external music downloads or credentials are needed.
-It starts only after a tap, has mute and volume controls, pauses in hidden tabs,
+Music and death sound effects start only after a tap, share mute and volume
+controls, pause in hidden tabs,
 and stops when the game ends. Mobile devices may require unmuting their audio.
+
+Every turn has its own background: crimson Mafia, teal Doctor, blue Detective,
+amber discussion, and purple voting, plus distinct ending screens.
+
+Each actual elimination creates a shared, randomly selected sad, goofy, or eerie
+story. A blood-red notification names the victim and plays a synthesized impact
+and splash when sound is enabled. Stories stay in the town record. Night deaths
+are revealed only at dawn; a Doctor save generates no death notice. Vote-outs
+get their own stories. Notices are remembered per player and round in browser
+session storage so polling and page reloads do not repeatedly interrupt play.
 
 The active frontend is `static/index.html`, `static/game.css`, and
 `static/game.js`. The root `index.html` mirrors the entry document as a server
@@ -60,4 +72,5 @@ node --check static/game.js
 ```
 
 The regression suite covers settings, role counts, split and unanimous votes,
-timeouts, private chat permissions, Doctor protection, and host end/restart.
+timeouts, private chat permissions, Doctor protection, host end/restart, shared
+death stories, and notification event timing.

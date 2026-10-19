@@ -653,3 +653,144 @@ dialog::backdrop {
     transition: none !important;
   }
 }
+
+/* Each turn has a distinct scene, shared by everyone to keep roles secret. */
+body[data-atmosphere] {
+  --scene-glow: #422339;
+  --scene-deep: #1c1420;
+  background-attachment: fixed;
+}
+body[data-atmosphere="lobby"] {
+  background-image:
+    radial-gradient(ellipse at 50% 10%, #573324, transparent 65%),
+    linear-gradient(145deg, #1c1316, #100e13);
+}
+body[data-atmosphere="mafia"] {
+  --red: #f15b64;
+  --scene-glow: #721c2a;
+  --scene-deep: #200c14;
+  background-image:
+    repeating-linear-gradient(115deg, transparent 0 100px, #0004 101px 160px),
+    radial-gradient(ellipse at 50% 15%, #661322, #13090f 75%);
+}
+body[data-atmosphere="doctor"] {
+  --red: #80d6c1;
+  --gold: #b0e6d6;
+  --scene-glow: #1f635e;
+  --scene-deep: #102a30;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 79px, #73e6c509 80px 81px),
+    repeating-linear-gradient(90deg, transparent 0 79px, #73e6c509 80px 81px),
+    radial-gradient(ellipse at 30% 10%, #184744, #09151e 80%);
+}
+body[data-atmosphere="detective"] {
+  --red: #a9baf4;
+  --gold: #c0cdf7;
+  --scene-glow: #354c7d;
+  --scene-deep: #131b32;
+  background-image:
+    conic-gradient(
+      from 145deg at 80% 0%,
+      transparent,
+      #9eb8ed20 12deg,
+      transparent 28deg
+    ),
+    radial-gradient(ellipse at 80% 10%, #253761, #0c1020 75%);
+}
+body[data-atmosphere="discussion"] {
+  --red: #e9b77f;
+  --gold: #edcb96;
+  --scene-glow: #654426;
+  --scene-deep: #2c201b;
+  background-image:
+    radial-gradient(circle at 90% 0%, #d19b5740, transparent 45%),
+    linear-gradient(160deg, #443020, #211b20 48%, #14131b);
+}
+body[data-atmosphere="voting"] {
+  --red: #d5a4e9;
+  --gold: #e1c1ef;
+  --scene-glow: #59335f;
+  --scene-deep: #26142f;
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 60px, #05040b35 61px 64px),
+    radial-gradient(ellipse at 50% 0%, #492653, #170e21 75%);
+}
+body[data-atmosphere="victory"] {
+  --red: #a5d2a9;
+  --gold: #e5d5a5;
+  --scene-glow: #4a6039;
+  --scene-deep: #1e2a22;
+  background-image: radial-gradient(ellipse at 50% 0%, #63704d, #14241e 70%);
+}
+body[data-atmosphere="defeat"] {
+  --scene-glow: #571020;
+  --scene-deep: #1f0810;
+  background-image: radial-gradient(ellipse at 50% 0%, #4c091b, #09070d 75%);
+}
+body[data-atmosphere="ended"] {
+  --red: #b7b0c5;
+  --scene-glow: #413b4c;
+  --scene-deep: #211e29;
+  background-image: radial-gradient(ellipse at 50% 0%, #393345, #100e16 75%);
+}
+body[data-atmosphere] .phase-card {
+  background:
+    radial-gradient(ellipse at top right, var(--scene-glow), transparent 85%),
+    var(--scene-deep);
+}
+.death-notice {
+  margin: auto;
+  padding: 30px 24px 24px;
+  text-align: center;
+  border: 1px solid #a42c40;
+  background: radial-gradient(ellipse at top, #4e1422, #180d15 70%);
+  box-shadow: 0 0 80px #8f102844;
+  overflow-wrap: anywhere;
+}
+.death-notice::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 12% 0, #ac2639 0 8px, transparent 9px),
+    radial-gradient(ellipse at 65% 0, #8b172a 0 15px, transparent 16px),
+    radial-gradient(ellipse at 85% 0, #ac2639 0 6px, transparent 7px);
+}
+.death-notice::backdrop {
+  background: #130008df;
+}
+.death-symbol {
+  color: #df465b;
+  font: 64px/1 Georgia;
+  margin: 20px 0 12px;
+  text-shadow: 0 5px 20px #a51138;
+}
+#death-title {
+  color: #ff7885;
+  font: 700 clamp(28px, 8vw, 38px)/1.15 Georgia;
+  text-shadow:
+    0 2px #7f1023,
+    0 4px #650d1c,
+    1px 7px 0 #360612;
+  margin-bottom: 22px;
+}
+#death-tone {
+  display: inline-block;
+  color: #e9b0b5;
+  border-color: #6d3040;
+}
+#death-story {
+  margin: 20px 0 24px;
+  color: #e1c5cd;
+  line-height: 1.75;
+  font-size: 16px;
+}
+#dismiss-death {
+  width: 100%;
+  min-height: 50px;
+}

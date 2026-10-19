@@ -117,6 +117,41 @@ def night_done(room):
             and (n["detective"] or not alive(room, "detective")))
 
 
+DEATH_STORIES = {
+    "night": [
+        ("sad", "{name} took the long road home to leave flowers on a friend's doorstep. The Mafia were waiting at the last streetlamp. By morning, the flowers were still there."),
+        ("sad", "{name} promised to be home before the kettle boiled. A Mafia ambush ended that promise. At dawn, an untouched cup waited by the window."),
+        ("sad", "{name} stayed late to fix the town's broken clock. The Mafia found them alone. The clock began ringing again, but its caretaker never came home."),
+        ("goofy", "{name} followed a suspicious 'FREE PIZZA' sign into a Mafia trap. The town mourned a brave soul with catastrophically low standards for free food."),
+        ("goofy", "{name} challenged the Mafia to a dance-off instead of running. Their final moonwalk was legendary. Their escape plan was considerably less impressive."),
+        ("goofy", "{name} wore a fake moustache to sneak past the Mafia. Unfortunately, the disguise still had a name tag. The town has since banned name tags after dark."),
+        ("eerie", "{name} heard their own voice calling from the empty station. The Mafia waited beyond the platform lights. The station phone kept ringing until dawn."),
+        ("eerie", "Every light on {name}'s street went out, one by one. The Mafia arrived with the last patch of darkness. In the morning, one porch light would not turn back on."),
+        ("eerie", "{name} found a note that read 'Don't turn around.' The Mafia were already inside. At dawn, every mirror in the house faced the wall."),
+    ],
+    "vote": [
+        ("sad", "{name} left a letter on their chair before the town's verdict was carried out. It simply said, 'I thought you trusted me.' Nobody volunteered to read it aloud."),
+        ("goofy", "{name}'s final defence was a slideshow titled 'Definitely Not Suspicious.' The town voted anyway. The slideshow had seventeen slides and absolutely no evidence."),
+        ("eerie", "The town carried out its verdict against {name} as the bell struck midnight. One extra toll followed, though nobody was left in the bell tower."),
+    ],
+}
+
+
+def record_death(room, pid, cause):
+    """Publish one shared story only when an elimination actually happens."""
+    player = room["players"][pid]
+    if not player["alive"]:
+        return
+    player["alive"] = False
+    stories = DEATH_STORIES[cause]
+    tone, template = stories[random.randrange(len(stories))]
+    story = template.format(name=player["name"])
+    event = dict(id=uuid.uuid4().hex, day=room["day"], name=player["name"],
+                 player_id=pid, cause=cause, tone=tone, story=story)
+    room.setdefault("death_events", []).append(event)
+    say(room, story)
+
+
 def resolve_night(room):
     n, P = room["night"], room["players"]
     for i in alive(room, "detective"):
@@ -125,7 +160,7 @@ def resolve_night(room):
             P[i]["notes"].append(f"Night {room['day']}: {t['name']} is {'Mafia' if t['role'] == 'mafia' else 'not Mafia'}.")
     victim = n["victim"]
     if victim and victim != n["doctor"]:
-        P[victim]["alive"] = False
+        record_death(room, victim, "night")
         room["dawn"] = f"{P[victim]['name']} was killed."
     else:
         room["dawn"] = "Nobody was killed last night."  # nobody learns if the doctor saved someone
@@ -145,7 +180,7 @@ def tally(room):
         say(room, f"Day {room['day']}: no majority, nobody was voted out.")
     else:
         p = P[leaders[0]]
-        p["alive"] = False
+        record_death(room, leaders[0], "vote")
         say(room, f"Day {room['day']}: {p['name']} was voted out.")
     if not check_win(room):
         start_night(room)
@@ -255,7 +290,7 @@ def view(room, pid):
     chat = [dict(c) for c in room["chat"] if c["ch"] == "town"][-80:]
     mafia_chat = [dict(c) for c in room["chat"] if c["ch"] == "mafia"][-80:] if me["role"] == "mafia" else []
     return dict(code=room["code"], chat=chat, chat_mode=mode, phase=room["phase"], day=room["day"], winner=room.get("winner"),
-                round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
+                death_events=room.get("death_events", []), round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
                 mafia_chat_open=me["role"] == "mafia" and me["alive"] and room["phase"] in ("day", "night"),
                 can_skip=me["host"] and (room["phase"] == "day" or (room["phase"] == "night" and room["night_step"] != "mafia")),
                 min=MIN_PLAYERS, me=dict(name=me["name"], role=me["role"], alive=me["alive"], host=me["host"]),
@@ -383,7 +418,7 @@ def start_game(room):
     random.shuffle(roles)
     for p, r in zip(P.values(), roles):
         p.update(role=r, alive=True, notes=[], last=0)
-    room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex)
+    room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[])
     say(room, "The game begins. Night falls on the town.")
     start_night(room)
     run_bots(room)
@@ -526,7 +561,7 @@ def reset():
         room, pid = ctx(request.get_json(force=True))
         if not room["players"][pid]["host"] or room["phase"] != "over":
             raise Bad("Only the host can restart.")
-        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set(), ended=False)
+        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set(), ended=False, death_events=[])
         for p in room["players"].values():
             p.update(role=None, alive=True, notes=[], last=0)
         return jsonify(ok=True)

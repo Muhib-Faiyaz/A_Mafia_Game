@@ -83,6 +83,7 @@ function leaveLocal() {
   revealed = false;
   draft = { town: "", mafia: "" };
   localStorage.removeItem("mafia");
+  $("#death-notice").close();
   render();
 }
 async function poll(force = false) {
@@ -94,6 +95,8 @@ async function poll(force = false) {
     const key = [next.round_id, next.phase, next.day, next.night_step].join(
       ":",
     );
+    if (next.round_id !== state?.round_id || next.phase === "lobby")
+      $("#death-notice").close();
     if (key !== phaseKey) {
       selected = null;
       if (next.round_id !== state?.round_id) revealed = false;
@@ -106,6 +109,7 @@ async function poll(force = false) {
       render();
     }
     tick();
+    showDeathNotice();
     $("#connection")?.remove();
   } catch (error) {
     if (error.status === 404) {
@@ -232,6 +236,74 @@ ${state.voting && m.host ? '<button id="tally" class="ghost" style="width:100%;m
 <div id="chats" class="stack">${chat("town")}${m.role === "mafia" ? chat("mafia") : ""}</div>
 ${over && m.host ? '<button id="play-again" class="primary">Restart with fresh roles</button><button id="back-lobby">Back to lobby & settings</button>' : ""}</div>`;
 }
+function atmosphere() {
+  if (!state) return "home";
+  if (state.phase === "night") return state.night_step;
+  if (state.phase === "day") return state.voting ? "voting" : "discussion";
+  if (state.phase === "over")
+    return state.ended
+      ? "ended"
+      : state.winner === "mafia"
+        ? "defeat"
+        : "victory";
+  return "lobby";
+}
+
+// Remember notices per player and round so polling/reloads never replay a death.
+let deathIdentity = "",
+  deathSeen = new Set();
+function showDeathNotice() {
+  if (
+    !session ||
+    !state?.round_id ||
+    document.hidden ||
+    state.phase === "lobby"
+  )
+    return;
+  const storageKey = `mafia-deaths:${session.code}:${session.pid}`;
+  const identity = storageKey + state.round_id;
+  if (deathIdentity !== identity) {
+    deathIdentity = identity;
+    deathSeen = new Set();
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(storageKey) || "null");
+      if (saved?.round === state.round_id) deathSeen = new Set(saved.seen);
+    } catch (_) {
+      /* In-memory deduplication still works without storage. */
+    }
+  }
+  if ($("#death-notice").open) return;
+  const event = (state.death_events || []).find(
+    (event) => !deathSeen.has(event.id),
+  );
+  if (!event) return;
+  deathSeen.add(event.id);
+  try {
+    sessionStorage.setItem(
+      storageKey,
+      JSON.stringify({ round: state.round_id, seen: [...deathSeen] }),
+    );
+  } catch (_) {}
+  $("#death-title").textContent =
+    event.name +
+    (event.cause === "night" ? " has been killed" : " has been voted out");
+  $("#death-tone").textContent =
+    {
+      sad: "A tragic farewell",
+      goofy: "A ridiculous end",
+      eerie: "A chilling tale",
+    }[event.tone] || "Town tale";
+  $("#death-story").textContent = event.story;
+  $("#game-menu").close();
+  $("#death-notice").showModal();
+  music.deathStrike();
+}
+$("#dismiss-death").onclick = () => $("#death-notice").close();
+$("#death-notice").addEventListener("close", () => {
+  // A restart may close an old notice before the next state is assigned.
+  setTimeout(showDeathNotice, 0);
+});
+
 function render() {
   const focused = document.activeElement?.id,
     selection = document.activeElement?.selectionStart,
@@ -245,6 +317,7 @@ function render() {
       };
   }
   document.body.dataset.phase = state?.phase || "home";
+  document.body.dataset.atmosphere = atmosphere();
   $("#nav").hidden = !state || state.phase === "lobby";
   app.innerHTML = !session
     ? home()
@@ -373,7 +446,7 @@ function openMenu() {
   const active = state && ["day", "night"].includes(state.phase),
     host = state?.me.host;
   $("#menu-body").innerHTML =
-    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">An original suspense score at night. Soft ambient notes during discussion. Music pauses when you leave this tab.</p>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
+    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">A tense Mafia score, quieter role themes, and soft discussion music. Sound effects share this volume and mute control. Music pauses when you leave this tab.</p>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
   $("#menu-music").onclick = async () => {
     await music.toggle();
     $("#menu-music").textContent =
@@ -410,7 +483,11 @@ const music = {
         if (!AC) throw Error("Audio is unavailable in this browser.");
         this.context = new AC();
         this.bus = this.context.createGain();
-        this.bus.connect(this.context.destination);
+        const limiter = this.context.createDynamicsCompressor();
+        limiter.threshold.value = -18;
+        limiter.ratio.value = 8;
+        this.bus.connect(limiter);
+        limiter.connect(this.context.destination);
       }
       this.enabled = !this.enabled;
       if (this.enabled) await this.context.resume();
@@ -453,11 +530,25 @@ const music = {
     if (!this.enabled || document.hidden || !this.mode) return;
     const t = this.context.currentTime + 0.04,
       k = this.step++;
-    if (this.mode === "night") {
-      const notes = [110, 116.54, 110, 103.83, 110, 130.81, 116.54, 103.83];
-      this.note(notes[k % 8] / 2, t, 1.8, 0.18, "triangle");
-      this.note(notes[k % 8] * 2, t + 0.25, 1.5, 0.045);
-      if (k % 4 === 0) this.note(41.2, t, 2.8, 0.12);
+    if (this.mode === "mafia") {
+      // Tight semitone ostinato, a double heartbeat, and a low rising drone.
+      const notes = [110, 116.54, 110, 103.83, 110, 123.47, 116.54, 103.83];
+      this.note(notes[k % 8], t, 0.42, 0.13, "triangle");
+      this.note(48, t, 0.17, 0.24);
+      this.note(42, t + 0.18, 0.2, 0.18);
+      if (k % 4 === 0) {
+        this.note(55, t, 1.8, 0.12, "triangle");
+        this.note(233.08, t + 0.12, 1.5, 0.035, "sawtooth");
+      }
+    } else if (this.mode === "doctor") {
+      this.note([261.63, 392, 329.63, 392][k % 4], t, 2.2, 0.09);
+      if (k % 4 === 0) this.note(130.81, t, 3, 0.06);
+    } else if (this.mode === "detective") {
+      this.note([146.83, 220, 164.81, 155.56][k % 4], t, 1.4, 0.09, "triangle");
+      if (k % 2 === 0) this.note(293.66, t + 0.25, 0.8, 0.04);
+    } else if (this.mode === "voting") {
+      this.note([98, 110, 116.54, 110][k % 4], t, 0.7, 0.12, "triangle");
+      this.note(49, t, 0.25, 0.12);
     } else {
       const notes = [261.63, 329.63, 392, 493.88, 440, 392, 329.63, 293.66];
       this.note(notes[k % 8], t, 2.6, 0.11);
@@ -467,9 +558,68 @@ const music = {
       }
     }
   },
+  deathStrike() {
+    if (
+      !this.enabled ||
+      !this.context ||
+      this.context.state !== "running" ||
+      document.hidden
+    )
+      return;
+    const c = this.context,
+      t = c.currentTime + 0.02;
+    // A descending impact with a short filtered splash, synthesized locally.
+    const hit = c.createOscillator(),
+      gain = c.createGain();
+    hit.frequency.setValueAtTime(150, t);
+    hit.frequency.exponentialRampToValueAtTime(32, t + 0.7);
+    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 1);
+    hit.connect(gain);
+    gain.connect(this.bus);
+    hit.start(t);
+    hit.stop(t + 1.1);
+    hit.onended = () => {
+      hit.disconnect();
+      gain.disconnect();
+    };
+    const buffer = c.createBuffer(
+      1,
+      Math.ceil(c.sampleRate * 0.55),
+      c.sampleRate,
+    );
+    const samples = buffer.getChannelData(0);
+    for (let i = 0; i < samples.length; i++) samples[i] = Math.random() * 2 - 1;
+    const noise = c.createBufferSource(),
+      filter = c.createBiquadFilter(),
+      splash = c.createGain();
+    noise.buffer = buffer;
+    filter.type = "bandpass";
+    filter.Q.value = 1.4;
+    filter.frequency.setValueAtTime(1400, t);
+    filter.frequency.exponentialRampToValueAtTime(220, t + 0.5);
+    splash.gain.setValueAtTime(0.13, t);
+    splash.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+    noise.connect(filter);
+    filter.connect(splash);
+    splash.connect(this.bus);
+    noise.start(t);
+    noise.onended = () => {
+      noise.disconnect();
+      filter.disconnect();
+      splash.disconnect();
+    };
+    this.note(73.42, t + 0.15, 1.8, 0.12, "triangle");
+  },
   sync() {
     const mode =
-      state?.phase === "night" ? "night" : state?.phase === "day" ? "day" : "";
+      state?.phase === "night"
+        ? state.night_step
+        : state?.phase === "day"
+          ? state.voting
+            ? "voting"
+            : "discussion"
+          : "";
     if (this.bus)
       this.bus.gain.setTargetAtTime(
         this.enabled && !document.hidden ? this.volume : 0,
@@ -486,7 +636,7 @@ const music = {
       this.beat();
       this.timer = setInterval(
         () => this.beat(),
-        mode === "night" ? 850 : 1100,
+        mode === "mafia" ? 460 : mode === "voting" ? 700 : 1100,
       );
     }
     this.updateButton();
