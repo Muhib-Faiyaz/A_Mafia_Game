@@ -21,6 +21,7 @@ p.muted,.muted{color:var(--muted)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;transition:background .9s,border-color .9s}
 .stack{display:grid;gap:14px}
 .narrow{max-width:420px;margin:8vh auto 0}
+select{font:inherit;background:var(--surface);color:var(--ink);padding:12px;border:1px solid var(--line);border-radius:12px;width:100%}
 input{width:100%;font:inherit;color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;min-height:48px}
 input:focus,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 button{font:inherit;font-weight:600;cursor:pointer;border:0;border-radius:12px;min-height:48px;padding:0 18px;background:var(--accent);color:var(--on);transition:transform .1s,opacity .2s}
@@ -133,15 +134,16 @@ async function api(p,b={}){const r=await fetch('/api/'+p,{method:'POST',headers:
 async function run(p,b){try{const j=await api(p,b);if(j.pid){S={code:j.code,pid:j.pid};localStorage.setItem('mafia',JSON.stringify(S))}await poll(true)}catch(e){toast(e.message)}}
 async function poll(force){
  if(!S)return;
- try{const j=await api('state');const s=JSON.stringify({...j,chat:0,timer_left:j.timer_left>0?1:0}),c=JSON.stringify(j.chat);dEnd=j.timer_left>0?Date.now()+j.timer_left*1000:0;
-  const k=j.phase+j.day;if(k!==key){key=k;sel=null}
+ try{const j=await api('state');const s=JSON.stringify({...j,chat:0,mafia_chat:0,timer_left:j.timer_left>0?1:0}),c=JSON.stringify([j.chat,j.mafia_chat]);dEnd=j.timer_left>0?Date.now()+j.timer_left*1000:0;
+  const k=j.phase+j.day+j.night_step;if(k!==key){key=k;sel=null}
   if(s!==last||force){last=s;lastChat=c;st=j;render()}
-  else if(c!==lastChat){lastChat=c;st=j;const m=$('#ms');if(m){const end=m.scrollTop+m.clientHeight>=m.scrollHeight-30;m.innerHTML=msgs();if(end)m.scrollTop=m.scrollHeight}}}
+  else if(c!==lastChat){lastChat=c;st=j;game()}}
+
  catch(e){if(e.code===404){leave()}}
 }
 const REC=7;
 function leave(){localStorage.removeItem('mafia');S=st=null;last=key='';render()}
-const act=()=>st.phase==='night'?(st.night_step===st.me.role?{mafia:'Lock in kill',doctor:'Protect',detective:'Investigate'}[st.me.role]:null):st.phase==='day'?(st.voting?'Cast vote':null):null;
+const act=()=>st.phase==='night'?(st.night_step===st.me.role?{mafia:'Vote to kill',doctor:'Protect',detective:'Investigate'}[st.me.role]:null):st.phase==='day'?(st.voting?'Cast vote':null):null;
 function ok(p){const m=st.me;if(!m.alive||!act())return false;
  if(st.phase==='day')return st.voting&&p.alive&&!p.you;
  if(!p.alive)return false;
@@ -168,10 +170,14 @@ function home(){app.innerHTML=`<div class="home"><div class="hero rise"><img src
 function lobby(){const n=st.players.length,host=st.me.host;
  app.innerHTML=`<div class="stack narrow"><div class="card stack"><p class="muted" style="text-align:center">Room code. Friends join with this</p><div class="code">${st.code}</div></div>
 <div class="card stack"><h2>${n} at the table</h2><div class="grid">${st.players.map(p=>`<div class="card p" style="min-height:0"><b>${esc(p.name)}</b><small>${p.bot?'Test bot ':''}${p.host?'Host ':''}${p.you?'You':''}</small></div>`).join('')}</div></div>
+<div class="card stack"><h2>Game settings</h2>
+<label>Special characters<select id="special" ${host?'':'disabled'}><option value="yes" ${st.settings.special_roles?'selected':''}>Doctor and Detective enabled</option><option value="no" ${!st.settings.special_roles?'selected':''}>Mafia and Villagers only</option></select></label>
+<label>Number of Mafia<select id="count" ${host?'':'disabled'}><option value="" ${st.settings.mafia_count===null?'selected':''}>Automatic (${Math.max(1,Math.floor((n+1)/4))})</option>${Array.from({length:Math.max(1,Math.floor((n-1)/2),st.settings.mafia_count||0)},(_,i)=>`<option value="${i+1}" ${st.settings.mafia_count===i+1?'selected':''}>${i+1}</option>`).join('')}</select></label>
+<p class="muted">Mafia must be fewer than half the players. Special roles are added as space allows.</p></div>
 ${host?`<div class="row"><button class="ghost" id="ab">Add test bot</button><button class="ghost" id="fb" ${n>=REC?'disabled':''}>Fill to ${REC}</button></div><button class="cta" id="go" ${n<st.min?'disabled':''}>Start game</button>`:'<p class="muted">Waiting for the host to start.</p>'}
 <p class="muted">${n<st.min?`Need at least ${st.min} players. Add test bots to try it alone.`:n<REC?`Best with ${REC} to 15 players. You have ${n}.`:'Ready when you are.'}</p>
 <button class="ghost" id="lv">Leave room</button></div>`;
- if(host){$('#go').onclick=()=>run('start');$('#ab').onclick=()=>run('bot',{count:1});$('#fb').onclick=()=>run('bot',{count:REC-n})}
+ if(host){const save=()=>run('settings',{special_roles:$('#special').value==='yes',mafia_count:$('#count').value?Number($('#count').value):null});$('#special').onchange=save;$('#count').onchange=save;$('#go').onclick=()=>run('start');$('#ab').onclick=()=>run('bot',{count:1});$('#fb').onclick=()=>run('bot',{count:REC-n})}
  $('#lv').onclick=async()=>{try{await api('leave')}catch(e){}leave()}}
 const RC={mafia:'#E63950',town:'#2FB585',doctor:'#3A9BFF',detective:'#F2A93B'};
 const ICON={mafia:'<svg viewBox="0 0 64 64"><ellipse cx="32" cy="43" rx="27" ry="7" fill="currentColor"/><path d="M16 41Q17 14 32 13Q47 14 48 41Z" fill="currentColor"/><path d="M16 33Q32 41 48 33L48 38Q32 46 16 38Z" fill="#fff" opacity=".9"/></svg>',
@@ -189,14 +195,14 @@ function tick(){const e=$('#cd2');if(!e)return;const left=dEnd?Math.max(0,Math.c
 const escRe=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 function fmt(t){const names=st.players.map(p=>p.name).sort((x,y)=>y.length-x.length);let o=esc(t);
  if(names.length)o=o.replace(new RegExp('@('+names.map(n=>escRe(esc(n))).join('|')+')','gi'),(x,n)=>`<span class="men ${n.toLowerCase()===st.me.name.toLowerCase()?'me':''}">${x}</span>`);return o}
-function msgs(){return st.chat.length?st.chat.map(c=>c.k==='sys'?`<div class="m sys">${esc(c.t)}</div>`:`<div class="m ${c.ch==='mafia'?'mafia':''}"><b>${esc(c.n)}${c.ch==='mafia'?' (Mafia)':''}</b> ${fmt(c.t)}</div>`).join(''):'<p class="muted">No messages yet. Say who you suspect.</p>'}
-function chatCard(){const mode=st.chat_mode;
- return `<div class="card stack"><h2>${mode==='mafia'?'Mafia chat':'Town chat'}</h2><div class="msgs" id="ms">${msgs()}</div>
- ${mode?`<div class="mchips">${st.players.filter(p=>p.alive&&!p.you).map(p=>`<button class="ghost sm" data-mn="${esc(p.name)}">@${esc(p.name)}</button>`).join('')}</div>
- <div class="row"><input id="ci" maxlength="200" autocomplete="off" placeholder="${st.voting?'/vote Name, or @Name I think he is Mafia':'@Name I think he is Mafia'}"><button class="cta" id="cs" style="flex:none">Send</button></div>
- <p class="muted" style="font-size:.85rem">Mention someone with @name. Type /vote name or /skip to vote once voting opens.</p>`
- :`<p class="muted">${st.me.alive?'Chat is closed while the town sleeps.':'Eliminated players cannot chat.'}</p>`}</div>`}
-function game(){const oi=$('#ci'),keep=oi?{v:oi.value,f:document.activeElement===oi,s:oi.selectionStart}:null,om=$('#ms'),atEnd=!om||om.scrollTop+om.clientHeight>=om.scrollHeight-30,oTop=om?om.scrollTop:0;
+function msgs(channel='town'){const messages=channel==='mafia'?st.mafia_chat:st.chat;return messages.length?messages.map(c=>c.k==='sys'?`<div class="m sys">${esc(c.t)}</div>`:`<div class="m ${c.ch==='mafia'?'mafia':''}"><b>${esc(c.n)}${c.ch==='mafia'?' (Mafia)':''}</b> ${fmt(c.t)}</div>`).join(''):'<p class="muted">No messages yet. Say who you suspect.</p>'}
+function chatCard(channel='town'){const mafia=channel==='mafia',mode=mafia?st.mafia_chat_open:st.chat_mode;
+ const voting=mafia&&st.phase==='night'&&st.night_step==='mafia'&&st.me.alive;
+ return `<div class="card stack"><h2>${mafia?'Mafia chat · private':'Town chat'}</h2><div class="msgs" id="ms-${channel}">${msgs(channel)}</div>
+ ${mode?`<div class="row"><input id="ci-${channel}" maxlength="200" autocomplete="off" aria-label="${mafia?'Mafia':'Town'} message" placeholder="${mafia?'/vote Name or message your team':'Message the town'}"><button class="cta" id="cs-${channel}" style="flex:none">Send</button></div>
+ <p class="muted">${mafia?'Only Mafia members see this chat. During your night turn, type /vote name to choose a victim.':'Mention @name. Use /vote name or /skip when voting opens.'}</p>`:'<p class="muted">Chat is closed for you right now.</p>'}
+ ${voting?`<p class="muted">All Mafia votes end this turn. Split votes choose randomly among nominated targets; no votes means no kill.</p><div class="mchips">${st.players.filter(p=>p.alive&&p.role!=='mafia').map(p=>`<button class="ghost sm" data-kill="${p.id}">Vote: ${esc(p.name)}</button>`).join('')}</div>${st.mafia_picks.length?`<p>${st.mafia_picks.map(esc).join('<br>')}</p>`:''}`:''}</div>`}
+function game(){const saved={};for(const ch of ['town','mafia']){const i=$('#ci-'+ch),m=$('#ms-'+ch);saved[ch]={v:i?i.value:'',f:!!i&&document.activeElement===i,s:i?i.selectionStart:0,end:!m||m.scrollTop+m.clientHeight>=m.scrollHeight-30,top:m?m.scrollTop:0}}
  const m=st.me,role=m.role,over=st.phase==='over',night=st.phase==='night',day=st.phase==='day',a=act(),vote=day&&st.voting,
  picked=sel||st.pick,left=dEnd?Math.max(0,Math.ceil((dEnd-Date.now())/1000)):0,
  nAlive=st.players.filter(p=>p.alive).length,names=id=>id==='skip'?'Skip':esc((st.players.find(p=>p.id===id)||{}).name||'');
@@ -221,14 +227,14 @@ ${over?`<div class="card win" style="--rc:${st.winner==='town'?RC.town:RC.mafia}
 ${day&&st.dawn?`<div class="card dawn"><h2>Everyone, open your eyes</h2><p>${esc(st.dawn)}</p></div>`:''}
 ${night||(day&&!st.voting)?`<div class="card timer"><svg class="ring" viewBox="0 0 80 80"><circle class="trk" cx="40" cy="40" r="34"/><circle id="rg" class="prg" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="${(213.6*(1-left/st.timer_total)).toFixed(1)}"/></svg>
  <div><b id="cd2"></b>${night?`<p>${chip(st.night_step)}</p><p class="muted">${a?'Open your eyes and make your choice.':st.night_step===role?'':'Everyone else, keep your eyes closed.'}</p>`:'<p class="muted">Discussion time. Share your suspicions out loud.</p>'}
- ${m.host?`<button class="ghost sm" id="sk2">${night?'Skip step':'Skip to voting'}</button>`:''}</div></div>`:''}
+ ${st.can_skip?`<button class="ghost sm" id="sk2">${night?'Skip step':'Skip to voting'}</button>`:''}</div></div>`:''}
 ${st.notes.length?`<div class="card"><p class="rl" style="--rc:${RC.detective}">${ICON.detective}Case file</p><p>${st.notes.map(esc).join('<br>')}</p></div>`:''}
 ${role==='mafia'&&!over&&m.alive?`<div class="card"><p class="rl" style="--rc:${RC.mafia}">${ICON.mafia}Your team</p><p>${team||'You are alone.'}</p>${st.mafia_picks.length?`<p class="muted">Their picks: ${st.mafia_picks.map(esc).join(', ')}</p>`:''}</div>`:''}
 <div class="grid">${st.players.map(card).join('')}</div>
-${(a||vote)&&m.alive?`<div class="actbar"><div class="row">${vote?`<button class="ghost" id="sk" ${picked==='skip'?'style="border-color:var(--accent)"':''}>Skip vote${st.skips?` (${st.skips})`:''}</button>`:''}<button class="cta" id="ok" ${picked?'':'disabled'}>${a}${picked?': '+names(picked):''}</button></div>${st.pick?'<p class="muted">Locked in. You can change it until the timer ends.</p>':''}</div>`:''}
+${(a||vote)&&m.alive?`<div class="actbar"><div class="row">${vote?`<button class="ghost" id="sk" ${picked==='skip'?'style="border-color:var(--accent)"':''}>Skip vote${st.skips?` (${st.skips})`:''}</button>`:''}<button class="cta" id="ok" ${picked?'':'disabled'}>${a}${picked?': '+names(picked):''}</button></div>${st.pick?'<p class="muted">Vote recorded. You can change it while this turn remains open.</p>':''}</div>`:''}
 ${vote&&m.host?'<button class="ghost" id="tl">End vote now</button>':''}
 ${over&&m.host?'<button class="cta" id="again">Play again</button>':''}${over&&!m.host?'<p class="muted">Waiting for the host to restart.</p>':''}
-</div><div class="stack">${chatCard()}<div class="card stack"><h2>Town record</h2><ul class="log">${st.log.map(l=>`<li>${esc(l.t)}</li>`).join('')}</ul></div></div></div>`;
+</div><div class="stack">${chatCard()}${role==='mafia'?chatCard('mafia'):''}<div class="card stack"><h2>Town record</h2><ul class="log">${st.log.map(l=>`<li>${esc(l.t)}</li>`).join('')}</ul></div></div></div>`;
  const flip=()=>{peek=!peek;$('#rl').classList.toggle('flipped',peek)};
  $('#rl').onclick=flip;$('#rl').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flip()}};
  app.querySelectorAll('.pc[data-id]').forEach(b=>b.onclick=()=>{sel=b.dataset.id;game()});
@@ -238,12 +244,14 @@ ${over&&m.host?'<button class="cta" id="again">Play again</button>':''}${over&&!
  if(q('#ok'))q('#ok').onclick=()=>run(night?'act':'vote',{target:sel||st.pick});
  if(q('#tl'))q('#tl').onclick=()=>run('tally');
  if(q('#again'))q('#again').onclick=()=>{peek=false;run('reset')};
- const ci=$('#ci');
- if(ci){const send=async()=>{const v=ci.value.trim();if(!v)return;ci.value='';try{await api('chat',{text:v});await poll()}catch(e){toast(e.message);ci.value=v}ci.focus()};
-  $('#cs').onclick=send;ci.onkeydown=e=>{if(e.key==='Enter')send()};
-  app.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{ci.value+=(ci.value&&!ci.value.endsWith(' ')?' ':'')+'@'+b.dataset.mn+' ';ci.focus()});
-  if(keep){ci.value=keep.v;if(keep.f){ci.focus();try{ci.setSelectionRange(keep.s,keep.s)}catch(e){}}}}
- const ms=$('#ms');if(ms)ms.scrollTop=atEnd?ms.scrollHeight:oTop;
+ for(const ch of ['town','mafia']){
+  const ci=$('#ci-'+ch),keep=saved[ch];
+  if(ci){const send=async()=>{const v=ci.value.trim();if(!v)return;ci.value='';try{await api('chat',{text:v,channel:ch});await poll()}catch(e){toast(e.message);const current=$('#ci-'+ch);if(current)current.value=v}const current=$('#ci-'+ch);if(current)current.focus()};
+   $('#cs-'+ch).onclick=send;ci.onkeydown=e=>{if(e.key==='Enter')send()};ci.value=keep.v;if(keep.f){ci.focus();ci.setSelectionRange(keep.s,keep.s)}}
+  const ms=$('#ms-'+ch);if(ms)ms.scrollTop=keep.end?ms.scrollHeight:keep.top;
+ }
+ app.querySelectorAll('[data-kill]').forEach(b=>b.onclick=()=>run('act',{target:b.dataset.kill}));
+
  tick()}
 function render(){const noir=!S||(st&&st.phase==='lobby');
  document.body.classList.toggle('noir',noir);
