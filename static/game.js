@@ -127,9 +127,9 @@ async function poll(force = false) {
   }
 }
 function home() {
-  return `<section id="top" class="stack"><div class="intro"><p class="eyebrow">A game of secrets & suspicion</p><h1>The town sleeps.<br><em>Trust no one.</em></h1><p class="muted">One phone. One secret identity. Gather your friends and survive the night.</p></div>
-<div class="cover" aria-hidden="true"><svg class="silhouette" viewBox="0 0 120 140"><path d="M13 140q3-42 47-45 44 3 47 45" fill="#09080d"/><path d="m48 98 12 30 12-30" fill="#b7a89c"/><path d="m57 110 6 0 3 30H54" fill="#9b293e"/><ellipse cx="60" cy="75" rx="22" ry="27" fill="#09080d"/><path d="M30 57q3-40 30-40t30 40" fill="#09080d"/><path d="M30 47h60v9H30" fill="#9b293e"/><ellipse cx="60" cy="60" rx="43" ry="8" fill="#09080d"/></svg><span class="cover-caption">EVERYONE HAS SOMETHING TO HIDE.</span></div>
-<form id="entry" class="card stack"><label class="field">YOUR ALIAS<input id="name" maxlength="16" autocomplete="nickname" placeholder="What should we call you?" required></label><button class="primary" type="submit">Create a room →</button><label class="field">HAVE AN INVITATION?<input id="code" maxlength="4" autocapitalize="characters" placeholder="4-letter room code"></label><button type="button" id="join">Join the town</button><small>3–20 players · Add bots to try it solo</small></form></section>`;
+  return `<section id="top" class="stack"><div class="intro"><p class="eyebrow">A game of secrets & suspicion</p><h1>The town sleeps.<br>Trust no one.</h1><p class="muted">Gather your friends. Hide your identity. Survive the night.</p></div>
+<div class="cover" aria-hidden="true"><span class="cover-mark">M</span><span class="cover-caption">Someone won’t see the sunrise.</span></div>
+<form id="entry" class="card stack"><label class="field">Your alias<input id="name" maxlength="16" autocomplete="nickname" placeholder="What should we call you?" required></label><button class="primary" type="submit">Create a room</button><label class="field">Have an invitation?<input id="code" maxlength="4" autocapitalize="characters" placeholder="4-letter room code"></label><button type="button" id="join">Join the town</button><small>3–20 players · Add bots to try it solo</small></form></section>`;
 }
 function lobby() {
   const n = state.players.length,
@@ -249,6 +249,65 @@ function atmosphere() {
   return "lobby";
 }
 
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let motionKey = "";
+function animateMoment(element, frames, duration = 420) {
+  if (
+    !element ||
+    reducedMotion.matches ||
+    typeof element.animate !== "function"
+  )
+    return;
+  return element.animate(frames, {
+    duration,
+    easing: "cubic-bezier(.2,.7,.2,1)",
+  });
+}
+function turnMoment() {
+  const key = state
+    ? [session?.code, state.round_id, state.day, atmosphere()].join(":")
+    : "home";
+  if (key === motionKey) return;
+  motionKey = key;
+  const cue = $("#turn-cue");
+  clearTimeout(turnMoment.timer);
+  cue.classList.remove("visible");
+  if (!state || state.phase === "lobby") return;
+  const names = {
+    mafia: "The hunt begins",
+    doctor: "The Doctor is awake",
+    detective: "The investigation begins",
+    discussion: "The town gathers",
+    voting: "Time to name the killer",
+    victory: "The town survives",
+    defeat: "The Mafia takes the town",
+    ended: "The final chapter",
+  };
+  cue.textContent = names[atmosphere()] || "A new chapter";
+  cue.classList.add("visible");
+  animateMoment(
+    cue,
+    [
+      { opacity: 0, transform: "translate(-50%, -12px)" },
+      { opacity: 1, transform: "translate(-50%, 0)" },
+    ],
+    380,
+  );
+  animateMoment(
+    $(".phase-card"),
+    [
+      { opacity: 0.35, transform: "perspective(800px) rotateX(-7deg)" },
+      { opacity: 1, transform: "perspective(800px) rotateX(0deg)" },
+    ],
+    650,
+  );
+  turnMoment.timer = setTimeout(() => cue.classList.remove("visible"), 2200);
+}
+reducedMotion.addEventListener("change", () => {
+  if (reducedMotion.matches)
+    document.getAnimations().forEach((animation) => animation.cancel());
+});
+
 // Remember notices per player and round so polling/reloads never replay a death.
 let deathIdentity = "",
   deathSeen = new Set();
@@ -307,6 +366,19 @@ function showDeathNotice() {
   $("#death-story").textContent = event.story;
   $("#game-menu").close();
   $("#death-notice").showModal();
+  animateMoment(
+    $("#death-notice"),
+    rescued
+      ? [
+          { opacity: 0, transform: "scale(.96)" },
+          { opacity: 1, transform: "scale(1)" },
+        ]
+      : [
+          { opacity: 0, transform: "scale(.88) rotate(-2deg)" },
+          { opacity: 1, transform: "scale(1) rotate(0deg)" },
+        ],
+    rescued ? 650 : 480,
+  );
   if (rescued) music.rescueChime();
   else music.deathStrike();
 }
@@ -406,6 +478,14 @@ function render() {
   on("#role", () => {
     revealed = !revealed;
     render();
+    animateMoment(
+      $("#role"),
+      [
+        { transform: "perspective(700px) rotateY(-16deg)", opacity: 0.45 },
+        { transform: "perspective(700px) rotateY(0deg)", opacity: 1 },
+      ],
+      420,
+    );
   });
   on("#skip-timer", () => run("skip"));
   on("#tally", () => run("tally"));
@@ -425,6 +505,15 @@ function render() {
       (el.onclick = () => {
         selected = el.dataset.player;
         render();
+        animateMoment(
+          $(".player.selected"),
+          [
+            { transform: "scale(.96)" },
+            { transform: "scale(1.025)", offset: 0.55 },
+            { transform: "scale(1)" },
+          ],
+          320,
+        );
       }),
   );
   app
@@ -468,6 +557,7 @@ function render() {
       restore.setSelectionRange(selection, selection);
   }
   tick();
+  turnMoment();
   music.sync();
 }
 function tick() {

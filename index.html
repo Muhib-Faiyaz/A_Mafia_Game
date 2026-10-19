@@ -9,6 +9,7 @@
     <meta name="theme-color" content="#100e13" />
     <title>Mafia · After dark</title>
     <link rel="stylesheet" href="/static/game.css" />
+    <link rel="stylesheet" href="/static/horror.css" />
     <script src="/static/game.js" defer></script>
   </head>
   <body>
@@ -52,6 +53,16 @@
       aria-labelledby="death-title"
       aria-describedby="death-story"
     >
+      <svg
+        class="blood-edge"
+        viewBox="0 0 480 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M0 0H480V15Q460 7 444 17V49Q444 65 436 65T428 49V24Q392 8 361 22V79Q361 98 352 98T343 79V22Q298 8 274 17V36Q274 49 267 49T260 36V17Q208 5 177 23V57Q177 76 168 76T159 57V22Q118 8 94 21V38Q94 51 87 51T80 38V19Q39 7 0 22Z"
+        />
+      </svg>
       <p id="notice-eyebrow" class="eyebrow">
         A seat at the table falls silent
       </p>
@@ -61,6 +72,13 @@
       <p id="death-story"></p>
       <button id="dismiss-death" class="danger">Continue</button>
     </dialog>
+    <div
+      id="turn-cue"
+      class="turn-cue"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
     <div id="toast" role="status" aria-live="polite"></div>
   </body>
 </html>
