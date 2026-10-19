@@ -315,6 +315,18 @@ def run_bots(room):
             break
 
 
+def turn_background(room):
+    """Only advertise installed artwork; retain phase colors otherwise."""
+    scene = None
+    if room["phase"] == "night":
+        scene = {"mafia": "village", "doctor": "doctor", "detective": "detective"}.get(room["night_step"])
+    elif room["phase"] == "day":
+        scene = "discussion" if discussing(room) else "voting"
+    if scene and (Path(app.static_folder) / "images" / "turns" / f"{scene}.jpg").is_file():
+        return f"/static/images/turns/{scene}.jpg"
+    return None
+
+
 def view(room, pid):
     P, me, over = room["players"], room["players"][pid], room["phase"] == "over"
     vc = {}
@@ -344,7 +356,7 @@ def view(room, pid):
     chat = [dict(c) for c in room["chat"] if c["ch"] == "town"][-80:]
     mafia_chat = [dict(c) for c in room["chat"] if c["ch"] == "mafia"][-80:] if me["role"] == "mafia" else []
     return dict(code=room["code"], chat=chat, chat_mode=mode, phase=room["phase"], day=room["day"], winner=room.get("winner"),
-                notices=room.get("notices", []), scores_settled=room.get("scores_settled", False),
+                turn_background=turn_background(room), notices=room.get("notices", []), scores_settled=room.get("scores_settled", False),
                 death_events=room.get("death_events", []), round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
                 mafia_chat_open=me["role"] == "mafia" and me["alive"] and room["phase"] in ("day", "night"),
                 can_skip=me["host"] and (room["phase"] == "day" or (room["phase"] == "night" and room["night_step"] != "mafia")),

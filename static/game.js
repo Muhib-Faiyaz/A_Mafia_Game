@@ -346,6 +346,21 @@ function render() {
   } else {
     document.body.style.removeProperty("--death-background");
   }
+  const turnBackground = state?.turn_background;
+  const hasTurnBackground =
+    typeof turnBackground === "string" &&
+    /^\/static\/images\/turns\/(village|doctor|detective|discussion|voting)\.jpg$/.test(
+      turnBackground,
+    );
+  document.body.dataset.turnBackground = String(hasTurnBackground);
+  if (hasTurnBackground) {
+    document.body.style.setProperty(
+      "--turn-background",
+      `url("${turnBackground}")`,
+    );
+  } else {
+    document.body.style.removeProperty("--turn-background");
+  }
   $("#nav").hidden = !state || state.phase === "lobby";
   app.innerHTML = !session
     ? home()
