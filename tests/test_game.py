@@ -106,6 +106,71 @@ class GameTests(unittest.TestCase):
         self.assertTrue(self.room['players'][target]['alive'])
         self.assertEqual(self.room['phase'], 'day')
 
+    def test_default_is_one_and_maximum_is_three(self):
+        self.assertEqual(self.room['settings']['mafia_count'], 1)
+        self.post('settings', dict(self.host, mafia_count=None))
+        self.assertEqual(self.room['settings']['mafia_count'], 1)
+        self.post('start', self.host)
+        self.assertEqual(len(game.alive(self.room, 'mafia')), 1)
+
+    def test_two_mafia_split_votes_lock_target_until_dawn(self):
+        self.start(True)
+        a, b = [u['pid'] for u in self.town[:2]]
+        with patch.object(game.random, 'choice', return_value=b) as choice:
+            self.post('act', dict(self.mafia[0], target=a))
+            self.post('act', dict(self.mafia[1], target=b))
+            self.assertEqual(set(choice.call_args.args[0]), {a, b})
+            choice.assert_called_once()
+        self.assertEqual(self.room['night']['victim'], b)
+        self.assertEqual(self.room['night_step'], 'doctor')
+        self.post('skip', self.host)
+        self.post('skip', self.host)
+        self.assertFalse(self.room['players'][b]['alive'])
+        self.assertTrue(self.room['players'][a]['alive'])
+
+    def test_two_mafia_split_votes_kill_without_special_roles(self):
+        self.start(False)
+        a, b = [u['pid'] for u in self.town[:2]]
+        self.post('act', dict(self.mafia[0], target=a))
+        self.post('act', dict(self.mafia[1], target=b))
+        dead = {i for i, p in self.room['players'].items() if not p['alive']}
+        self.assertEqual(len(dead), 1)
+        self.assertTrue(dead <= {a, b})
+        self.assertEqual(self.room['phase'], 'day')
+
+    def test_end_restart_permissions_and_state(self):
+        self.start()
+        old_round = self.room['round_id']
+        self.post('end', self.users[1], 400)
+        self.post('restart', self.users[1], 400)
+        self.post('end', self.host)
+        state = self.post('state', self.host)
+        self.assertTrue(state['ended'])
+        self.assertEqual(state['phase'], 'over')
+        self.assertIsNone(state['winner'])
+        self.assertTrue(all(p['role'] for p in state['players']))
+        self.post('act', dict(self.mafia[0], target=self.town[0]['pid']), 400)
+        self.post('restart', self.host)
+        self.assertEqual(self.room['phase'], 'night')
+        self.assertNotEqual(self.room['round_id'], old_round)
+        self.assertFalse(self.room['ended'])
+        self.assertEqual(len(self.room['players']), 7)
+        self.assertEqual(len(game.alive(self.room)), 7)
+        self.assertEqual(self.room['night']['mafia'], {})
+        self.assertEqual(self.room['votes'], {})
+        self.assertEqual(self.room['day'], 1)
+
+    def test_restart_midgame_and_return_to_lobby(self):
+        self.start()
+        self.room['players'][self.town[0]['pid']]['alive'] = False
+        self.post('restart', self.host)
+        self.assertEqual(len(game.alive(self.room)), 7)
+        self.post('end', self.host)
+        self.post('reset', self.host)
+        self.assertEqual(self.room['phase'], 'lobby')
+        self.assertEqual(self.room['settings']['mafia_count'], 2)
+        self.assertTrue(all(p['role'] is None for p in self.room['players'].values()))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -64,7 +64,7 @@ def discussing(room):
 def start_night(room):
     room["day"] += 1
     room["phase"] = "night"
-    room["night"] = dict(mafia={}, doctor=None, detective=None)
+    room["night"] = dict(mafia={}, doctor=None, detective=None, victim=None)
     room["votes"] = {}
     room["night_step"], room["step_until"] = STEPS[0], time.time() + STEP
 
@@ -76,7 +76,13 @@ def advance(room):
                     all(i in room["night"]["mafia"] for i in alive(room, "mafia")))
         if not complete and time.time() < room["step_until"]:
             break
-        steps = STEPS if room["settings"]["special_roles"] else ("mafia",)
+        if room["night_step"] == "mafia":
+            nominees = sorted(set(room["night"]["mafia"].values()))
+            room["night"]["victim"] = random.choice(nominees) if nominees else None
+            if nominees:
+                chat_add(room, "mafia", "", "Voting closed. A target is locked in; the outcome is revealed at dawn.", "sys")
+        steps = tuple(role for role in STEPS if role == "mafia" or
+                      (room["settings"]["special_roles"] and any(p["role"] == role for p in room["players"].values())))
         i = steps.index(room["night_step"])
         if i + 1 < len(steps):
             room["night_step"], room["step_until"] = steps[i + 1], time.time() + STEP
@@ -117,10 +123,7 @@ def resolve_night(room):
         t = P.get(n["detective"])
         if t:
             P[i]["notes"].append(f"Night {room['day']}: {t['name']} is {'Mafia' if t['role'] == 'mafia' else 'not Mafia'}.")
-    picks = list(n["mafia"].values())
-    victim = None
-    if picks:
-        victim = random.choice(sorted(set(picks)))
+    victim = n["victim"]
     if victim and victim != n["doctor"]:
         P[victim]["alive"] = False
         room["dawn"] = f"{P[victim]['name']} was killed."
@@ -252,7 +255,7 @@ def view(room, pid):
     chat = [dict(c) for c in room["chat"] if c["ch"] == "town"][-80:]
     mafia_chat = [dict(c) for c in room["chat"] if c["ch"] == "mafia"][-80:] if me["role"] == "mafia" else []
     return dict(code=room["code"], chat=chat, chat_mode=mode, phase=room["phase"], day=room["day"], winner=room.get("winner"),
-                settings=room["settings"], mafia_chat=mafia_chat,
+                round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
                 mafia_chat_open=me["role"] == "mafia" and me["alive"] and room["phase"] in ("day", "night"),
                 can_skip=me["host"] and (room["phase"] == "day" or (room["phase"] == "night" and room["night_step"] != "mafia")),
                 min=MIN_PLAYERS, me=dict(name=me["name"], role=me["role"], alive=me["alive"], host=me["host"]),
@@ -277,7 +280,7 @@ def create():
         while code in rooms:
             code = "".join(random.choices("ABCDEFGHJKMNPQRSTUVWXYZ", k=4))
         rooms[code] = dict(code=code, players={}, phase="lobby", day=0, log=[], votes={}, chat=[], said=set(), t=time.time(),
-                           settings=dict(special_roles=True, mafia_count=None))
+                           settings=dict(special_roles=True, mafia_count=1))
         pid = add_player(rooms[code], name, host=True)
     return jsonify(code=code, pid=pid)
 
@@ -348,8 +351,10 @@ def settings():
         count = d.get("mafia_count", room["settings"]["mafia_count"])
         if type(special) is not bool:
             raise Bad("Special roles must be on or off.")
-        if count is not None and (type(count) is not int or not 1 <= count <= max(1, (len(room["players"]) - 1) // 2)):
-            raise Bad("Mafia must be fewer than half the players.")
+        if count is None:
+            count = 1
+        if type(count) is not int or not 1 <= count <= 3:
+            raise Bad("Choose between 1 and 3 Mafia.")
         room["settings"] = dict(special_roles=special, mafia_count=count)
         return jsonify(ok=True)
 
@@ -361,21 +366,47 @@ def start():
         P = room["players"]
         if not P[pid]["host"] or room["phase"] != "lobby":
             raise Bad("Only the host can start the game.")
-        n = len(P)
-        if n < MIN_PLAYERS:
-            raise Bad(f"You need at least {MIN_PLAYERS} players.")
-        m = room["settings"]["mafia_count"] or max(1, (n + 1) // 4)
-        if m * 2 >= n:
-            raise Bad("Mafia must be fewer than half the players. Update the lobby settings.")
-        sp = [r for k, r in enumerate(("doctor", "detective")) if room["settings"]["special_roles"] and n - m - k > 1]
-        roles = ["mafia"] * m + sp + ["town"] * (n - m - len(sp))
-        random.shuffle(roles)
-        for p, r in zip(P.values(), roles):
-            p.update(role=r, alive=True, notes=[])
-        room.update(day=0, log=[], winner=None, chat=[], said=set())
-        say(room, "The game begins. Night falls on the town.")
-        start_night(room)
-        run_bots(room)
+        start_game(room)
+        return jsonify(ok=True)
+
+
+def start_game(room):
+    P = room["players"]
+    n = len(P)
+    if n < MIN_PLAYERS:
+        raise Bad(f"You need at least {MIN_PLAYERS} players.")
+    m = room["settings"]["mafia_count"] or 1
+    if m * 2 >= n:
+        raise Bad("Mafia must be fewer than half the players. Update the lobby settings.")
+    sp = [r for k, r in enumerate(("doctor", "detective")) if room["settings"]["special_roles"] and n - m - k > 1]
+    roles = ["mafia"] * m + sp + ["town"] * (n - m - len(sp))
+    random.shuffle(roles)
+    for p, r in zip(P.values(), roles):
+        p.update(role=r, alive=True, notes=[], last=0)
+    room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex)
+    say(room, "The game begins. Night falls on the town.")
+    start_night(room)
+    run_bots(room)
+
+
+@app.post("/api/restart")
+def restart():
+    with lock:
+        room, pid = ctx(request.get_json(force=True))
+        if not room["players"][pid]["host"] or room["phase"] == "lobby":
+            raise Bad("Only the host can restart a game.")
+        start_game(room)
+        return jsonify(ok=True)
+
+
+@app.post("/api/end")
+def end():
+    with lock:
+        room, pid = ctx(request.get_json(force=True))
+        if not room["players"][pid]["host"] or room["phase"] not in ("night", "day"):
+            raise Bad("Only the host can end an active game.")
+        room.update(phase="over", winner=None, ended=True)
+        say(room, "The host ended the game. All roles are revealed.")
         return jsonify(ok=True)
 
 
@@ -495,9 +526,9 @@ def reset():
         room, pid = ctx(request.get_json(force=True))
         if not room["players"][pid]["host"] or room["phase"] != "over":
             raise Bad("Only the host can restart.")
-        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set())
+        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set(), ended=False)
         for p in room["players"].values():
-            p.update(role=None, alive=True, notes=[])
+            p.update(role=None, alive=True, notes=[], last=0)
         return jsonify(ok=True)
 
 
