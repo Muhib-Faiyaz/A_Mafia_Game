@@ -854,3 +854,20 @@ body[data-atmosphere] .phase-card {
   color: #d4ffeb;
   border-color: #4b8d72;
 }
+
+/* A fixed layer avoids mobile background-attachment scrolling issues. */
+body[data-eliminated="true"] {
+  isolation: isolate;
+}
+body[data-eliminated="true"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(#100e134d, #100e1373), var(--death-background);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

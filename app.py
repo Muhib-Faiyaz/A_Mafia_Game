@@ -1,6 +1,7 @@
 """Mafia — a Flask app where the server acts as the neutral Moderator.
 State lives in memory, so run a single worker (see Procfile)."""
 import math, os, random, string, threading, time, uuid
+from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 from death_stories import DEATH_STORIES, RESCUE_STORIES
 
@@ -133,12 +134,32 @@ def night_done(room):
             and (n["detective"] or not alive(room, "detective")))
 
 
+def choose_death_background(room):
+    """Use each installed illustration once per cycle, with no adjacent repeats."""
+    folder = Path(app.static_folder) / "images" / "dead"
+    available = sorted("/static/images/dead/" + p.name for p in folder.glob("*")
+                       if p.is_file() and p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp")
+                       and all(c.isalnum() or c in "-_." for c in p.name))
+    if not available:
+        return None
+    used = room.setdefault("death_backgrounds_used", [])
+    choices = [url for url in available if url not in used]
+    if not choices:
+        previous = used[-1] if used else None
+        used.clear()
+        choices = [url for url in available if url != previous] or available
+    selected = choices[random.randrange(len(choices))]
+    used.append(selected)
+    return selected
+
+
 def record_death(room, pid, cause):
     """Publish one shared story only when an elimination actually happens."""
     player = room["players"][pid]
     if not player["alive"]:
         return
     player["alive"] = False
+    player["death_background"] = choose_death_background(room)
     stories = DEATH_STORIES[cause]
     used = room.setdefault("story_used", {}).setdefault(cause, [])
     available = [i for i in range(len(stories)) if i not in used]
@@ -327,7 +348,8 @@ def view(room, pid):
                 death_events=room.get("death_events", []), round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
                 mafia_chat_open=me["role"] == "mafia" and me["alive"] and room["phase"] in ("day", "night"),
                 can_skip=me["host"] and (room["phase"] == "day" or (room["phase"] == "night" and room["night_step"] != "mafia")),
-                min=MIN_PLAYERS, me=dict(name=me["name"], role=me["role"], alive=me["alive"], host=me["host"]),
+                min=MIN_PLAYERS, me=dict(name=me["name"], role=me["role"], alive=me["alive"], host=me["host"],
+                                       death_background=me.get("death_background") if not me["alive"] else None),
                 players=players, pick=pick, notes=me["notes"], mafia_picks=mp,
                 skips=vc.get("skip", 0),
                 timer_left=timers(room)[0], timer_total=timers(room)[1],
@@ -451,8 +473,8 @@ def start_game(room):
     roles = ["mafia"] * m + sp + ["town"] * (n - m - len(sp))
     random.shuffle(roles)
     for p, r in zip(P.values(), roles):
-        p.update(role=r, alive=True, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
-    room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[], story_used={}, notices=[], scores_settled=False)
+        p.update(role=r, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
+    room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
     say(room, "The game begins. Night falls on the town.")
     start_night(room)
     run_bots(room)
@@ -596,9 +618,9 @@ def reset():
         room, pid = ctx(request.get_json(force=True))
         if not room["players"][pid]["host"] or room["phase"] != "over":
             raise Bad("Only the host can restart.")
-        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set(), ended=False, death_events=[], story_used={}, notices=[], scores_settled=False)
+        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set(), ended=False, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
         for p in room["players"].values():
-            p.update(role=None, alive=True, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
+            p.update(role=None, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
         return jsonify(ok=True)
 
 

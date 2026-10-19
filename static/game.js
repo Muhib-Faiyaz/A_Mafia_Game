@@ -330,6 +330,22 @@ function render() {
   }
   document.body.dataset.phase = state?.phase || "home";
   document.body.dataset.atmosphere = atmosphere();
+  const deathBackground =
+    state?.me?.alive === false && state.phase !== "lobby"
+      ? state.me.death_background
+      : null;
+  const hasDeathBackground =
+    typeof deathBackground === "string" &&
+    /^\/static\/images\/dead\/[a-zA-Z0-9_.-]+$/.test(deathBackground);
+  document.body.dataset.eliminated = String(hasDeathBackground);
+  if (hasDeathBackground) {
+    document.body.style.setProperty(
+      "--death-background",
+      `url("${deathBackground}")`,
+    );
+  } else {
+    document.body.style.removeProperty("--death-background");
+  }
   $("#nav").hidden = !state || state.phase === "lobby";
   app.innerHTML = !session
     ? home()

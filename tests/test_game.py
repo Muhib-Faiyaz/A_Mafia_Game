@@ -223,7 +223,8 @@ class GameTests(unittest.TestCase):
                 self.room['players'][target]['alive'] = True
                 self.room['players'][target]['name'] = '<Alex & Sam>'
                 self.room['story_used'] = {}
-                with patch.object(game.random, 'randrange', return_value=index):
+                # Force the story index independently of background selection.
+                with patch.object(game, 'choose_death_background', return_value=None), patch.object(game.random, 'randrange', return_value=index):
                     game.record_death(self.room, target, cause)
                 event = self.room['death_events'][-1]
                 self.assertEqual(event['story'], template.format(name='<Alex & Sam>'))
