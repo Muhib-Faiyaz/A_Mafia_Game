@@ -127,8 +127,7 @@ async function poll(force = false) {
   }
 }
 function home() {
-  return `<section id="top" class="stack"><div class="intro"><p class="eyebrow">A game of secrets & suspicion</p><h1>The town sleeps.<br>Trust no one.</h1><p class="muted">Gather your friends. Hide your identity. Survive the night.</p></div>
-<div class="cover" aria-hidden="true"><span class="cover-mark">M</span><span class="cover-caption">Someone won’t see the sunrise.</span></div>
+  return `<section id="top" class="stack opening-scene"><div class="intro opening-intro"><p class="opening-title">Mafia<span>After dark</span></p><h1>The town sleeps.<br>Trust no one.</h1><button id="learn-game" class="tutorial-link" aria-haspopup="dialog" aria-controls="help-dialog"><span aria-hidden="true">?</span> First night? Learn to play</button></div>
 <form id="entry" class="card stack"><label class="field">Your alias<input id="name" maxlength="16" autocomplete="nickname" placeholder="What should we call you?" required></label><button class="primary" type="submit">Create a room</button><label class="field">Have an invitation?<input id="code" maxlength="4" autocapitalize="characters" placeholder="4-letter room code"></label><button type="button" id="join">Join the town</button><small>3–20 players · Add bots to try it solo</small></form></section>`;
 }
 function lobby() {
@@ -136,11 +135,11 @@ function lobby() {
     count = state.settings.mafia_count || 1,
     host = state.me.host,
     needed = Math.max(3, count * 2 + 1);
-  return `<section id="top" class="stack"><div><p class="eyebrow">The gathering</p><h1 style="margin-top:8px">Take your seat.</h1></div>
+  return `<section id="top" class="stack lobby-scene"><div><p class="eyebrow">The gathering</p><h1 style="margin-top:8px">Take your seat.</h1></div>
 <div class="card row spread"><div><p class="eyebrow">Invite your accomplices</p><p class="room-code">${esc(state.code)}</p></div><span class="pill">Lobby</span></div>
 <div class="card stack"><div class="row spread"><h2>The guest list</h2><span class="pill">${n}/20</span></div><div class="members">${state.players.map((p) => `<span class="member"><b>${esc(p.name)}</b> ${p.host ? "♛" : ""}${p.you ? " · You" : ""}${p.bot ? " · Bot" : ""}<small class="player-score">${p.score || 0} session points</small></span>`).join("")}</div>${host ? '<div class="row"><button id="add-bot" style="flex:1">+ Add bot</button><button id="fill" style="flex:1">Fill to 7</button></div>' : ""}</div>
-<div class="card stack"><h2>Set the stakes</h2><label class="field">NUMBER OF MAFIA<select id="count" ${host ? "" : "disabled"}>${[1, 2, 3].map((i) => `<option value="${i}" ${count === i ? "selected" : ""}>${i} Mafia${i === 1 ? " · default" : ""}</option>`).join("")}</select></label><label class="field">SPECIAL CHARACTERS<select id="special" ${host ? "" : "disabled"}><option value="yes" ${state.settings.special_roles ? "selected" : ""}>Doctor & Detective</option><option value="no" ${!state.settings.special_roles ? "selected" : ""}>Mafia & Villagers only</option></select></label><p class="hint">1–3 Mafia. Start with at least ${needed} players for this setup. Special characters are added as space allows.</p></div>
-${host ? `<button id="start" class="primary" ${n < needed ? "disabled" : ""}>Begin the night →</button>` : '<p class="muted">The host will begin when everyone is ready.</p>'}<button id="leave" class="ghost">Leave this room</button></section>`;
+<div class="card stack"><h2>Set the stakes</h2><label class="field">Number of Mafia<select id="count" ${host ? "" : "disabled"}>${[1, 2, 3].map((i) => `<option value="${i}" ${count === i ? "selected" : ""}>${i} Mafia${i === 1 ? " · default" : ""}</option>`).join("")}</select></label><label class="field">Special characters<select id="special" ${host ? "" : "disabled"}><option value="yes" ${state.settings.special_roles ? "selected" : ""}>Doctor & Detective</option><option value="no" ${!state.settings.special_roles ? "selected" : ""}>Mafia & Villagers only</option></select></label><p class="hint">1–3 Mafia. Start with at least ${needed} players for this setup. Special characters are added as space allows.</p></div>
+${host ? `<button id="start" class="primary" ${n < needed ? "disabled" : ""}>Begin the night</button>` : '<p class="muted">The host will begin when everyone is ready.</p>'}<button id="leave" class="ghost">Leave this room</button></section>`;
 }
 function canAct(p) {
   if (!state.me.alive || !p.alive) return false;
@@ -331,7 +330,7 @@ function showDeathNotice() {
       /* In-memory deduplication still works without storage. */
     }
   }
-  if ($("#death-notice").open) return;
+  if ($("#death-notice").open || $("#help-dialog").open) return;
   const event = (state.notices || state.death_events || []).find(
     (event) => !deathSeen.has(event.id),
   );
@@ -445,6 +444,7 @@ function render() {
     const el = $(id);
     if (el) el.onclick = handler;
   };
+  on("#learn-game", openHelp);
   if (!session) {
     $("#entry").onsubmit = (e) => {
       e.preventDefault();
@@ -824,6 +824,26 @@ const music = {
     this.updateButton();
   },
 };
+function openHelp() {
+  $("#game-menu").close();
+  const guide = $("#help-dialog");
+  if (!guide.open) guide.showModal();
+  guide.scrollTop = 0;
+  animateMoment(
+    guide,
+    [
+      { opacity: 0, transform: "translateY(16px)" },
+      { opacity: 1, transform: "translateY(0)" },
+    ],
+    300,
+  );
+}
+$("#help").onclick = openHelp;
+$("#close-help").onclick = $("#finish-help").onclick = () =>
+  $("#help-dialog").close();
+$("#help-dialog").addEventListener("close", () =>
+  setTimeout(showDeathNotice, 0),
+);
 $("#music").onclick = () => music.toggle();
 $("#menu").onclick = openMenu;
 $("#close-menu").onclick = () => $("#game-menu").close();

@@ -422,3 +422,280 @@ body[data-eliminated="true"]::before {
   color: #e1d2c5;
   text-shadow: 0 1px 3px #10090b;
 }
+
+/* Opening scenes keep the supplied art separate from live controls. */
+body[data-atmosphere="home"],
+body[data-atmosphere="lobby"] {
+  isolation: isolate;
+}
+body[data-atmosphere="home"]::before,
+body[data-atmosphere="lobby"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+body[data-atmosphere="home"]::before {
+  background-image:
+    linear-gradient(#100a1020, #100a104d),
+    url("/static/images/opening/town.png");
+}
+body[data-atmosphere="lobby"]::before {
+  background-image:
+    linear-gradient(#100a1020, #100a104d),
+    url("/static/images/opening/hall.png");
+}
+.opening-intro {
+  text-align: center;
+  padding-block: 0 16px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.opening-title {
+  font: 88px/0.9 var(--display);
+  color: var(--bone);
+  text-shadow:
+    2px 3px #171012,
+    0 0 24px #000;
+}
+.opening-title span {
+  display: block;
+  margin-top: 6px;
+  font-size: 28px;
+  letter-spacing: 0.08em;
+}
+.opening-intro h1 {
+  font-size: clamp(36px, 10vw, 48px);
+  line-height: 1.1;
+  color: #ebcd95;
+  margin: 0;
+  text-shadow:
+    2px 3px #130b10,
+    0 0 16px #000;
+}
+.tutorial-link {
+  background: #160f16e6;
+  border-color: #b38a6e;
+  color: #f1ddbd;
+  min-height: 48px;
+  font-size: 14px;
+  padding: 10px 14px;
+}
+.tutorial-link span {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #cba980;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.help-button {
+  font:
+    26px Georgia,
+    serif;
+  color: var(--bone);
+}
+.opening-scene #entry,
+.lobby-scene > .card {
+  border: 3px double #b16a72;
+  background: linear-gradient(135deg, #2c2a2bf5, #191a1df5);
+  box-shadow:
+    0 0 0 3px #1a0c13,
+    0 0 0 4px #75434c,
+    0 12px 28px #0009;
+  border-radius: 7px 16px 7px 16px;
+}
+.opening-scene #entry {
+  gap: 18px;
+  padding: 22px;
+}
+.opening-scene .field {
+  font:
+    20px/1.4 Georgia,
+    serif;
+  text-align: center;
+  color: #edcca0;
+}
+.opening-scene input {
+  text-align: left;
+  border: 2px solid #7e7064;
+  border-radius: 3px;
+  background: #1d1c1ef5;
+}
+.opening-scene #entry > button {
+  font: 27px var(--display);
+  border: 2px solid #b28a66;
+  border-radius: 4px;
+}
+.opening-scene #join {
+  background: linear-gradient(#4c172e, #301221);
+}
+.opening-scene #entry > small {
+  text-align: center;
+  color: #ddc5af;
+}
+.lobby-scene > div:first-child {
+  text-align: center;
+  padding: 6px 0 12px;
+  text-shadow: 0 3px 12px #000;
+}
+.lobby-scene h1 {
+  color: #ebcd95;
+}
+.lobby-scene .room-code {
+  color: #efd29e;
+  font-size: 56px;
+}
+.lobby-scene .members {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 4px;
+  scrollbar-color: #ad8365 #22181e;
+}
+.lobby-scene .member {
+  display: block;
+  border: 2px solid #814850;
+  border-radius: 3px;
+  background: #211d20;
+  padding: 12px;
+  color: #efdbc0;
+}
+.lobby-scene .member b {
+  font-size: 16px;
+}
+.lobby-scene .player-score {
+  margin-top: 4px;
+  color: #d4b897;
+}
+.lobby-scene select {
+  border: 2px solid #a0616a;
+  background: #251c22;
+}
+.lobby-scene .field {
+  color: #e9cba0;
+}
+.help-dialog {
+  max-width: 520px;
+  padding: 24px;
+  background: linear-gradient(135deg, #2b2021, #151318);
+  border: 2px solid #ac7d65;
+  scrollbar-color: #ad8365 #22181e;
+}
+.help-dialog .sheet-head {
+  align-items: flex-start;
+  gap: 12px;
+}
+.help-dialog .sheet-head .icon-button {
+  flex-shrink: 0;
+}
+.help-dialog h2 {
+  font-size: 36px;
+  margin-top: 5px;
+}
+.help-intro {
+  color: #e4d2bf;
+  font-size: 16px;
+}
+.help-section {
+  border-top: 1px solid #7c5b4b;
+  margin-top: 24px;
+  padding-top: 20px;
+}
+.help-section h3 {
+  color: #efd29e;
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.help-dialog li {
+  margin-block: 10px;
+  padding-left: 4px;
+}
+.help-dialog ol,
+.help-dialog ul {
+  padding-left: 22px;
+}
+.help-dialog p,
+.help-dialog li,
+.help-dialog dd {
+  line-height: 1.7;
+}
+.help-dialog code {
+  color: #f1c6c8;
+  background: #130e14;
+  padding: 2px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.role-guide {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+}
+.role-guide > div {
+  border-left: 3px solid #a74f5a;
+  padding: 4px 0 4px 14px;
+}
+.role-guide > div:nth-child(3) {
+  border-color: #8dc6af;
+}
+.role-guide > div:nth-child(4) {
+  border-color: #a5b4d7;
+}
+.role-guide dt {
+  font-weight: 700;
+  color: #f0dfc4;
+  margin-bottom: 5px;
+}
+.role-guide dt span {
+  display: inline-block;
+  min-width: 22px;
+  text-align: center;
+  margin-right: 4px;
+}
+.role-guide dd {
+  margin: 0;
+  color: #d9c9be;
+}
+.help-note {
+  margin-block: 24px;
+  color: #d6bfa9;
+}
+#finish-help {
+  width: 100%;
+}
+@media (max-width: 350px) {
+  .topbar {
+    gap: 6px;
+  }
+  .tools {
+    gap: 5px;
+  }
+  .wordmark {
+    font-size: 26px;
+    gap: 6px;
+  }
+  .opening-title {
+    font-size: 76px;
+  }
+  .opening-intro {
+    min-height: 280px;
+  }
+  .opening-scene #entry {
+    padding: 18px;
+  }
+  .help-dialog {
+    padding: 20px 16px;
+  }
+}

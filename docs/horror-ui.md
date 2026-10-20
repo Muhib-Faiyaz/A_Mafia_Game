@@ -26,3 +26,15 @@ A black-and-red card grid alone would not distinguish this game. Use the supplie
 ## Implementation constraints
 
 Use native CSS and Web Animations; no animation framework is needed for this plain-JavaScript app. Animate transform and opacity with finite durations. Respect reduced motion, avoid strobing, retain keyboard focus and dialog behavior, and preserve dead-player background priority. Fonts load locally with a fallback. Artwork and audio remain the user-supplied and licensed existing assets.
+
+## Opening and tutorial
+
+Use the user's supplied village/shadow-figure and gothic-hall mockups as the
+home and lobby art direction. Background-only edits remove baked-in controls,
+text and the phone frame. Keep the branded title, entry form, live room code,
+scrollable guest list and settings as actual HTML with readable contrast.
+
+A persistent header question-mark button and first-screen learning link open
+a native dialog explaining setup, all four roles, night actions, discussion,
+voting, win conditions and session scoring. The guide remains separate from
+polling renders, preserves typed input, and defers death notices until closed.

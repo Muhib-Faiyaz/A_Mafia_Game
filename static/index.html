@@ -21,6 +21,15 @@
       >
       <div class="tools">
         <button
+          id="help"
+          class="icon-button help-button"
+          aria-label="How to play"
+          aria-haspopup="dialog"
+          aria-controls="help-dialog"
+        >
+          ?
+        </button>
+        <button
           id="music"
           class="icon-button"
           aria-label="Enable music"
@@ -38,6 +47,137 @@
       ><a href="#players">♟<span>Players</span></a
       ><a href="#chats">☏<span>Chat</span></a>
     </nav>
+    <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
+      <div class="sheet-head">
+        <div>
+          <p class="eyebrow">A guide for the living</p>
+          <h2 id="help-title">How to play</h2>
+        </div>
+        <button id="close-help" class="icon-button" aria-label="Close tutorial">
+          ×
+        </button>
+      </div>
+      <p class="help-intro">
+        Someone in this town is Mafia. Keep your identity secret, watch what
+        people say, and choose whom to trust.
+      </p>
+      <section class="help-section" aria-labelledby="help-start">
+        <h3 id="help-start">Your first game</h3>
+        <ol>
+          <li>
+            Enter an alias to create a room, or join with a friend's four-letter
+            code. Each player joins on their own phone.
+          </li>
+          <li>
+            The host chooses 1–3 Mafia and whether to include the Doctor and
+            Detective. Start with 3–20 players; Mafia must be fewer than half.
+            Special roles are added when there is room.
+          </li>
+          <li>
+            Try it solo by adding bots in the lobby. When everyone is ready, the
+            host starts the night.
+          </li>
+          <li>
+            Tap your secret identity card to reveal your role, then tap again to
+            hide it. This guide describes the roles without revealing anyone's
+            identity.
+          </li>
+        </ol>
+      </section>
+      <section class="help-section" aria-labelledby="help-roles">
+        <h3 id="help-roles">Meet the roles</h3>
+        <dl class="role-guide">
+          <div>
+            <dt><span aria-hidden="true">♠</span> Mafia</dt>
+            <dd>
+              Choose a non-Mafia player to kill at night. Work together in your
+              extra private Mafia chat while keeping up appearances in town
+              chat. Win when living Mafia match or outnumber the rest of the
+              town.
+            </dd>
+          </div>
+          <div>
+            <dt><span aria-hidden="true">◇</span> Villager</dt>
+            <dd>
+              You have no night action. Listen during discussion and vote to
+              uncover the Mafia. The town wins when every Mafia player is
+              eliminated.
+            </dd>
+          </div>
+          <div>
+            <dt><span aria-hidden="true">+</span> Doctor</dt>
+            <dd>
+              Protect one living player each night, including yourself. If you
+              protect the Mafia's target, that player survives. The rescue is
+              announced, but your identity stays secret. You are on the town's
+              team.
+            </dd>
+          </div>
+          <div>
+            <dt><span aria-hidden="true">⌕</span> Detective</dt>
+            <dd>
+              Investigate one other living player each night. Your private case
+              file tells you at dawn whether they are Mafia. Use that knowledge
+              to help the town without making yourself an easy target.
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <section class="help-section" aria-labelledby="help-cycle">
+        <h3 id="help-cycle">Night, discussion, vote</h3>
+        <ol>
+          <li>
+            <b>Mafia turn:</b> tap a target, then confirm, or vote in Mafia
+            chat. Matching choices kill that target; split choices select a
+            random person from the nominated targets. With no Mafia votes,
+            nobody is targeted. This turn ends when all living Mafia have voted
+            or time runs out; the host cannot skip it.
+          </li>
+          <li>
+            <b>Doctor and Detective turns:</b> each role chooses their action
+            when prompted. Everyone else waits. The night result and any private
+            investigation notes arrive at dawn.
+          </li>
+          <li>
+            <b>Discussion:</b> use town chat to share clues, ask questions, and
+            defend yourself. Voting opens when the timer ends or the host opens
+            it.
+          </li>
+          <li>
+            <b>Voting:</b> tap another living player and confirm, type
+            <code>/vote name</code> in town chat, or choose <code>/skip</code>.
+            The player with the most votes is eliminated. A tie, a winning skip
+            vote, or no votes means nobody is eliminated.
+          </li>
+          <li>
+            The next night begins after votes are counted. Continue until the
+            town or Mafia wins. Eliminated players can watch but cannot act or
+            send messages during play.
+          </li>
+        </ol>
+      </section>
+      <section class="help-section" aria-labelledby="help-points">
+        <h3 id="help-points">Session points</h3>
+        <p>
+          Points appear under your name after the game ends and stay with you
+          across games in the same room.
+        </p>
+        <ul>
+          <li>Each Mafia player gets 1 point for a Mafia team win.</li>
+          <li>Each surviving town player gets 1 point for a town win.</li>
+          <li>The Doctor gets 1 point for each successful rescue.</li>
+          <li>
+            The Detective gets 1 point for each different Mafia player correctly
+            identified.
+          </li>
+        </ul>
+      </section>
+      <p class="help-note">
+        Use ♫ for music. The host can restart or end a game from ☰. Open this ?
+        guide whenever you need a reminder.
+      </p>
+      <button id="finish-help" class="primary">I'm ready</button>
+    </dialog>
     <dialog id="game-menu" aria-labelledby="menu-title">
       <div class="sheet-head">
         <h2 id="menu-title">Game menu</h2>
