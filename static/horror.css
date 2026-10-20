@@ -112,7 +112,7 @@ select {
   border-color: #a7795c;
   background:
     linear-gradient(0deg, #160910d9, #140d0e5c 70%),
-    url("/static/images/turns/village.jpg") center 58% / cover;
+    url("/static/images/turns/village.webp") center 58% / cover;
 }
 .cover::before {
   display: none;
@@ -442,12 +442,12 @@ body[data-atmosphere="lobby"]::before {
 body[data-atmosphere="home"]::before {
   background-image:
     linear-gradient(#100a1020, #100a104d),
-    url("/static/images/opening/town.png");
+    url("/static/images/opening/town.webp");
 }
 body[data-atmosphere="lobby"]::before {
   background-image:
     linear-gradient(#100a1020, #100a104d),
-    url("/static/images/opening/hall.png");
+    url("/static/images/opening/hall.webp");
 }
 .opening-intro {
   text-align: center;
@@ -697,5 +697,21 @@ body[data-atmosphere="lobby"]::before {
   }
   .help-dialog {
     padding: 20px 16px;
+  }
+}
+
+/* Timer updates affect compositing rather than the layout width. */
+.progress span {
+  transform-origin: left;
+  transition: transform 0.25s linear;
+}
+button[aria-busy="true"] {
+  cursor: progress;
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .progress span {
+    transition: none;
   }
 }

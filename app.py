@@ -3,9 +3,12 @@ State lives in memory, so run a single worker (see Procfile)."""
 import math, os, random, string, threading, time, uuid
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
+from flask_compress import Compress
 from death_stories import DEATH_STORIES, RESCUE_STORIES
 
 app = Flask(__name__, static_folder="static")
+app.config.update(COMPRESS_ALGORITHM=["gzip"], COMPRESS_MIN_SIZE=500)
+Compress(app)
 rooms, lock = {}, threading.RLock()
 MIN_PLAYERS, MAX_PLAYERS = 3, 20
 STEP = int(os.environ.get("NIGHT_STEP_SECONDS", 30))  # mafia, then doctor, then detective
@@ -137,9 +140,11 @@ def night_done(room):
 def choose_death_background(room):
     """Use each installed illustration once per cycle, with no adjacent repeats."""
     folder = Path(app.static_folder) / "images" / "dead"
-    available = sorted("/static/images/dead/" + p.name for p in folder.glob("*")
-                       if p.is_file() and p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp")
-                       and all(c.isalnum() or c in "-_." for c in p.name))
+    pictures = {}
+    for picture in sorted(folder.glob("*"), key=lambda p: p.suffix.lower() == ".webp"):
+        if picture.is_file() and picture.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp") and all(c.isalnum() or c in "-_." for c in picture.name):
+            pictures[picture.stem] = "/static/images/dead/" + picture.name
+    available = sorted(pictures.values())
     if not available:
         return None
     used = room.setdefault("death_backgrounds_used", [])
@@ -322,8 +327,10 @@ def turn_background(room):
         scene = {"mafia": "village", "doctor": "doctor", "detective": "detective"}.get(room["night_step"])
     elif room["phase"] == "day":
         scene = "discussion" if discussing(room) else "voting"
-    if scene and (Path(app.static_folder) / "images" / "turns" / f"{scene}.jpg").is_file():
-        return f"/static/images/turns/{scene}.jpg"
+    if scene:
+        for extension in ("webp", "jpg"):
+            if (Path(app.static_folder) / "images" / "turns" / f"{scene}.{extension}").is_file():
+                return f"/static/images/turns/{scene}.{extension}"
     return None
 
 
@@ -634,6 +641,39 @@ def reset():
         for p in room["players"].values():
             p.update(role=None, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
         return jsonify(ok=True)
+
+
+@app.after_request
+def deliver_response(response):
+    # send_file streams bypass compression by default; these small text files
+    # can be buffered so gzip validators and conditional requests remain valid.
+    if response.status_code == 200 and response.mimetype in ("text/html", "text/css", "text/javascript", "application/javascript"):
+        response.direct_passthrough = False
+        stream = response.response
+        body = response.get_data()
+        if hasattr(stream, "close"):
+            stream.close()
+        response.set_data(body)
+    if request.path.startswith("/api/"):
+        # Return the caller's authorized view with an action to avoid a second RTT.
+        response.headers["Cache-Control"] = "no-store"
+        data = request.get_json(silent=True) or {}
+        if response.status_code == 200 and request.path != "/api/state" and data.get("include_state"):
+            payload = response.get_json(silent=True)
+            if isinstance(payload, dict):
+                code = str(payload.get("code", data.get("code", ""))).strip().upper()
+                pid = payload.get("pid", data.get("pid"))
+                with lock:
+                    room = rooms.get(code)
+                    if room and pid in room["players"]:
+                        payload["state"] = view(room, pid)
+                        response.set_data(app.json.dumps(payload))
+    elif request.path.startswith("/static/") and Path(request.path).suffix.lower() in (".webp", ".png", ".jpg", ".jpeg", ".ttf", ".woff2", ".mp3"):
+        response.headers["Cache-Control"] = "public, max-age=86400"
+    else:
+        # Revalidate HTML, scripts and styles so deployments are picked up promptly.
+        response.headers["Cache-Control"] = "no-cache"
+    return response
 
 
 BASE = os.path.dirname(os.path.abspath(__file__))

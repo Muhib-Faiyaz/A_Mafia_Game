@@ -1,0 +1,106 @@
+{
+  "role": [
+    {
+      "processing": 60.79999999701977,
+      "frame": 112.59999999403954,
+      "inputRetained": false
+    },
+    {
+      "processing": 70.70000000298023,
+      "frame": 114.09999999403954,
+      "inputRetained": false
+    },
+    {
+      "processing": 89.5,
+      "frame": 154.79999999701977,
+      "inputRetained": false
+    },
+    {
+      "processing": 80.29999999701977,
+      "frame": 116.40000000596046,
+      "inputRetained": false
+    },
+    {
+      "processing": 76.20000000298023,
+      "frame": 114.40000000596046,
+      "inputRetained": false
+    },
+    {
+      "processing": 80.5,
+      "frame": 150.20000000298023,
+      "inputRetained": false
+    },
+    {
+      "processing": 102,
+      "frame": 171.20000000298023,
+      "inputRetained": false
+    },
+    {
+      "processing": 83.8999999910593,
+      "frame": 157.3999999910593,
+      "inputRetained": false
+    },
+    {
+      "processing": 129,
+      "frame": 200.20000000298023,
+      "inputRetained": false
+    },
+    {
+      "processing": 42.5,
+      "frame": 99.90000000596046,
+      "inputRetained": false
+    }
+  ],
+  "select": [
+    {
+      "processing": 107,
+      "frame": 157.5,
+      "inputRetained": false
+    },
+    {
+      "processing": 46.400000005960464,
+      "frame": 87.20000000298023,
+      "inputRetained": false
+    },
+    {
+      "processing": 50.900000005960464,
+      "frame": 84.6000000089407,
+      "inputRetained": false
+    },
+    {
+      "processing": 64,
+      "frame": 100.3999999910593,
+      "inputRetained": false
+    },
+    {
+      "processing": 37.599999994039536,
+      "frame": 83,
+      "inputRetained": false
+    },
+    {
+      "processing": 52,
+      "frame": 100.8999999910593,
+      "inputRetained": false
+    },
+    {
+      "processing": 75.40000000596046,
+      "frame": 120.20000000298023,
+      "inputRetained": false
+    },
+    {
+      "processing": 88,
+      "frame": 132.5,
+      "inputRetained": false
+    },
+    {
+      "processing": 71,
+      "frame": 120,
+      "inputRetained": false
+    },
+    {
+      "processing": 20.099999994039536,
+      "frame": 67.5,
+      "inputRetained": false
+    }
+  ]
+}

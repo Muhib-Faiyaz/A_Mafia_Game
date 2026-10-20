@@ -28,7 +28,8 @@ let state = null,
   selected = null,
   revealed = false,
   deadline = 0,
-  polling = false,
+  polling = null,
+  updateEpoch = 0,
   busy = false;
 let draft = { town: "", mafia: "" },
   recordOpen = false;
@@ -42,7 +43,11 @@ async function api(route, body = {}) {
   const response = await fetch("/api/" + route, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...session, ...body }),
+    body: JSON.stringify({
+      ...session,
+      ...body,
+      ...(route !== "state" ? { include_state: true } : {}),
+    }),
     signal: AbortSignal.timeout(10000),
   });
   const data = await response.json();
@@ -56,6 +61,9 @@ async function api(route, body = {}) {
 async function run(route, body = {}) {
   if (busy) return false;
   busy = true;
+  updateEpoch++;
+  const button = document.activeElement?.closest("button");
+  button?.setAttribute("aria-busy", "true");
   try {
     const data = await api(route, body);
     if (data.pid) {
@@ -67,16 +75,20 @@ async function run(route, body = {}) {
       selected = null;
       draft = { town: "", mafia: "" };
     }
-    await poll(true);
+    updateEpoch++;
+    if (data.state) applyState(data.state);
+    else if (route !== "leave") await poll(true);
     return true;
   } catch (error) {
     toast(error.message);
     return false;
   } finally {
+    button?.removeAttribute("aria-busy");
     busy = false;
   }
 }
 function leaveLocal() {
+  updateEpoch++;
   session = state = null;
   signature = phaseKey = "";
   selected = null;
@@ -86,46 +98,93 @@ function leaveLocal() {
   $("#death-notice").close();
   render();
 }
-async function poll(force = false) {
-  if (!session || polling) return;
-  polling = true;
-  try {
-    const next = await api("state");
-    deadline = next.timer_left ? Date.now() + next.timer_left * 1000 : 0;
-    const key = [next.round_id, next.phase, next.day, next.night_step].join(
-      ":",
-    );
-    if (next.round_id !== state?.round_id || next.phase === "lobby")
-      $("#death-notice").close();
-    if (key !== phaseKey) {
-      selected = null;
-      if (next.round_id !== state?.round_id) revealed = false;
-      phaseKey = key;
+function applyState(next) {
+  deadline = next.timer_left ? Date.now() + next.timer_left * 1000 : 0;
+  const key = [
+    next.round_id,
+    next.phase,
+    next.day,
+    next.night_step,
+    next.voting,
+  ].join(":");
+  if (next.round_id !== state?.round_id || next.phase === "lobby")
+    $("#death-notice").close();
+  if (key !== phaseKey) {
+    selected = null;
+    if (next.round_id !== state?.round_id) revealed = false;
+    phaseKey = key;
+  }
+  state = next;
+  const sig = JSON.stringify({ ...next, timer_left: 0 });
+  if (sig !== signature) {
+    signature = sig;
+    render();
+  }
+  tick();
+  showDeathNotice();
+  $("#connection")?.remove();
+}
+function poll(force = false) {
+  if (!session || (document.hidden && !force)) return Promise.resolve();
+  // A requested refresh must run AFTER any older in-flight snapshot.
+  if (polling) return force ? polling.then(() => poll(true)) : polling;
+  const identity = session,
+    epoch = updateEpoch;
+  polling = (async () => {
+    try {
+      const next = await api("state");
+      if (identity === session && epoch === updateEpoch) applyState(next);
+    } catch (error) {
+      if (identity !== session || epoch !== updateEpoch) return;
+      if (error.status === 404) {
+        leaveLocal();
+        toast("This room has closed. Create or join another room.");
+      } else if (!$("#connection")) {
+        const note = document.createElement("p");
+        note.id = "connection";
+        note.className = "connection";
+        note.textContent = "Connection interrupted. Reconnecting…";
+        app.prepend(note);
+      }
     }
-    state = next;
-    const sig = JSON.stringify({ ...next, timer_left: 0 });
-    if (sig !== signature || force) {
-      signature = sig;
-      render();
+  })().finally(() => {
+    polling = null;
+  });
+  return polling;
+}
+function updateRoleCard() {
+  const card = $("#role");
+  if (!card) return;
+  card.setAttribute("aria-expanded", String(revealed));
+  card.querySelector(".role-icon").textContent = revealed ? "♠" : "?";
+  card.querySelector("b").textContent = revealed
+    ? roleName(state.me.role)
+    : "Your secret identity";
+  card.querySelector("small").textContent = revealed
+    ? roles[state.me.role]?.[1] || ""
+    : "Tap to reveal. Keep it to yourself.";
+}
+function selectTarget(target) {
+  selected = target;
+  for (const card of app.querySelectorAll("[data-player]")) {
+    const picked = card.dataset.player === target;
+    if (card.classList.contains("selected") !== picked) {
+      card.classList.toggle("selected", picked);
+      card.setAttribute("aria-pressed", String(picked));
     }
-    tick();
-    showDeathNotice();
-    $("#connection")?.remove();
-  } catch (error) {
-    if (error.status === 404) {
-      leaveLocal();
-      toast("This room has closed. Create or join another room.");
-    } else if (!$("#connection")) {
-      const note = document.createElement("p");
-      note.id = "connection";
-      note.className = "connection";
-      note.textContent = "Connection interrupted. Reconnecting…";
-      app.prepend(note);
-    }
-  } finally {
-    polling = false;
+  }
+  const button = $("#confirm-action"),
+    label = actionLabel();
+  const name =
+    target === "skip"
+      ? "Skip"
+      : state.players.find((p) => p.id === target)?.name;
+  if (button && label) {
+    button.disabled = !target;
+    button.textContent = label + (name ? ": " + name : "");
   }
 }
+
 function home() {
   return `<section id="top" class="stack opening-scene"><div class="intro opening-intro"><p class="opening-title">Mafia<span>After dark</span></p><h1>The town sleeps.<br>Trust no one.</h1><button id="learn-game" class="tutorial-link" aria-haspopup="dialog" aria-controls="help-dialog"><span aria-hidden="true">?</span> First night? Learn to play</button></div>
 <form id="entry" class="card stack"><label class="field">Your alias<input id="name" maxlength="16" autocomplete="nickname" placeholder="What should we call you?" required></label><button class="primary" type="submit">Create a room</button><label class="field">Have an invitation?<input id="code" maxlength="4" autocapitalize="characters" placeholder="4-letter room code"></label><button type="button" id="join">Join the town</button><small>3–20 players · Add bots to try it solo</small></form></section>`;
@@ -388,9 +447,12 @@ $("#death-notice").addEventListener("close", () => {
 });
 
 function render() {
-  const focused = document.activeElement?.id,
+  const focusedElement = document.activeElement;
+  const focused = focusedElement?.id,
     selection = document.activeElement?.selectionStart,
     scrolls = {};
+  const members = $(".members"),
+    memberScroll = members?.scrollTop;
   for (const ch of ["town", "mafia"]) {
     const el = $("#messages-" + ch);
     if (el)
@@ -420,7 +482,7 @@ function render() {
   const turnBackground = state?.turn_background;
   const hasTurnBackground =
     typeof turnBackground === "string" &&
-    /^\/static\/images\/turns\/(village|doctor|detective|discussion|voting)\.jpg$/.test(
+    /^\/static\/images\/turns\/(village|doctor|detective|discussion|voting)\.(jpg|webp)$/.test(
       turnBackground,
     );
   document.body.dataset.turnBackground = String(hasTurnBackground);
@@ -433,13 +495,26 @@ function render() {
     document.body.style.removeProperty("--turn-background");
   }
   $("#nav").hidden = !state || state.phase === "lobby";
-  app.innerHTML = !session
+  const markup = !session
     ? home()
     : !state
       ? '<p class="muted">Entering the town…</p>'
       : state.phase === "lobby"
         ? lobby()
         : game();
+  const target = app.cloneNode(false);
+  target.innerHTML = markup;
+  morphdom(app, target, {
+    childrenOnly: true,
+    getNodeKey: (node) =>
+      node.id ||
+      (node.dataset?.player ? "player:" + node.dataset.player : undefined),
+    onBeforeElUpdated: (from, to) => {
+      if (from === document.activeElement && from.matches("input,textarea"))
+        return false;
+      return !from.isEqualNode(to);
+    },
+  });
   const on = (id, handler) => {
     const el = $(id);
     if (el) el.onclick = handler;
@@ -477,7 +552,7 @@ function render() {
   }
   on("#role", () => {
     revealed = !revealed;
-    render();
+    updateRoleCard();
     animateMoment(
       $("#role"),
       [
@@ -490,8 +565,7 @@ function render() {
   on("#skip-timer", () => run("skip"));
   on("#tally", () => run("tally"));
   on("#skip-vote", () => {
-    selected = "skip";
-    render();
+    selectTarget("skip");
   });
   on("#confirm-action", () =>
     run(state.phase === "night" ? "act" : "vote", {
@@ -503,8 +577,7 @@ function render() {
   app.querySelectorAll("[data-player]").forEach(
     (el) =>
       (el.onclick = () => {
-        selected = el.dataset.player;
-        render();
+        selectTarget(el.dataset.player);
         animateMoment(
           $(".player.selected"),
           [
@@ -550,8 +623,9 @@ function render() {
       old = scrolls[ch];
     if (el) el.scrollTop = !old || old.end ? el.scrollHeight : old.top;
   }
+  if (members?.isConnected) members.scrollTop = memberScroll;
   const restore = focused ? document.getElementById(focused) : null;
-  if (restore) {
+  if (restore && restore !== focusedElement) {
     restore.focus({ preventScroll: true });
     if (typeof selection === "number" && restore.type === "text")
       restore.setSelectionRange(selection, selection);
@@ -564,17 +638,21 @@ function tick() {
   const left = deadline
     ? Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
     : 0;
-  if ($("#clock"))
-    $("#clock").textContent =
-      Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
-  if ($("#progress"))
-    $("#progress").style.width =
-      Math.min(100, (left / (state?.timer_total || 1)) * 100) + "%";
+  const clock = $("#clock"),
+    progress = $("#progress");
+  const text = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
+  if (clock && clock.textContent !== text) clock.textContent = text;
+  if (progress) {
+    const transform = `scaleX(${Math.min(1, left / (state?.timer_total || 1))})`;
+    if (progress.style.transform !== transform)
+      progress.style.transform = transform;
+  }
   if (deadline && left === 0) {
     deadline = 0;
     poll();
   }
 }
+
 function openMenu() {
   const active = state && ["day", "night"].includes(state.phase),
     host = state?.me.host;
@@ -671,17 +749,27 @@ const music = {
     };
   },
   async loadTrack(path) {
-    if (!this.buffers.has(path)) {
-      const promise = fetch(path, { signal: AbortSignal.timeout(30000) })
-        .then((response) => {
-          if (!response.ok) throw new Error("Music file unavailable");
-          return response.arrayBuffer();
-        })
-        .then((bytes) => this.context.decodeAudioData(bytes));
-      this.buffers.set(path, promise);
-      promise.catch(() => this.buffers.delete(path));
+    if (this.buffers.has(path)) {
+      const cached = this.buffers.get(path);
+      this.buffers.delete(path);
+      this.buffers.set(path, cached);
+      return cached;
     }
-    return this.buffers.get(path);
+    const promise = fetch(path, { signal: AbortSignal.timeout(30000) })
+      .then((response) => {
+        if (!response.ok) throw new Error("Music file unavailable");
+        return response.arrayBuffer();
+      })
+      .then((bytes) => this.context.decodeAudioData(bytes));
+    this.buffers.set(path, promise);
+    // MP3 files expand substantially in memory. Keep only two decoded tracks;
+    // the HTTP cache supplies earlier tracks without another full download.
+    while (this.buffers.size > 2)
+      this.buffers.delete(this.buffers.keys().next().value);
+    promise.catch(() => {
+      if (this.buffers.get(path) === promise) this.buffers.delete(path);
+    });
+    return promise;
   },
   fadeOut(voice, seconds = 0.7) {
     if (!voice) return;
@@ -854,4 +942,6 @@ document.addEventListener("visibilitychange", () => {
 render();
 poll();
 setInterval(() => poll(), 1200);
-setInterval(tick, 250);
+setInterval(() => {
+  if (!document.hidden) tick();
+}, 250);
