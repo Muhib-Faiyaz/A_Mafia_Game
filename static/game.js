@@ -657,7 +657,7 @@ function openMenu() {
   const active = state && ["day", "night"].includes(state.phase),
     host = state?.me.host;
   $("#menu-body").innerHTML =
-    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">A different track for every turn: cinematic Mafia tension, brooding Detective music, dark voting music, calm Doctor ambience and warm discussion music. Sound effects share this volume and mute control. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Session scoring</summary><p>Each Mafia member gets 1 point for a Mafia win. Surviving town members get 1 for a town win. Doctors earn 1 for each actual rescue, and Detectives earn 1 for each different Mafia member correctly identified.</p><p>Points appear only after the game ends. Totals stay with the player through restarts. Restarting an unfinished game discards its unclaimed points.</p></details><details class="music-credits"><summary>Music credits</summary><p>“Signal Lost”, “Beneath”, “Ash”, “Quiet Room” and “Afterglow Vast” by AERIS MUSIC. Released under CC0 1.0; compressed for mobile playback.</p><a href="https://github.com/farmmer938-lgtm/aeris-cc0-music" target="_blank" rel="noopener noreferrer">Artist’s collection ↗</a> · <a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">License details ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
+    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">“It’s In The Fog” by Darren Curtis loops throughout every turn. Sound effects share this volume and mute control. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Session scoring</summary><p>Each Mafia member gets 1 point for a Mafia win. Surviving town members get 1 for a town win. Doctors earn 1 for each actual rescue, and Detectives earn 1 for each different Mafia member correctly identified.</p><p>Points appear only after the game ends. Totals stay with the player through restarts. Restarting an unfinished game discards its unclaimed points.</p></details><details class="music-credits"><summary>Music credits</summary><p><a href="https://breakingcopyright.com/song/darren-curtis-its-in-the-fog" target="_blank" rel="noopener noreferrer">It's In The Fog</a> by <a href="https://www.youtube.com/user/DesperateMeasurez" target="_blank" rel="noopener noreferrer">Darren Curtis</a> | Creative Commons (BY 3.0) | <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">License</a></p><p>Music powered by <a href="https://breakingcopyright.com" target="_blank" rel="noopener noreferrer">BreakingCopyright</a>. Converted to MP3 for playback; loops in game.</p><a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">Full credits ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
   $("#menu-music").onclick = async () => {
     await music.toggle();
     $("#menu-music").textContent =
@@ -678,15 +678,12 @@ function confirmHostAction(action) {
   };
   $("#cancel-host").onclick = openMenu;
 }
-// Downloaded CC0 recordings, decoded only after a deliberate user tap.
+// Darren Curtis, CC BY 3.0; decoded only after a deliberate user tap.
 // Sources, license and checksums: /static/audio/sources.json and CREDITS.md.
-const SOUNDTRACKS = {
-  mafia: "/static/audio/signal-lost.mp3",
-  detective: "/static/audio/beneath.mp3",
-  voting: "/static/audio/ash.mp3",
-  doctor: "/static/audio/quiet-room.mp3",
-  discussion: "/static/audio/afterglow-vast.mp3",
-};
+const SOUNDTRACK = "/static/audio/its-in-the-fog.mp3";
+const SOUNDTRACKS = Object.fromEntries(
+  ["mafia", "detective", "voting", "doctor", "discussion"].map((mode) => [mode, SOUNDTRACK]),
+);
 const music = {
   enabled: false,
   volume: 0.3,

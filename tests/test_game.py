@@ -253,7 +253,9 @@ class GameTests(unittest.TestCase):
         from pathlib import Path
         root = Path(game.__file__).parent
         manifest = json.loads((root / 'static/audio/sources.json').read_text())
-        self.assertEqual(manifest['license'], 'CC0-1.0')
+        self.assertEqual(manifest['license'], 'CC-BY-3.0')
+        self.assertEqual(manifest['artist'], 'Darren Curtis')
+        self.assertEqual({p.name for p in (root / 'static/audio').glob('*.mp3')}, {'its-in-the-fog.mp3'})
         for entry in manifest['files']:
             data = (root / entry['file']).read_bytes()
             self.assertEqual(hashlib.sha256(data).hexdigest(), entry['sha256'])

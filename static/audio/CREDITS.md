@@ -1,26 +1,11 @@
 # Music credits
 
-All five recordings are by **AERIS MUSIC**, dedicated to the public domain
-under **CC0 1.0 Universal** by the publisher.
+Song: **It's In The Fog**
+Composer: **Darren Curtis**
+Website: https://www.youtube.com/user/DesperateMeasurez
+License: Creative Commons Attribution 3.0 Unported (CC BY 3.0): https://creativecommons.org/licenses/by/3.0/
+Music powered by BreakingCopyright: https://breakingcopyright.com
 
-| Track | Game use | Duration |
-| --- | --- | --- |
-| Signal Lost | Mafia turn — cinematic tension | 80 seconds |
-| Beneath | Detective turn — brooding suspense | 80 seconds |
-| Ash | Voting — dark, minimal tension | 87 seconds |
-| Quiet Room | Doctor turn — calm ambient | 57 seconds |
-| Afterglow Vast | Discussion — warm, relaxed ambience | 91 seconds |
+[It's In The Fog](https://breakingcopyright.com/song/darren-curtis-its-in-the-fog) by Darren Curtis | Creative Commons (BY 3.0) | [License](https://creativecommons.org/licenses/by/3.0/)
 
-Source: https://github.com/farmmer938-lgtm/aeris-cc0-music
-Pinned revision: `51ab767ca32558ae5686344fc3b29c7a4498b145`.
-Publisher license: [AERIS-LICENSE](AERIS-LICENSE).
-Publisher descriptions: [AERIS-README.md](AERIS-README.md).
-License deed and full text: https://creativecommons.org/publicdomain/zero/1.0/
-
-The downloaded recordings were transcoded to 128 kbps MP3 / 44.1 kHz to reduce
-mobile download size. Their compositions were not edited. Playback loops and
-crossfades are implemented by the game. Original and delivered file hashes,
-byte sizes, and exact download URLs are recorded in [sources.json](sources.json).
-
-The death impact/splash remains an original procedurally synthesized effect.
-No account, streaming subscription, or runtime third-party connection is needed.
+Source: user-supplied `its in the fog.zip`, containing `Its in the frog.webm` (audio only). Attribution and license information supplied with the upload. Converted from Opus/WebM to 128 kbps MP3 at 44.1 kHz for browser playback; metadata updated to the credited title and composer. The composition is unchanged; playback loops in game. No endorsement is implied.

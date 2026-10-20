@@ -42,25 +42,9 @@ a winner) or **restart** (deal fresh roles while retaining players and settings)
 Both actions ask for confirmation. After a game ends, the host can also return
 to the lobby to change settings.
 
-Tap the music button to enable downloaded **CC0 recordings by AERIS MUSIC**:
+Tap the music button to enable **[It's In The Fog](https://breakingcopyright.com/song/darren-curtis-its-in-the-fog)** by **[Darren Curtis](https://www.youtube.com/user/DesperateMeasurez)**, licensed under **[Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/)**. Music powered by [BreakingCopyright](https://breakingcopyright.com).
 
-- **Signal Lost:** tense cinematic music for the Mafia turn.
-- **Beneath:** brooding suspense for Detective turns.
-- **Ash:** dark, minimal tension for daytime voting.
-- **Quiet Room:** calm ambient music for Doctor turns.
-- **Afterglow Vast:** warm, relaxed music for discussion.
-
-Tracks are hosted locally, loop, and crossfade when the mood changes. They are
-loaded only after sound is enabled, cached for the session, and compressed to
-128 kbps MP3 (about 6.3 MB total). No external streaming service or credentials
-are required. Music and death effects share mute and volume controls; playback
-stops in hidden tabs and at game end. Mobile browsers require an initial tap.
-The death impact/splash is still synthesized locally with Web Audio.
-
-Music credits are available in the game menu and
-[`static/audio/CREDITS.md`](static/audio/CREDITS.md). The publisher's CC0 license,
-pinned source revision, original hashes, and delivered-file hashes are retained
-beside the recordings.
+The uploaded recording is hosted locally and converted to 128 kbps MP3 for browser playback. It loops continuously across turns, loads only after sound is enabled, and shares volume and mute controls with the synthesized death and rescue effects. Playback pauses in hidden tabs and stops at game end. Mobile browsers require an initial tap. Full attribution, conversion details, and a source checksum are in [`static/audio/CREDITS.md`](static/audio/CREDITS.md) and `static/audio/sources.json`.
 
 Every turn has its own background: crimson Mafia, teal Doctor, blue Detective,
 amber discussion, and purple voting, plus distinct ending screens.
