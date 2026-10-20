@@ -107,3 +107,11 @@ The regression suite covers settings, role counts, split and unanimous votes,
 timeouts, private chat permissions, Doctor protection, host end/restart, shared
 death stories, non-repetition, notification timing, bundled audio integrity,
 private scoring, one-time settlement, session retention, and anonymous rescues.
+
+## Search visibility
+
+The public introduction and rules are included in the server's HTML response and remain available without JavaScript. Search metadata targets online Mafia play and the Mafia board/party game without changing gameplay. Private game data stays behind the API and is excluded from indexing.
+
+Set `SITE_URL` to your production origin (HTTPS scheme and hostname, without a path) to enable the canonical URL, absolute social sharing images, and `/sitemap.xml`. Railway's `RAILWAY_PUBLIC_DOMAIN` is used automatically when `SITE_URL` is unset. With neither configured, the game still runs, but URL-specific metadata is omitted and the sitemap returns 503 rather than advertising a development address.
+
+See [SEO implementation and launch checks](docs/seo.md), including the installed MIT-licensed SEO and accessibility skills, validation commands, and Search Console follow-up.

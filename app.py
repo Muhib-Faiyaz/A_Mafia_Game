@@ -2,13 +2,19 @@
 State lives in memory, so run a single worker (see Procfile)."""
 import math, os, random, string, threading, time, uuid
 from pathlib import Path
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, render_template_string, make_response, redirect
+from urllib.parse import urlsplit
+from xml.sax.saxutils import escape as xml_escape
 from flask_compress import Compress
 from death_stories import DEATH_STORIES, RESCUE_STORIES
 
 app = Flask(__name__, static_folder="static")
 app.config.update(COMPRESS_ALGORITHM=["gzip"], COMPRESS_MIN_SIZE=500)
 Compress(app)
+# Railway injects its public domain; custom deployments can set SITE_URL.
+app.config["SITE_URL"] = os.environ.get("SITE_URL") or (
+    "https://" + os.environ["RAILWAY_PUBLIC_DOMAIN"] if os.environ.get("RAILWAY_PUBLIC_DOMAIN") else ""
+)
 rooms, lock = {}, threading.RLock()
 MIN_PLAYERS, MAX_PLAYERS = 3, 20
 STEP = int(os.environ.get("NIGHT_STEP_SECONDS", 30))  # mafia, then doctor, then detective
@@ -657,6 +663,7 @@ def deliver_response(response):
     if request.path.startswith("/api/"):
         # Return the caller's authorized view with an action to avoid a second RTT.
         response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Robots-Tag"] = "noindex, nofollow"
         data = request.get_json(silent=True) or {}
         if response.status_code == 200 and request.path != "/api/state" and data.get("include_state"):
             payload = response.get_json(silent=True)
@@ -679,18 +686,82 @@ def deliver_response(response):
 BASE = os.path.dirname(os.path.abspath(__file__))
 
 
+def public_site_url():
+    """Use deployment configuration, never an untrusted request Host header."""
+    value = app.config.get("SITE_URL", "").strip().rstrip("/")
+    try:
+        parsed = urlsplit(value)
+    except ValueError:
+        return ""
+    if (parsed.scheme not in ("https", "http") or not parsed.netloc
+            or parsed.username or parsed.password or parsed.path or parsed.query or parsed.fragment):
+        return ""
+    return value
+
+
+def game_schema(site_url):
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Mafia · After dark",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript and an internet connection",
+        "inLanguage": "en",
+        "description": "A free online Mafia social deduction party game for 3–20 players, with private rooms, optional bots, and Doctor and Detective roles.",
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+    }
+    if site_url:
+        schema.update(url=site_url + "/", image=site_url + "/static/images/opening/town.png")
+    return schema
+
+
 @app.get("/")
 def index():
-    # Works whether index.html is in static/ or next to app.py
+    # Render the same useful public introduction for players and search engines.
     for folder in (os.path.join(BASE, "static"), BASE):
-        if os.path.isfile(os.path.join(folder, "index.html")):
-            return send_from_directory(folder, "index.html")
+        path = Path(folder) / "index.html"
+        if path.is_file():
+            site_url = public_site_url()
+            response = make_response(render_template_string(
+                path.read_text(), site_url=site_url, game_schema=game_schema(site_url)))
+            response.add_etag()
+            return response.make_conditional(request)
     return "index.html is missing from the deployment.", 500
+
+
+@app.get("/index.html")
+@app.get("/static/index.html")
+def duplicate_index():
+    return redirect("/", code=301)
+
+
+@app.get("/robots.txt")
+def robots():
+    body = "User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /health\n"
+    if public_site_url():
+        body += "Sitemap: " + public_site_url() + "/sitemap.xml\n"
+    return app.response_class(body, mimetype="text/plain")
+
+
+@app.get("/sitemap.xml")
+def sitemap():
+    site_url = public_site_url()
+    if not site_url:
+        response = app.response_class("Set SITE_URL to the public site origin to enable the sitemap.\n", status=503, mimetype="text/plain")
+        response.headers["X-Robots-Tag"] = "noindex"
+        return response
+    body = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            '<url><loc>' + xml_escape(site_url + "/") + '</loc></url></urlset>')
+    return app.response_class(body, mimetype="application/xml")
 
 
 @app.get("/health")
 def health():
-    return "ok"
+    response = make_response("ok")
+    response.headers["X-Robots-Tag"] = "noindex"
+    return response
 
 
 if __name__ == "__main__":

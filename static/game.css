@@ -874,3 +874,13 @@ body[data-eliminated="true"]::before {
   background-position: center;
   background-repeat: no-repeat;
 }
+
+/* Public game introduction stays readable before JavaScript starts. */
+.opening-description { color: var(--muted); max-width: 44rem; }
+.game-overview { margin-top: 12px; }
+.game-overview p, .game-overview ol { margin: 0; }
+.game-overview ol { padding-left: 1.4rem; }
+.game-overview li + li { margin-top: 8px; }
+
+.skip-link { position: fixed; top: 8px; left: 8px; z-index: 1000; transform: translateY(-180%); padding: 12px 18px; border-radius: 8px; background: var(--ink); color: var(--bg); }
+.skip-link:focus { transform: translateY(0); }
