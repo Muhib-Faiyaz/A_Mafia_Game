@@ -657,7 +657,7 @@ function openMenu() {
   const active = state && ["day", "night"].includes(state.phase),
     host = state?.me.host;
   $("#menu-body").innerHTML =
-    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">“It’s In The Fog” by Darren Curtis loops throughout every turn. Sound effects share this volume and mute control. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Session scoring</summary><p>Each Mafia member gets 1 point for a Mafia win. Surviving town members get 1 for a town win. Doctors earn 1 for each actual rescue, and Detectives earn 1 for each different Mafia member correctly identified.</p><p>Points appear only after the game ends. Totals stay with the player through restarts. Restarting an unfinished game discards its unclaimed points.</p></details><details class="music-credits"><summary>Music credits</summary><p><a href="https://breakingcopyright.com/song/darren-curtis-its-in-the-fog" target="_blank" rel="noopener noreferrer">It's In The Fog</a> by <a href="https://www.youtube.com/user/DesperateMeasurez" target="_blank" rel="noopener noreferrer">Darren Curtis</a> | Creative Commons (BY 3.0) | <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">License</a></p><p>Music powered by <a href="https://breakingcopyright.com" target="_blank" rel="noopener noreferrer">BreakingCopyright</a>. Converted to MP3 for playback; loops in game.</p><a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">Full credits ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
+    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">“It’s In The Fog” by Darren Curtis loops throughout every turn. Sound effects share this volume and mute control. Music fades in when the site opens, or on your first interaction if the browser blocks autoplay. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Session scoring</summary><p>Each Mafia member gets 1 point for a Mafia win. Surviving town members get 1 for a town win. Doctors earn 1 for each actual rescue, and Detectives earn 1 for each different Mafia member correctly identified.</p><p>Points appear only after the game ends. Totals stay with the player through restarts. Restarting an unfinished game discards its unclaimed points.</p></details><details class="music-credits"><summary>Music credits</summary><p><a href="https://breakingcopyright.com/song/darren-curtis-its-in-the-fog" target="_blank" rel="noopener noreferrer">It's In The Fog</a> by <a href="https://www.youtube.com/user/DesperateMeasurez" target="_blank" rel="noopener noreferrer">Darren Curtis</a> | Creative Commons (BY 3.0) | <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">License</a></p><p>Music powered by <a href="https://breakingcopyright.com" target="_blank" rel="noopener noreferrer">BreakingCopyright</a>. Converted to MP3 for playback; loops in game.</p><a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">Full credits ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
   $("#menu-music").onclick = async () => {
     await music.toggle();
     $("#menu-music").textContent =
@@ -678,14 +678,14 @@ function confirmHostAction(action) {
   };
   $("#cancel-host").onclick = openMenu;
 }
-// Darren Curtis, CC BY 3.0; decoded only after a deliberate user tap.
+// Darren Curtis, CC BY 3.0; autoplay follows browser audio permissions.
 // Sources, license and checksums: /static/audio/sources.json and CREDITS.md.
 const SOUNDTRACK = "/static/audio/its-in-the-fog.mp3";
 const SOUNDTRACKS = Object.fromEntries(
-  ["mafia", "detective", "voting", "doctor", "discussion"].map((mode) => [mode, SOUNDTRACK]),
+  ["ambient", "mafia", "detective", "voting", "doctor", "discussion"].map((mode) => [mode, SOUNDTRACK]),
 );
 const music = {
-  enabled: false,
+  enabled: true,
   volume: 0.3,
   context: null,
   bus: null,
@@ -695,26 +695,36 @@ const music = {
   requestedTrack: "",
   trackVersion: 0,
   voices: new Set(),
-  async toggle() {
+  init() {
+    if (this.context) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) throw Error("Audio is unavailable in this browser.");
+    this.context = new AC();
+    this.bus = this.context.createGain();
+    this.bus.gain.setValueAtTime(0, this.context.currentTime);
+    const limiter = this.context.createDynamicsCompressor();
+    limiter.threshold.value = -18;
+    limiter.ratio.value = 8;
+    this.bus.connect(limiter);
+    limiter.connect(this.context.destination);
+    this.context.addEventListener("statechange", () => this.sync());
+  },
+  start() {
+    if (!this.enabled) return;
     try {
-      if (!this.context) {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) throw Error("Audio is unavailable in this browser.");
-        this.context = new AC();
-        this.bus = this.context.createGain();
-        const limiter = this.context.createDynamicsCompressor();
-        limiter.threshold.value = -18;
-        limiter.ratio.value = 8;
-        this.bus.connect(limiter);
-        limiter.connect(this.context.destination);
-      }
-      this.enabled = !this.enabled;
-      if (this.enabled) await this.context.resume();
+      this.init();
+      // resume() can stay pending until a gesture; do not block initialization.
+      this.context.resume().then(() => this.sync()).catch(() => {});
       this.sync();
     } catch (e) {
       this.enabled = false;
-      toast("Could not start music. Tap the music button to try again.");
+      this.updateButton();
     }
+  },
+  async toggle() {
+    this.enabled = !this.enabled;
+    if (this.enabled) this.start();
+    else this.sync();
     this.updateButton();
   },
   updateButton() {
@@ -782,7 +792,8 @@ const music = {
   },
   syncTrack(mode) {
     const path =
-      this.enabled && !document.hidden ? SOUNDTRACKS[mode] || "" : "";
+      this.enabled && !document.hidden && this.context?.state === "running"
+        ? SOUNDTRACKS[mode] || "" : "";
     if (path === this.requestedTrack) return;
     this.requestedTrack = path;
     const version = ++this.trackVersion;
@@ -801,7 +812,7 @@ const music = {
         source.buffer = buffer;
         source.loop = true;
         gain.gain.setValueAtTime(0, this.context.currentTime);
-        gain.gain.linearRampToValueAtTime(0.9, this.context.currentTime + 0.7);
+        gain.gain.linearRampToValueAtTime(0.9, this.context.currentTime + 2);
         source.connect(gain);
         gain.connect(this.bus);
         const voice = { path, source, gain, stopping: false };
@@ -897,7 +908,7 @@ const music = {
           ? state.voting
             ? "voting"
             : "discussion"
-          : "";
+          : !state || state.phase === "lobby" ? "ambient" : "";
     if (this.bus)
       this.bus.gain.setTargetAtTime(
         this.enabled && !document.hidden ? this.volume : 0,
@@ -936,6 +947,13 @@ document.addEventListener("visibilitychange", () => {
   music.sync();
   if (!document.hidden) poll(true);
 });
+// Retry blocked autoplay from a real gesture; an explicit mute stays muted.
+for (const event of ["click", "touchend", "keydown"]) {
+  document.addEventListener(event, () => {
+    if (music.enabled && music.context?.state !== "running") music.start();
+  });
+}
+music.start();
 render();
 poll();
 setInterval(() => poll(), 1200);

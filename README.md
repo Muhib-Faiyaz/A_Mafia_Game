@@ -44,7 +44,7 @@ to the lobby to change settings.
 
 Tap the music button to enable **[It's In The Fog](https://breakingcopyright.com/song/darren-curtis-its-in-the-fog)** by **[Darren Curtis](https://www.youtube.com/user/DesperateMeasurez)**, licensed under **[Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/)**. Music powered by [BreakingCopyright](https://breakingcopyright.com).
 
-The uploaded recording is hosted locally and converted to 128 kbps MP3 for browser playback. It loops continuously across turns, loads only after sound is enabled, and shares volume and mute controls with the synthesized death and rescue effects. Playback pauses in hidden tabs and stops at game end. Mobile browsers require an initial tap. Full attribution, conversion details, and a source checksum are in [`static/audio/CREDITS.md`](static/audio/CREDITS.md) and `static/audio/sources.json`.
+The uploaded recording is hosted locally and converted to 128 kbps MP3 for browser playback. It attempts to start when the site opens with a two-second fade-in, plays on the landing page and in the lobby, loops continuously across turns, and shares volume and mute controls with the synthesized death and rescue effects. Playback pauses in hidden tabs and stops at game end. Browsers that block audible autoplay require a first tap, click, or keypress; explicit mute is respected. Full attribution, conversion details, and a source checksum are in [`static/audio/CREDITS.md`](static/audio/CREDITS.md) and `static/audio/sources.json`.
 
 Every turn has its own background: crimson Mafia, teal Doctor, blue Detective,
 amber discussion, and purple voting, plus distinct ending screens.
