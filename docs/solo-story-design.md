@@ -1,105 +1,120 @@
-# Solo story mode
+# Seven solo mysteries
 
-## Writing method and source
+Solo mode has seven original thriller cases, each with six witnesses, one fixed
+Mafia culprit, a Doctor, and the human Detective seat. The case timeline and
+solution are authored together. Replaying a case preserves its culprit; a new
+case offers a new mystery. Online rooms retain their configurable roles and
+social-deduction dialogue.
 
-The user requested 20 possible novel-like scenarios and a dedicated solo mode.
-The MIT-licensed `novel-writing` package from
-https://github.com/wgwtest/novel-writing was downloaded again at commit
-`838729695148008d42c01bd7c3c0c1a5c15de830` and compared against the existing
-unmodified local package. Its license and source record are retained in
-`.agents/skills/novel-writing/`. No duplicate skill installation was needed.
-The skill is craft guidance, not a story generator or runtime dependency.
-The 20 openings and 120 character profiles are original content authored for
-this game, stored in `data/solo_scenarios.json`.
+## Writing skill and craft
 
-The planning, character introductions, cognition, causality, dialogue, structure,
-style, and realism references guided the work:
+The MIT-licensed [novel-writing skill](../.agents/skills/novel-writing/SKILL.md)
+was downloaded from https://github.com/wgwtest/novel-writing at the current
+upstream commit `838729695148008d42c01bd7c3c0c1a5c15de830` and verified against
+the installed package. License and provenance remain alongside the skill.
+Its planning, cognition, dialogue, character introduction, causality, structure,
+realism, and revision references guided this rewrite. The prose is original;
+it does not reproduce or claim to imitate a particular novelist.
 
-- **Main task:** turn an unfamiliar location into a bounded social crisis in
-  which questioning and collective choices matter.
-- **Secondary task:** introduce distinctive people with ordinary interests that
-  can explain evasiveness independently of guilt.
-- **Point of view:** the human Detective sees the initial scene and public
-  character descriptions. Personal accounts are reports, not verified facts.
-- **Required characters:** the player and six identifiable, named NPCs, each
-  anchored by an occupation, visible trait, prior account, and separate secret.
-- **Required information:** the setting, inciting death, criminal interest,
-  concrete obstacle to outside help, and why the group must keep evidence safe.
-- **Forbidden mistakes:** identifying Mafia through a character's fixed profile;
-  leaking one NPC's secrets to another; inventing retrospective clues; repeating
-  an opening-night alibi as a newly established later-night fact; releasing all
-  private prose to the browser; claiming a small rules system can improvise a
-  whole novel.
+The narrative task is to make an account change the reader's next question.
+The secondary task is to distinguish moral failure from the murder itself.
+The player's viewpoint is limited to introductions, spoken testimony, inspected
+exhibits, and their private Detective findings. Each witness has a stable role,
+relationship, account, observation, private shame, and defensive response.
+Author-only fields contain the culprit, chronology, comparisons, and solution.
 
-Openings move from a concrete disruption to discovered stakes and isolation,
-then close on a changed social arrangement around an evidence object. Character
-entry details distinguish their priorities. Private admissions require pressure
-or trust; they do not become automatic role reveals. Factions are dealt after
-the briefing independently of names, occupations, and innocent secrets.
+Required information: an identifiable victim, a reason for the meeting, an
+obstacle to outside help, the criminal interest at stake, and independent ways
+to test the culprit's account. Forbidden shortcuts: automatic villain
+confessions, evidence that changes to fit randomized roles, invented facts in
+answer to unsupported prompts, identical alibis at each dawn, ghost dialogue,
+and a definitive accusation based on one ambiguous observation.
 
-## Product flow
+## The cases
 
-1. The initial page has Online play and Solo run choices; public game information
-   remains present in the server response for search and no-JavaScript readers.
-2. Solo asks for an alias, selects one case, and creates a paused private room.
-   The opening and cast are readable without consuming a night timer.
-3. Begin starts the Detective plus six bots. Two bots are Mafia, one has the
-   Doctor ability, and three are Villagers. The Detective is protected from vote-outs and ordinary night attacks.
-   On a final-chance night (town = Mafia + 1), the Detective can be attacked if
-   no surviving Mafia member has been correctly investigated. A correct finding
-   before dawn restores the protection; Doctor rescues still apply. Identified
-   Mafia who are already eliminated do not count. Mafia still win at parity.
-   Night and discussion timers follow normal rules.
-4. Public case information stays in a dossier during the game. Direct questions
-   draw from each NPC's own authored account; accusations and defenses still
-   use the existing persuasion model.
-5. Eliminations and the final account reference the selected case. Replaying
-   redeals roles with the same cast and retains room scores. Choosing another
-   case or leaving as the lead deletes the old solo room and starts fresh.
-6. The lead can copy a private invitation link for up to two friends. Friends
-   have separate sessions and a private team chat, sharing one Detective seat,
-   investigation result, readiness vote, ballot, and score. They do not change
-   the cast size or win thresholds. Any teammate can confirm a shared action;
-   only the lead can speak in town chat or manage the game. A friend leaving
-   frees a seat and does not close the case.
+| Case | Central question | Sources that can be compared |
+| --- | --- | --- |
+| The Ninth Bell | Why does an old distress call contain tonight's sound? | Bell timing, roof access, a speaking tube, reel stock |
+| A Room Kept Warm | Why is an empty hospice room heated during an evacuation? | A borrowed key, an empty chair, luggage tracks, an altered transfer |
+| The Witness in Carriage Six | Can a stamped receipt establish an alibi? | Departure signal, porter records, a spare key, a missing journey |
+| What the River Returned | Which building was actually surveyed? | A displaced door, drain plans, a missing fold, a surviving impression |
+| The Last Dress Rehearsal | Who could have heard a cue that was never called? | A disconnected monitor, rehearsal audio, a gallery route, a brake pin |
+| The Winter Seed | Is a continuous label proof of a continuous sample? | Envelope stock, a duplicate label, arrival records, an omitted handover |
+| The House Below the Tide | When did a shared memory become a manufactured account? | Original notes, adjacent photographs, a hire carbon, a repeated omitted journey |
 
-Online room rules and the ordinary bot dialogue remain available through Online
-play. No external LLM or new service is required. Live state is still in memory,
-so a server restart ends runs. Browser reload resumes the existing session.
+Each case has two independent chains that challenge its culprit, plus a
+comparison that separates an innocent person's wrongdoing from the central
+crime. Comparisons require every supporting item to have been published. The
+culprit answers with an authored qualification or deflection, not a confession.
+The initial murder chronology never changes as later watches and votes occur.
 
-## Knowledge boundaries
+## Runtime conversation and consequences
 
-`solo_story.public_case` explicitly whitelists public case fields. Secrets and
-unspoken alibis are omitted from the browser response. `bot_context` receives
-only the current NPC's private profile, public roster/votes, relationship priors,
-and role-permitted Mafia teammate information. A secret enters public chat only
-when the character actually discloses it; subsequent honesty affects suspicion
-slightly and never establishes innocence. Accounts remain stable across rounds.
+`solo_story.discussion` is a separate solo conversation engine. It uses no
+online dialogue templates. `bot_brain.read_message` is shared only as a parser
+for names, accusations, defenses, and direct address.
 
-Friends are stored separately from `players`. The solo invitation uses an
-unguessable token, validated under the room lock along with the two-friend cap.
-Only the lead's view exposes the invitation link. Each friend receives an
-independent session identity; allowed game actions resolve to the lead's one
-Detective seat. Host controls and public chat reject friend sessions.
-`team_chat` has its own bounded buffer and per-author rate limit, and is never
-added to the public chat history or bot context. Only the lead and invited
-friends receive its messages. Membership and team messages persist on replay;
-room deletion or server restart invalidates the invitation and all sessions.
+- Initial accounts appear once, paced over time. At most two unsolicited
+  observations appear per day. Repeated polls or new days do not replay them.
+- Direct questions can publish an account or an observation. A first request
+  for a secret receives that character's defensive response. Trust or renewed
+  pressure can produce the private admission once.
+- Natural questions about case topics can elicit relevant observations.
+  Inspecting the scene reveals one authored exhibit at a time.
+- Published combinations trigger a witness's comparison and the subject's
+  response. Every line and comparison is remembered for the entire run.
+- Unsupported or exhausted questions return a private interface hint. They do
+  not create a fictitious answer or recycle an accusation.
+- Characters under guard or dead stop speaking. Their signed pre-watch accounts
+  and observations can be read as archived material. Unspoken personal
+  admissions cannot conveniently be recovered from their notes.
 
-## Validation
+Ballots use only public comparisons and the Detective team's explicit claims.
+One unsupported accusation cannot force a chorus of votes; one partial
+comparison plus a player's argument can change the outcome. Two corroborating
+comparisons carry more weight than a single defense. Repeated claims replace
+rather than accumulate. Hidden roles and the private solution are not inputs to
+these beliefs. Private Detective and team-chat findings are never fed into them.
 
-Python tests cover every case, role counts, paused state, privacy before
-publication, blocked joining/settings changes, name collision, random selection,
-context isolation, disclosures, contextual eliminations, and online compatibility.
-Existing game, scoring, phase, bot, and SEO suites also run.
+The Mafia's later target selection reacts to witnesses who publicly supply
+information and corroboration. The Doctor can protect an exposed witness based
+on the same public record. Publishing evidence therefore changes both the
+argument and the next watch's risk. Outcomes include case-specific endings,
+the absent witnesses, the evidence preserved, and the comparisons made. A
+completed game also exposes the fixed solution and chronology for review.
 
-`scripts/check-solo.cjs` checks both mode choices, reading/reloading the briefing,
-mobile and desktop overflow, beginning a real Detective turn, a contextual
-interview, the final account, another case, and the online lobby. The existing
-music, bot chat, phase, and SEO browser checks remain relevant.
-`tests/test_solo_team.py` covers invitation validation and limits, permission and
-knowledge boundaries, single-seat actions and scoring, ordinary-night protection and final-chance vulnerability,
-and room lifecycle. `scripts/check-solo-team.cjs` exercises independent browser
-sessions, shared investigations and readiness, private chat, the friend cap,
-leaving/rejoining, reloads, mobile layout, and closing the shared room. Browser test
-screenshots are local validation artifacts, not shipped game assets.
+## Interface and existing rules
+
+The briefing is untimed. During play, the case dossier retains the opening and
+cast. The case journal offers account, observation, and private-question buttons,
+scene inspection, comparisons, and a durable record beyond the chat buffer.
+The lead can also type questions in town chat. Friends share the journal but
+continue discussing privately and acting through the same Detective seat.
+
+Solo has exactly one Mafia, one Doctor, four Villagers, and the Detective.
+The two-friend cap, one shared ballot, one investigation, shared scoring, and
+lead-only game controls remain. Normal timers apply. The Detective is protected
+from vote-outs and ordinary night attacks. On a final-chance night (two town
+members and one Mafia left), a Detective who has not identified the living Mafia
+can be killed; a correct finding before dawn restores protection. Doctor rescues
+still apply. Removing the sole Mafia ends the case immediately in a town win.
+
+Live state remains in memory. Reloads resume the session; a server restart ends
+it. No external text-generation service or API key is required. These are authored
+interactive mysteries with bounded language handling.
+
+## Validation and editorial checks
+
+Tests cover all seven cases, source references, independent clue chains, hidden
+content, fixed-role replay, aliases, finite dialogue, pressure and trust, archived
+accounts, evidence-dependent ballots, public-information boundaries, and target
+selection. Team, final-night, online game, scoring, and phase tests remain in place.
+`scripts/check-solo-journal.cjs` completes an inquiry through public chat and
+ballots. Browser checks cover the journal controls, evidence persistence, truthful mode
+copy, mobile layout, shared sessions, and existing online flows.
+
+The prose review checks access and timing in each case: a sound cannot establish
+a face; a signature can establish arrival without duration; a label cannot
+establish contents; an old wrongdoing cannot establish the present murder.
+Endings distinguish a solved case from a lost one. Post-verdict explanations
+state hidden history without implying evidence was recovered in a Mafia victory.

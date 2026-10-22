@@ -42,74 +42,62 @@ directly reveal who the killer is, but to convince the town through discussion
 and reasoning. Results remain in the Detective's private case file; the reminder
 is guidance, not an automatic chat filter.
 
-## Online play and solo stories
+## Online play and solo mysteries
 
-The first screen offers **Online play** and **Solo run**. Online play works as
-a conductor for Mafia with friends around the table or online, handling roles,
-night turns, timers, and voting. Solo run is a story-driven Detective mystery
-against six bots, with up to two invited friends helping the same Detective. Solo run chooses one of 20 original, authored mystery openings
-and introduces six named characters before starting any timer. The latest case
-is excluded when choosing another story in the same browser.
+Online play can conduct Mafia with friends around the table or online, handling
+roles, night turns, timers, and voting. **Solo run** chooses one of seven original
+thriller cases and introduces six witnesses before starting any timer. The latest
+case is excluded when choosing another story in the same browser.
 
-You play the Detective, with six NPCs including two randomized Mafia, a Doctor,
-and three Villagers. Their occupations, relationships, and personal secrets do
-not determine their faction. The Detective stays protected from vote-outs. Night protection lifts only on a
-**final-chance night**: the town has exactly one more living member than Mafia,
-and the team has not correctly investigated any surviving Mafia member. The
-Mafia may target the Detective then. A correct investigation of a living Mafia
-member before dawn restores protection, including against an already chosen
-attack; the Doctor can also save the Detective normally. Identifying a Mafia
-member who is already eliminated does not protect you from the remaining Mafia.
-Mafia still win by reaching parity with the town.
-Night and discussion durations are unchanged; the cast and settings stay fixed.
+Each case has **exactly one Mafia**, one Doctor, four Villagers, and your Detective
+seat. Its culprit, accounts, and timeline are fixed so the clues stay consistent.
+Replay preserves that solution; choosing another case gives you a different mystery.
 
-Open **Detective team · Invite friends** in the briefing or during play, then
-copy the invitation link. Up to **two friends** can join before or after the
-first night. They help with the same Detective seat, keeping the cast at seven:
+Use the **case journal** to ask for accounts, ask what witnesses noticed, question
+what they are hiding, inspect the scene, and compare collected evidence. You can
+also type in town chat, using names from your cast:
 
-- One shared investigation per night. The first confirmed target is final,
-  and every teammate receives the same private result and case notes.
-- One shared readiness vote and one ballot. Any teammate can submit a choice;
-  changing a ballot replaces the team's vote while voting remains open.
-- A separate **Detective team chat**, available throughout the case. Bots and
-  town chat never receive these messages. Only the lead speaks in town chat.
-- Start, restart, and end controls remain with the lead. Friends can leave to
-  free a friend seat; closing the case or choosing another story as lead closes
-  the old room for everyone. Reloading resumes each participant's own session.
-
-Treat the invitation link as private: anyone holding it can fill an open friend
-seat. A room code alone cannot join a solo case. Detective points belong to the
-single Detective seat; inviting friends does not multiply points.
-
-The case dossier remains available during play. Ask a character in town chat:
-
-- `@Mara, where were you before the first alarm?`
+- `@Mara, what is your account?`
+- `@Mara, what did you notice?`
 - `@Mara, what are you hiding?`
-- `@Mara, who do you trust?`
-- `@Mara, who are you?`
+- `I trust Mara` or `I suspect Elias`
+- `Inspect the scene` or `Compare the accounts`
 
-Use the actual name in your cast. Characters give their own accounts, protect
-embarrassing personal information, and may disclose it after further questioning
-or a statement of trust. Alibis refer to the first alarm, not newly invented
-night events. Disclosed honesty and pre-existing relationships modestly affect
-other bots' suspicions; neither proves innocence. Up to four additional direct
-player-interview replies per character per day are reserved beyond the ordinary
-six-message bot budget. Results, eliminations, and endings stay within the
-selected case's setting. Replay keeps the cast and redeals Mafia roles; choosing
-another story starts a new room and resets session scores.
+Solo dialogue uses a separate authored story engine. Witnesses remember what
+they said, and repeated questions do not repeat speeches. Trust or renewed
+pressure can unlock an admission. Independent accounts and exhibits can expose
+a contradiction; an innocent person's shame can also explain misleading behavior.
+Comparisons change bot votes, and a publicly useful witness can become the
+killer's next target. Your journal preserves evidence after it leaves the chat
+buffer. Inactive witnesses contribute only their recorded notes, never new speech.
 
-These are authored openings and bounded character interactions, not full novels
-or unrestricted AI improvisation. No external AI service or credentials are
-needed. In-memory progress survives a page reload but not a server restart.
+The seven cases are **The Ninth Bell**, **A Room Kept Warm**, **The Witness in
+Carriage Six**, **What the River Returned**, **The Last Dress Rehearsal**,
+**The Winter Seed**, and **The House Below the Tide**. Each has its own setting,
+crime, chronology, witnesses, and endings. A completed game explains the solution
+and records the witnesses and evidence your choices preserved.
 
-The MIT-licensed [novel-writing skill](.agents/skills/novel-writing/SKILL.md) was
-re-downloaded and verified at its pinned revision, then applied to the original
-scenario prose and character knowledge model. See [solo story design and source
-notes](docs/solo-story-design.md) and `data/solo_scenarios.json`.
+The Detective stays protected from vote-outs and ordinary night attacks. On a
+**final-chance night**—two town members and the one Mafia remain—you can be killed
+if your team has not identified the Mafia. A correct investigation before dawn
+restores protection; the Doctor can also save you. Mafia still win at parity.
 
-## Talking with bots
+Open **Detective team · Invite friends** to invite up to **two friends**. They share
+one investigation, readiness vote, ballot, score, and private case file. Team chat
+is separate from town chat and never reaches bots. Only the lead speaks in town
+chat or starts, restarts, and ends the case. A friend leaving frees a seat; the
+lead closing the case ends it for everyone. Treat the invitation link as private.
 
-Bots now use a small local dialogue and voting model rather than random chat
+These are authored interactive mysteries with bounded language handling. No
+external AI service or credentials are needed. Browser reloads resume progress;
+a server restart ends in-memory runs. The downloaded and verified
+[novel-writing skill](.agents/skills/novel-writing/SKILL.md) guided the rewrite.
+See [story design and sources](docs/solo-story-design.md) for the knowledge model,
+craft rules, and validation.
+
+## Talking with bots in online rooms
+
+Online bots use a small local dialogue and voting model rather than random chat
 and random daytime votes. They can accuse, defend themselves, disagree, ask for
 reasons, and respond to players or other bots. No external AI service or API key
 is required; this is a basic rule-based model, not unrestricted natural-language
@@ -151,7 +139,8 @@ inside Mafia chat. Town chat and private Mafia chat remain separate. Chat
 supports `/vote name`; Town chat also supports `/skip` during daytime voting.
 
 The top-right menu lets the host **end the game** (reveal roles without declaring
-a winner) or **restart** (deal fresh roles while retaining players and settings).
+a winner) or **restart** (deal fresh online roles, or replay the fixed solo case,
+while retaining players and settings).
 Both actions ask for confirmation. After a game ends, the host can also return
 to the lobby to change settings.
 
@@ -225,6 +214,7 @@ node scripts/check-phase-flow.cjs
 node scripts/check-bot-chat.cjs
 node scripts/check-solo.cjs
 node scripts/check-solo-team.cjs
+node scripts/check-solo-journal.cjs
 ```
 
 The regression suite covers settings, role counts, split and unanimous votes,

@@ -22,6 +22,7 @@ async function post(route, body) {
   identity = await page.evaluate(() => session);
   const firstCase = await page.evaluate(() => state.scenario.id);
   assert.equal(await page.locator('.case-person').count(),6);
+  assert.equal(await page.evaluate(() => state.settings.mafia_count),1);
   assert.equal(await page.locator('#clock').count(),0);
   for (const width of [390,1440]) {
    await page.setViewportSize({width,height:900});
@@ -45,7 +46,13 @@ async function post(route, body) {
   const npc = await page.evaluate(() => state.scenario.cast.find(c => state.players.find(p => p.id === c.id).alive));
   await page.locator('#input-town').fill(`@${npc.name}, where were you before the first alarm?`);
   await page.locator('.composer[data-channel=town] button').click();
-  await page.waitForFunction(name => state.chat.some(c => c.n === name && c.t.includes('my account')),npc.name);
+  await page.waitForFunction(name => state.scenario.journal.some(e => e.source === name && e.kind === 'account'),npc.name);
+  await page.waitForFunction(() => !busy);
+  await page.waitForTimeout(900); // Respect the public-chat rate limit between questions.
+  await page.locator('#case-journal > summary').click();
+  await page.getByRole('button',{name:'Inspect the scene',exact:true}).click();
+  await page.waitForFunction(() => state.scenario.journal.some(e=>e.kind==='document'));
+  assert.equal(await page.locator('#case-solution').count(),0);
   await page.locator('#case-dossier').click();
   assert.equal(await page.locator('#case-dossier').evaluate(e => e.open),true);
   await page.screenshot({path:'/tmp/mafia-solo-play.png',fullPage:true});

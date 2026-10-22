@@ -9,3 +9,9 @@ Also applied to the 20 original scenario openings and character accounts in
 `data/solo_scenarios.json`: concrete introductions, causal isolation, distinct
 private knowledge, and dialogue that changes decisions. The skill provides
 craft guidance; it is not a runtime AI service or source of the original prose.
+
+Re-downloaded from the same current upstream commit for the seven-case rewrite.
+Verified all upstream skill and reference files against the installed package.
+Applied planning, character knowledge, dialogue, causal scenes, and revision
+checks to the fixed timelines, evidence chains, witness accounts, and endings.
+The seven-case catalog replaces the earlier twenty-scenario catalog.

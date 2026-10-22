@@ -226,6 +226,8 @@ def record_death(room, pid, cause):
     tone, template = stories[index]
     story = (solo_story.death_story(room, player["name"], cause) if room.get("mode") == "solo"
              else template.format(name=player["name"]))
+    if room.get("mode") == "solo":
+        tone = "eerie"
     event = dict(id=uuid.uuid4().hex, day=room["day"], name=player["name"],
                  player_id=pid, cause=cause, tone=tone, story=story)
     room.setdefault("death_events", []).append(event)
@@ -382,6 +384,8 @@ def bot_context(room, pid):
 
 
 def bot_discussion(room):
+    if room.get('mode') == 'solo':
+        return solo_story.discussion(room, lambda name, text, kind='msg': chat_add(room, 'town', name, text, kind))
     bots = [i for i in alive(room) if room["players"][i]["bot"]]
     now = time.time()
     contexts = {pid: bot_context(room, pid) for pid in bots}
@@ -422,8 +426,7 @@ def bot_discussion(room):
     for _, pid, pending in candidates[:2]:
         brain = room['players'][pid]['brain']
         text = bot_brain.reply(brain, contexts[pid], pending)
-        text, disclosure = solo_story.roleplay_reply(brain, contexts[pid], pending, text)
-        chat_add(room, 'town', room['players'][pid]['name'], text, disclosure=disclosure)
+        chat_add(room, 'town', room['players'][pid]['name'], text)
         brain['posts'] += 1
         brain['opened'] = True
         if pending:
@@ -451,10 +454,12 @@ def run_bots(room):
                     continue
                 if r == "mafia" and i not in n["mafia"]:
                     choices = [x for x in alive(room) if P[x]["role"] != "mafia" and not night_protected_player(room, x)]
-                    mafia_vote(room, i, random.choice(choices))
+                    target = solo_story.night_target(room, i, choices) if room.get('mode') == 'solo' else random.choice(choices)
+                    mafia_vote(room, i, target)
                     moved = True
                 elif r in ("doctor", "detective") and not n[r]:
-                    target = random.choice([x for x in alive(room) if x != i or r == "doctor"])
+                    choices = [x for x in alive(room) if x != i or r == "doctor"]
+                    target = solo_story.night_target(room, i, choices) if room.get('mode') == 'solo' else random.choice(choices)
                     if r == "detective":
                         investigate(room, i, target)
                     else:
@@ -475,10 +480,10 @@ def run_bots(room):
                         brain = P[i].setdefault('brain', bot_brain.new_brain())
                         public_messages = max((c.get('seq', 0) for c in room['chat'] if c['ch'] == 'town' and c['k'] == 'msg' and c.get('speaker')), default=0)
                         human_votes = tuple(sorted((voter, target) for voter, target in room['votes'].items() if not P[voter]['bot']))
-                        version = (room['day'], public_messages, human_votes)
+                        version = (room['day'], public_messages, human_votes, len(room.get('story', {}).get('connections', {})))
                         if i not in room['votes'] or brain['vote_version'] != version:
                             brain['vote_version'] = version
-                            target = bot_brain.choose_target(brain, bot_context(room, i))
+                            target = solo_story.vote_target(room, i) if room.get('mode') == 'solo' else bot_brain.choose_target(brain, bot_context(room, i))
                             if room['votes'].get(i) != target:
                                 cast_vote(room, i, target)
                                 moved = True
@@ -581,23 +586,15 @@ def create():
             room['mode'] = 'solo'
             room.update(lead_pid=pid, friends={}, team_chat=[], invite_token=secrets.token_urlsafe(24))
             room['scenario'] = solo_story.choose(d.get('previous_scenario'))
-            room['settings'] = dict(special_roles=True, mafia_count=2)
-            cast = []
+            room['settings'] = dict(special_roles=True, mafia_count=1)
             for character in room['scenario']['cast']:
-                alias = character['name']
-                if alias.casefold() == name.casefold():
-                    original = alias
-                    alias += ' Vale'
-                    room['scenario']['opening'] = [re.sub(r'\b' + re.escape(original) + r'\b', alias, paragraph) for paragraph in room['scenario']['opening']]
-                npc = add_player(room, alias, bot=True)
-                room['players'][npc]['character'] = dict(character, name=alias)
-                cast.append(npc)
-            for index, npc in enumerate(cast):
-                friend, rival = cast[(index + 1) % 6], cast[(index + 3) % 6]
-                profile = room['players'][npc]['character']
-                profile['relationship'] = (f"{room['players'][friend]['name']} vouched for me at the first meeting; "
-                                           f"{room['players'][rival]['name']} questioned my account.")
-                room['players'][npc]['relationships'] = {friend: -0.25, rival: 0.25}
+                if character['name'].casefold() == name.casefold():
+                    room['scenario'] = solo_story.rename(room['scenario'], character['name'], character['name'] + ' Vale')
+                    break
+            for character in room['scenario']['cast']:
+                npc = add_player(room, character['name'], bot=True)
+                room['players'][npc]['character'] = dict(character)
+            solo_story.initialize(room)
     return jsonify(code=code, pid=pid)
 
 
@@ -719,7 +716,7 @@ def settings():
         if not room["players"][pid]["host"] or room["phase"] != "lobby":
             raise Bad("Only the host can change lobby settings.")
         if room.get("mode") == "solo":
-            raise Bad("Solo stories use a Detective, a Doctor, and two Mafia.")
+            raise Bad("Solo stories use one Detective, one Doctor, and exactly one Mafia.")
         special = d.get("special_roles", room["settings"]["special_roles"])
         count = d.get("mafia_count", room["settings"]["mafia_count"])
         if type(special) is not bool:
@@ -752,10 +749,12 @@ def start_game(room):
     if m * 2 >= n:
         raise Bad("Mafia must be fewer than half the players. Update the lobby settings.")
     if room.get('mode') == 'solo':
-        # Occupations and innocent secrets never determine hidden factions.
-        npc_roles = ['mafia', 'mafia', 'doctor', 'town', 'town', 'town']
-        random.shuffle(npc_roles)
-        roles = ['detective' if not p['bot'] else npc_roles.pop() for p in P.values()]
+        # The culprit and Doctor belong to the authored case, so the evidence stays true.
+        case = room['scenario']
+        room['settings']['mafia_count'] = 1
+        roles = ['detective' if not p['bot'] else
+                 'mafia' if p['character']['key'] == case['culprit'] else
+                 'doctor' if p['character']['key'] == case['doctor'] else 'town' for p in P.values()]
     else:
         sp = [r for k, r in enumerate(("doctor", "detective")) if room["settings"]["special_roles"] and n - m - k > 1]
         roles = ["mafia"] * m + sp + ["town"] * (n - m - len(sp))
@@ -764,6 +763,7 @@ def start_game(room):
         p.update(role=r, brain=bot_brain.new_brain(), alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
     room.update(day=0, log=[], winner=None, chat=[], chat_seq=0, bot_last_spoke=0, bot_human_replied=0, said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
     if room.get('mode') == 'solo':
+        solo_story.initialize(room)
         say(room, room['scenario']['title'] + ': ' + room['scenario']['pressure'])
     say(room, "The game begins. Night falls on the town.")
     start_night(room)
@@ -882,8 +882,10 @@ def chat():
                 raise Bad("Commands: /vote name, or /skip (when voting is open).")
         else:
             chat_add(room, ch, p["name"], text)
+        if room.get('mode') == 'solo':
+            room['story']['feedback'] = ''
         run_bots(room)
-        return jsonify(ok=True)
+        return jsonify(ok=True, feedback=room.get('story', {}).get('feedback', ''))
 
 
 @app.post("/api/tally")
@@ -903,6 +905,8 @@ def reset():
         room, pid = ctx(request.get_json(force=True))
         if not room["players"][pid]["host"] or room["phase"] != "over":
             raise Bad("Only the host can restart.")
+        if room.get('mode') == 'solo':
+            solo_story.initialize(room)
         room.update(phase="lobby", day=0, log=[], votes={}, discussion_ready=set(), voting_announced=False, winner=None, chat=[], said=set(), ended=False, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
         for p in room["players"].values():
             p.update(role=None, brain=bot_brain.new_brain(), alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)

@@ -36,7 +36,7 @@ class SoloTeamTests(unittest.TestCase):
         self.post('start', self.lead)
         self.assertEqual(len(game.alive(self.room)), 7)
         self.assertEqual(len(game.alive(self.room, 'detective')), 1)
-        self.assertEqual(len(game.alive(self.room, 'mafia')), 2)
+        self.assertEqual(len(game.alive(self.room, 'mafia')), 1)
 
     def test_aliases_are_distinct_from_cast_and_other_team_members(self):
         for name in ['lead', next(p['name'] for p in self.room['players'].values() if p['bot'])]:
@@ -193,14 +193,14 @@ class SoloTeamTests(unittest.TestCase):
         self.join('Two')
         self.post('start', self.lead)
         innocents = [pid for pid in game.alive(self.room) if pid != self.lead['pid'] and self.room['players'][pid]['role'] != 'mafia']
-        for pid in innocents[:3]:
+        for pid in innocents:
             game.record_death(self.room, pid, 'vote')
         self.assertTrue(game.check_win(self.room))
         self.assertEqual(self.room['winner'], 'mafia')
         self.assertTrue(self.room['players'][self.lead['pid']]['alive'])
         self.assertEqual(self.room['players'][self.lead['pid']]['round_points'], 0)
 
-    def final_chance_night(self, mafia_count=2):
+    def final_chance_night(self, mafia_count=1):
         self.post('start', self.lead)
         mafia = game.alive(self.room, 'mafia')
         for pid in mafia[mafia_count:]:
@@ -260,10 +260,10 @@ class SoloTeamTests(unittest.TestCase):
         self.assertEqual(self.room['winner'], 'mafia')
         self.assertFalse(self.room['players'][self.lead['pid']]['alive'])
 
-    def test_prior_surviving_finding_protects_but_eliminated_mafia_does_not(self):
+    def test_prior_surviving_finding_protects_but_stale_finding_does_not(self):
         mafia = self.final_chance_night(mafia_count=1)
         lead = self.lead['pid']
-        eliminated = next(pid for pid, p in self.room['players'].items() if p['role'] == 'mafia' and not p['alive'])
+        eliminated = next(pid for pid, p in self.room['players'].items() if not p['alive'])
         self.room['players'][lead]['investigated'].add(eliminated)
         self.assertFalse(game.night_protected_player(self.room, lead))
         self.room['players'][lead]['investigated'].add(mafia[0])
