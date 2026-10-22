@@ -44,15 +44,23 @@ is guidance, not an automatic chat filter.
 
 ## Online play and solo stories
 
-The first screen offers **Online play** (the existing create/join room workflow)
-and **Solo run**. Solo run chooses one of 20 original, authored mystery openings
+The first screen offers **Online play** and **Solo run**. Online play works as
+a conductor for Mafia with friends around the table or online, handling roles,
+night turns, timers, and voting. Solo run is a story-driven Detective mystery
+against six bots, with up to two invited friends helping the same Detective. Solo run chooses one of 20 original, authored mystery openings
 and introduces six named characters before starting any timer. The latest case
 is excluded when choosing another story in the same browser.
 
 You play the Detective, with six NPCs including two randomized Mafia, a Doctor,
 and three Villagers. Their occupations, relationships, and personal secrets do
-not determine their faction. The Detective cannot be killed or voted out during
-any solo round, though Mafia can still win by reaching parity with the town.
+not determine their faction. The Detective stays protected from vote-outs. Night protection lifts only on a
+**final-chance night**: the town has exactly one more living member than Mafia,
+and the team has not correctly investigated any surviving Mafia member. The
+Mafia may target the Detective then. A correct investigation of a living Mafia
+member before dawn restores protection, including against an already chosen
+attack; the Doctor can also save the Detective normally. Identifying a Mafia
+member who is already eliminated does not protect you from the remaining Mafia.
+Mafia still win by reaching parity with the town.
 Night and discussion durations are unchanged; the cast and settings stay fixed.
 
 Open **Detective team · Invite friends** in the briefing or during play, then

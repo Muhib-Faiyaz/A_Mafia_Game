@@ -44,8 +44,11 @@ the briefing independently of names, occupations, and innocent secrets.
 2. Solo asks for an alias, selects one case, and creates a paused private room.
    The opening and cast are readable without consuming a night timer.
 3. Begin starts the Detective plus six bots. Two bots are Mafia, one has the
-   Doctor ability, and three are Villagers. The Detective is protected from both
-   night attacks and vote-outs throughout the case; Mafia can still win at parity.
+   Doctor ability, and three are Villagers. The Detective is protected from vote-outs and ordinary night attacks.
+   On a final-chance night (town = Mafia + 1), the Detective can be attacked if
+   no surviving Mafia member has been correctly investigated. A correct finding
+   before dawn restores the protection; Doctor rescues still apply. Identified
+   Mafia who are already eliminated do not count. Mafia still win at parity.
    Night and discussion timers follow normal rules.
 4. Public case information stays in a dossier during the game. Direct questions
    draw from each NPC's own authored account; accusations and defenses still
@@ -95,7 +98,7 @@ mobile and desktop overflow, beginning a real Detective turn, a contextual
 interview, the final account, another case, and the online lobby. The existing
 music, bot chat, phase, and SEO browser checks remain relevant.
 `tests/test_solo_team.py` covers invitation validation and limits, permission and
-knowledge boundaries, single-seat actions and scoring, later-night immunity,
+knowledge boundaries, single-seat actions and scoring, ordinary-night protection and final-chance vulnerability,
 and room lifecycle. `scripts/check-solo-team.cjs` exercises independent browser
 sessions, shared investigations and readiness, private chat, the friend cap,
 leaving/rejoining, reloads, mobile layout, and closing the shared room. Browser test

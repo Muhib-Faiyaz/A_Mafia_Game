@@ -100,7 +100,7 @@ class SoloTests(unittest.TestCase):
         self.assertIn(npc, other['brain']['disclosed'])
         self.assertNotIn('secret', state['scenario']['cast'][0])
 
-    def test_detective_is_protected_on_every_solo_night(self):
+    def test_detective_is_protected_on_ordinary_solo_nights_regardless_of_round_number(self):
         identity = self.create()
         room = game.rooms[identity['code']]
         self.post('start', identity)

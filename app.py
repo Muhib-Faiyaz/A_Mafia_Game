@@ -55,6 +55,16 @@ def protected_player(room, pid):
     return room.get('mode') == 'solo' and pid == room.get('lead_pid')
 
 
+def night_protected_player(room, pid):
+    """Solo protection lifts on a decisive night without a living Mafia finding."""
+    if not protected_player(room, pid):
+        return False
+    mafia = set(alive(room, 'mafia'))
+    final_night = room['phase'] == 'night' and mafia and len(alive(room)) == 2 * len(mafia) + 1
+    found = mafia & room['players'][pid].get('investigated', set())
+    return not (final_night and not found)
+
+
 def team_message(room, name, text, kind='msg'):
     room['team_seq'] = room.get('team_seq', 0) + 1
     room.setdefault('team_chat', []).append(dict(n=name, t=text, k=kind, seq=room['team_seq']))
@@ -200,7 +210,8 @@ def choose_death_background(room):
 def record_death(room, pid, cause):
     """Publish one shared story only when an elimination actually happens."""
     player = room["players"][pid]
-    if not player["alive"] or protected_player(room, pid):
+    protected = night_protected_player(room, pid) if cause == 'night' else protected_player(room, pid)
+    if not player["alive"] or protected:
         return
     player["alive"] = False
     player["death_background"] = choose_death_background(room)
@@ -246,7 +257,7 @@ def resolve_night(room):
         return
     n["resolved"] = True
     victim = n["victim"]
-    if protected_player(room, victim):
+    if night_protected_player(room, victim):
         victim = n["victim"] = None
     if victim and victim != n["doctor"]:
         record_death(room, victim, "night")
@@ -439,7 +450,7 @@ def run_bots(room):
                 if not p["bot"] or r != step:
                     continue
                 if r == "mafia" and i not in n["mafia"]:
-                    choices = [x for x in alive(room) if P[x]["role"] != "mafia" and not protected_player(room, x)]
+                    choices = [x for x in alive(room) if P[x]["role"] != "mafia" and not night_protected_player(room, x)]
                     mafia_vote(room, i, random.choice(choices))
                     moved = True
                 elif r in ("doctor", "detective") and not n[r]:
@@ -539,6 +550,7 @@ def view(room, pid):
                                 total=len(alive(room)), voted=pid in room.get("discussion_ready", set())),
                 investigation=me.get("investigation") if me["role"] == "detective" else None,
                 min=MIN_PLAYERS, me=dict(name=friend["name"] if friend else me["name"], friend=bool(friend), role=me["role"], alive=me["alive"], host=me["host"] and not friend,
+                                       at_risk=me['alive'] and protected_player(room, pid) and not night_protected_player(room, pid),
                                        death_background=me.get("death_background") if not me["alive"] else None),
                 players=players, pick=pick, notes=me["notes"], mafia_picks=mp,
                 skips=vc.get("skip", 0),
@@ -786,8 +798,8 @@ def mafia_vote(room, pid, target):
         raise Bad("Mafia kill voting is only open during the Mafia turn.")
     if target not in room["players"] or not room["players"][target]["alive"] or room["players"][target]["role"] == "mafia":
         raise Bad("Choose a living player outside the Mafia.")
-    if protected_player(room, target):
-        raise Bad("The Detective team is protected throughout a solo story.")
+    if night_protected_player(room, target):
+        raise Bad("The Detective is protected unless this is a final-chance night with no surviving Mafia identified.")
     if pid in room["night"]["mafia"]:
         if room["night"]["mafia"][pid] == target:
             return

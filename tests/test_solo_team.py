@@ -200,6 +200,103 @@ class SoloTeamTests(unittest.TestCase):
         self.assertTrue(self.room['players'][self.lead['pid']]['alive'])
         self.assertEqual(self.room['players'][self.lead['pid']]['round_points'], 0)
 
+    def final_chance_night(self, mafia_count=2):
+        self.post('start', self.lead)
+        mafia = game.alive(self.room, 'mafia')
+        for pid in mafia[mafia_count:]:
+            game.record_death(self.room, pid, 'vote')
+        town = [pid for pid in game.alive(self.room) if self.room['players'][pid]['role'] == 'town']
+        excess = len(game.alive(self.room)) - 2 * mafia_count - 1
+        for pid in town[:excess]:
+            game.record_death(self.room, pid, 'vote')
+        game.start_night(self.room)
+        return game.alive(self.room, 'mafia')
+
+    def choose_detective_as_victim(self, mafia):
+        for pid in mafia:
+            game.mafia_vote(self.room, pid, self.lead['pid'])
+        game.advance(self.room)
+        self.assertEqual(self.room['night']['victim'], self.lead['pid'])
+        # Deliberately protect somebody else; this test is about Detective findings.
+        self.room['night']['doctor'] = mafia[0]
+        game.advance(self.room)
+        self.assertEqual(self.room['night_step'], 'detective')
+
+    def test_final_night_wrong_investigation_can_kill_the_shared_detective(self):
+        friend = self.join()
+        mafia = self.final_chance_night()
+        self.assertTrue(game.view(self.room, friend['pid'])['me']['at_risk'])
+        self.choose_detective_as_victim(mafia)
+        innocent = game.alive(self.room, 'doctor')[0]
+        self.post('act', dict(friend, target=innocent))
+        state = self.post('state', friend)
+        self.assertFalse(state['me']['alive'])
+        self.assertFalse(state['investigation']['correct'])
+        self.assertEqual(state['winner'], 'mafia')
+        self.assertEqual(state['phase'], 'over')
+        lead = self.room['players'][self.lead['pid']]
+        self.assertEqual(lead['round_points'], 0)
+        self.assertEqual(sum(e['player_id'] == self.lead['pid'] for e in state['death_events']), 1)
+        self.assertIn('Lead was killed', self.room['dawn'])
+
+    def test_final_night_correct_investigation_stops_an_already_selected_attack(self):
+        friend = self.join()
+        mafia = self.final_chance_night()
+        self.choose_detective_as_victim(mafia)
+        self.post('act', dict(friend, target=mafia[0]))
+        state = self.post('state', self.lead)
+        self.assertTrue(state['me']['alive'])
+        self.assertTrue(state['investigation']['correct'])
+        self.assertFalse(state['me']['at_risk'])
+        self.assertEqual(state['phase'], 'day')
+        self.assertEqual(self.room['dawn'], 'Nobody was killed last night.')
+        self.assertEqual(self.room['players'][game.alive(self.room, 'doctor')[0]]['pending_points'], 0)
+
+    def test_final_night_timeout_without_a_finding_can_also_be_fatal(self):
+        mafia = self.final_chance_night(mafia_count=1)
+        self.choose_detective_as_victim(mafia)
+        self.room['step_until'] = time.time() - 1
+        game.advance(self.room)
+        self.assertEqual(self.room['winner'], 'mafia')
+        self.assertFalse(self.room['players'][self.lead['pid']]['alive'])
+
+    def test_prior_surviving_finding_protects_but_eliminated_mafia_does_not(self):
+        mafia = self.final_chance_night(mafia_count=1)
+        lead = self.lead['pid']
+        eliminated = next(pid for pid, p in self.room['players'].items() if p['role'] == 'mafia' and not p['alive'])
+        self.room['players'][lead]['investigated'].add(eliminated)
+        self.assertFalse(game.night_protected_player(self.room, lead))
+        self.room['players'][lead]['investigated'].add(mafia[0])
+        self.assertTrue(game.night_protected_player(self.room, lead))
+        self.assertFalse(game.view(self.room, lead)['me']['at_risk'])
+        with self.assertRaises(game.Bad):
+            game.mafia_vote(self.room, mafia[0], lead)
+
+    def test_doctor_can_save_the_detective_on_a_final_chance_night(self):
+        mafia = self.final_chance_night()
+        self.choose_detective_as_victim(mafia)
+        self.room['night']['doctor'] = self.lead['pid']
+        game.resolve_night(self.room)
+        self.assertTrue(self.room['players'][self.lead['pid']]['alive'])
+        self.assertEqual(self.room['phase'], 'day')
+        self.assertIn('was saved by the Doctor', self.room['dawn'])
+        self.assertEqual(self.room['players'][game.alive(self.room, 'doctor')[0]]['pending_points'], 1)
+
+    def test_bot_mafia_can_choose_the_unprotected_detective_on_the_final_night(self):
+        self.final_chance_night()
+        lead = self.lead['pid']
+        def pick_detective(choices):
+            return lead if lead in choices else choices[0]
+        with patch.object(game.random, 'choice', side_effect=pick_detective):
+            game.run_bots(self.room)
+        self.assertEqual(self.room['night']['victim'], lead)
+        self.assertEqual(self.room['night_step'], 'detective')
+        # Daytime voting protection stays in place even after a dangerous night.
+        self.room.update(phase='day', discuss_until=0)
+        with self.assertRaises(game.Bad):
+            game.cast_vote(self.room, game.alive(self.room, 'mafia')[0], lead)
+        self.assertFalse(game.view(self.room, lead)['me']['at_risk'])
+
     def test_online_game_has_no_solo_team_or_immunity(self):
         identity = self.post('create', dict(name='Host', include_state=True))
         room = game.rooms[identity['code']]
