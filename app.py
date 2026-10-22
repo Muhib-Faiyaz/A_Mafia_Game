@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 from xml.sax.saxutils import escape as xml_escape
 from flask_compress import Compress
 from death_stories import DEATH_STORIES, RESCUE_STORIES
+import bot_brain
 
 app = Flask(__name__, static_folder="static")
 app.config.update(COMPRESS_ALGORITHM=["gzip"], COMPRESS_MIN_SIZE=500)
@@ -46,7 +47,10 @@ def clean(n):
 
 
 def chat_add(room, ch, name, text, kind="msg"):
-    room["chat"].append(dict(ch=ch, n=name, t=text, k=kind))
+    room["chat_seq"] = room.get("chat_seq", 0) + 1
+    speaker = next((pid for pid, p in room["players"].items() if p["name"] == name), None) if name else None
+    room["chat"].append(dict(ch=ch, n=name, t=text, k=kind, seq=room["chat_seq"],
+                             day=room.get("day", 0), speaker=speaker))
     del room["chat"][:-150]
 
 
@@ -285,10 +289,6 @@ def find_player(room, arg):
     return pick[0]
 
 
-BOT_LINES = ["I think {n} is acting suspicious.", "{n} has been too quiet for me.",
-             "My gut says {n} is Mafia.", "Does anyone else trust {n}? I don't.", "Watch {n} closely."]
-
-
 def investigate(room, pid, target):
     """Keep one immediate investigation result private to its Detective."""
     p, suspect = room["players"][pid], room["players"][target]
@@ -300,6 +300,8 @@ def investigate(room, pid, target):
                 if correct else "Keep investigating and listen to the town's discussion.")
     p["investigation"] = dict(id=uuid.uuid4().hex, day=room["day"], name=suspect["name"],
                               correct=correct, reminder=reminder)
+    if p["bot"]:
+        p.setdefault("brain", bot_brain.new_brain())["checks"][target] = correct
     if correct:
         p["investigated"].add(target)
     p["notes"].append(f"Night {room['day']}: {suspect['name']} is {'Mafia' if correct else 'not Mafia'}. {reminder}")
@@ -331,8 +333,69 @@ def proceed():
         return jsonify(ok=True)
 
 
+def bot_context(room, pid):
+    """Only public facts and the bot's own permitted team information."""
+    player = room["players"][pid]
+    return dict(self=pid,
+                players=[dict(id=i, name=p["name"], alive=p["alive"], bot=p["bot"]) for i, p in room["players"].items()],
+                allies={i for i in alive(room, "mafia")} if player["role"] == "mafia" else set(),
+                votes=dict(room["votes"]))
+
+
+def bot_discussion(room):
+    bots = [i for i in alive(room) if room["players"][i]["bot"]]
+    now = time.time()
+    contexts = {pid: bot_context(room, pid) for pid in bots}
+    public = [c for c in room["chat"] if c["ch"] == "town" and c["k"] == "msg" and c.get("speaker")]
+    latest_human = max((c['seq'] for c in public if not room["players"][c["speaker"]]["bot"] and c['day'] == room['day']), default=0)
+    human_turn = latest_human > room.get("bot_human_replied", 0)
+
+    def consume(pid):
+        brain = room["players"][pid].setdefault("brain", bot_brain.new_brain())
+        if brain['day'] != room['day']:
+            brain.update(day=room['day'], posts=0, opened=False, pending=[], vote_version=None)
+            eligible = [p['id'] for p in contexts[pid]['players'] if p['alive'] and p['id'] != pid and p['id'] not in contexts[pid]['allies']]
+            brain['focus'] = random.choice(eligible) if eligible else None
+        for message in public:
+            if message['seq'] > brain['cursor'] and message['day'] == room['day']:
+                bot_brain.hear(brain, message, contexts[pid])
+        brain['cursor'] = room.get('chat_seq', 0)
+        return brain
+
+    for pid in bots:
+        consume(pid)
+    if not human_turn and now - room.get('bot_last_spoke', 0) < bot_brain.REPLY_DELAY:
+        return False
+    room['bot_human_replied'] = latest_human
+    # At most two messages per turn; a human message can receive an immediate reply.
+    candidates = []
+    for pid in bots:
+        brain = room['players'][pid]['brain']
+        if brain['posts'] >= bot_brain.MAX_POSTS:
+            continue
+        pending = max(brain['pending'], key=lambda p: (p['priority'], p['message']['seq']), default=None)
+        if pending or not brain['opened']:
+            candidates.append((pending['priority'] if pending else 0, pid, pending))
+    candidates.sort(key=lambda item: (-item[0], bots.index(item[1])))
+    for _, pid, pending in candidates[:2]:
+        brain = room['players'][pid]['brain']
+        text = bot_brain.reply(brain, contexts[pid], pending)
+        chat_add(room, 'town', room['players'][pid]['name'], text)
+        brain['posts'] += 1
+        brain['opened'] = True
+        if pending:
+            brain['pending'].remove(pending)
+    if candidates:
+        room['bot_last_spoke'] = now
+        # Let every bot hear the replies before making a voting decision.
+        public = [c for c in room['chat'] if c['ch'] == 'town' and c['k'] == 'msg' and c.get('speaker')]
+        for pid in bots:
+            consume(pid)
+    return bool(candidates)
+
+
 def run_bots(room):
-    """Test bots act automatically so one person can try the game alone."""
+    """Bots use bounded public conversation and private, role-legal knowledge."""
     P = room["players"]
     for _ in range(300):
         moved = False
@@ -354,12 +417,7 @@ def run_bots(room):
                         n[r] = target
                     moved = True
         elif room["phase"] == "day":
-            for i in alive(room):
-                if P[i]["bot"] and (room["day"], i) not in room["said"]:
-                    room["said"].add((room["day"], i))
-                    pool = [x for x in alive(room) if x != i and not (P[i]["role"] == "mafia" and P[x]["role"] == "mafia")]
-                    if pool and random.random() < 0.7:
-                        chat_add(room, "town", P[i]["name"], random.choice(BOT_LINES).format(n="@" + P[random.choice(pool)]["name"]))
+            moved = bot_discussion(room) or moved
             for i in alive(room):
                 if discussing(room) and P[i]["bot"] and i not in room.get("discussion_ready", set()):
                     proceed_to_vote(room, i)
@@ -369,10 +427,17 @@ def run_bots(room):
                 for i in alive(room):
                     if room["phase"] != "day":
                         break
-                    if P[i]["bot"] and i not in room["votes"]:
-                        opts = [x for x in alive(room) if x != i and not (P[i]["role"] == "mafia" and P[x]["role"] == "mafia")]
-                        cast_vote(room, i, random.choice(opts + ["skip"]))
-                        moved = True
+                    if P[i]["bot"]:
+                        brain = P[i].setdefault('brain', bot_brain.new_brain())
+                        public_messages = max((c.get('seq', 0) for c in room['chat'] if c['ch'] == 'town' and c['k'] == 'msg' and c.get('speaker')), default=0)
+                        human_votes = tuple(sorted((voter, target) for voter, target in room['votes'].items() if not P[voter]['bot']))
+                        version = (room['day'], public_messages, human_votes)
+                        if i not in room['votes'] or brain['vote_version'] != version:
+                            brain['vote_version'] = version
+                            target = bot_brain.choose_target(brain, bot_context(room, i))
+                            if room['votes'].get(i) != target:
+                                cast_vote(room, i, target)
+                                moved = True
                 if room["phase"] == "day" and all(i in room["votes"] for i in alive(room)):
                     tally(room)
                     moved = True
@@ -554,8 +619,8 @@ def start_game(room):
     roles = ["mafia"] * m + sp + ["town"] * (n - m - len(sp))
     random.shuffle(roles)
     for p, r in zip(P.values(), roles):
-        p.update(role=r, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
-    room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
+        p.update(role=r, brain=bot_brain.new_brain(), alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
+    room.update(day=0, log=[], winner=None, chat=[], chat_seq=0, bot_last_spoke=0, bot_human_replied=0, said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
     say(room, "The game begins. Night falls on the town.")
     start_night(room)
     run_bots(room)
@@ -694,7 +759,7 @@ def reset():
             raise Bad("Only the host can restart.")
         room.update(phase="lobby", day=0, log=[], votes={}, discussion_ready=set(), voting_announced=False, winner=None, chat=[], said=set(), ended=False, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
         for p in room["players"].values():
-            p.update(role=None, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
+            p.update(role=None, brain=bot_brain.new_brain(), alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
         return jsonify(ok=True)
 
 

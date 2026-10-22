@@ -42,6 +42,42 @@ directly reveal who the killer is, but to convince the town through discussion
 and reasoning. Results remain in the Detective's private case file; the reminder
 is guidance, not an automatic chat filter.
 
+## Talking with bots
+
+Bots now use a small local dialogue and voting model rather than random chat
+and random daytime votes. They can accuse, defend themselves, disagree, ask for
+reasons, and respond to players or other bots. No external AI service or API key
+is required; this is a basic rule-based model, not unrestricted natural-language
+understanding.
+
+Use full player names in town chat, for example:
+
+- `I suspect Alex` or `Alex is Mafia` raises suspicion of Alex.
+- `I trust Alex`, `Alex is innocent`, or `don't vote Alex` argues in Alex's defense.
+- `@Bot 1, why Alex?` asks that bot to explain its current preference.
+- `@Bot 1, I suspect Alex` directs a claim to a specific bot.
+
+These statements affect bot beliefs and actual votes. Before the vote closes,
+new claims, defenses, or human ballots can make bots change their vote. They do
+not automatically obey every message: conflicting claims, their own private
+investigation, and known Mafia teammates can affect their decisions. Repeating
+a claim does not keep increasing its weight. Ambiguous aliases, sarcasm, and
+complex arguments may not be understood.
+
+Bots hear public town chat only. Other players' hidden roles and private
+messages are excluded, apart from the teammate information Mafia legitimately
+know. Detective bots can use their own private findings
+without publishing the result; Mafia bots know their teammates and try to steer
+the vote away from them. Beliefs last through the current game and reset when
+roles are dealt again.
+
+At most two bot messages appear per conversation turn, with a short delay
+between autonomous replies and a maximum of six messages per bot per day.
+Player messages can trigger immediate responses. These limits prevent a bot
+conversation from flooding the room or trapping the server in a reply loop.
+They keep listening after their speaking budget is used. Bots still mark themselves ready automatically, so the human players control
+how much discussion happens before voting.
+
 ## Mobile controls
 
 The town record appears at the top. Bottom navigation jumps to the game,
@@ -121,6 +157,7 @@ node --check static/game.js
 node tests/test_music.cjs
 # With a local server running on port 5050:
 node scripts/check-phase-flow.cjs
+node scripts/check-bot-chat.cjs
 ```
 
 The regression suite covers settings, role counts, split and unanimous votes,
