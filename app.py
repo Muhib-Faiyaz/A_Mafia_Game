@@ -59,7 +59,7 @@ def add_player(room, name, host=False, bot=False):
     if any(p["name"].lower() == name.lower() for p in room["players"].values()):
         raise Bad("That name is taken in this room.")
     pid = uuid.uuid4().hex
-    room["players"][pid] = dict(name=name, role=None, alive=True, host=host, notes=[], bot=bot, score=0, pending_points=0, round_points=0, investigated=set())
+    room["players"][pid] = dict(name=name, role=None, alive=True, host=host, notes=[], bot=bot, score=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
     return pid
 
 
@@ -77,14 +77,17 @@ def start_night(room):
     room["phase"] = "night"
     room["night"] = dict(mafia={}, doctor=None, detective=None, victim=None)
     room["votes"] = {}
+    room["discussion_ready"] = set()
+    room["voting_announced"] = False
     room["night_step"], room["step_until"] = STEPS[0], time.time() + STEP
 
 
 def advance(room):
-    """Finish Mafia voting on all ballots or timeout; keep other role timers."""
+    """Advance on confirmed actions, or keep the existing timeout fallback."""
     while room["phase"] == "night":
-        complete = (room["night_step"] == "mafia" and
-                    all(i in room["night"]["mafia"] for i in alive(room, "mafia")))
+        role = room["night_step"]
+        complete = (all(i in room["night"]["mafia"] for i in alive(room, "mafia"))
+                    if role == "mafia" else bool(room["night"].get(role)) or not alive(room, role))
         if not complete and time.time() < room["step_until"]:
             break
         if room["night_step"] == "mafia":
@@ -99,6 +102,10 @@ def advance(room):
             room["night_step"], room["step_until"] = steps[i + 1], time.time() + STEP
         else:
             resolve_night(room)
+
+    if room["phase"] == "day" and not discussing(room) and not room.get("voting_announced"):
+        room["voting_announced"] = True
+        chat_add(room, "town", "", "Discussion is over. Voting is now open.", "sys")
 
 
 def timers(room):
@@ -117,7 +124,10 @@ def settle_scores(room):
     for player in room["players"].values():
         won = ((room.get("winner") == "mafia" and player["role"] == "mafia") or
                (room.get("winner") == "town" and player["role"] != "mafia" and player["alive"]))
-        points = player.get("pending_points", 0) + int(won)
+        if player["role"] == "detective":
+            points = 1 + int(bool(player.get("investigated"))) if won else 0
+        else:
+            points = player.get("pending_points", 0) + int(won)
         player["score"] = player.get("score", 0) + points
         player["round_points"] = points
         player["pending_points"] = 0
@@ -210,13 +220,6 @@ def resolve_night(room):
     if n.get("resolved"):
         return
     n["resolved"] = True
-    for i in alive(room, "detective"):
-        t = P.get(n["detective"])
-        if t:
-            if t["role"] == "mafia" and n["detective"] not in P[i]["investigated"]:
-                P[i]["pending_points"] += 1
-                P[i]["investigated"].add(n["detective"])
-            P[i]["notes"].append(f"Night {room['day']}: {t['name']} is {'Mafia' if t['role'] == 'mafia' else 'not Mafia'}.")
     victim = n["victim"]
     if victim and victim != n["doctor"]:
         record_death(room, victim, "night")
@@ -286,6 +289,48 @@ BOT_LINES = ["I think {n} is acting suspicious.", "{n} has been too quiet for me
              "My gut says {n} is Mafia.", "Does anyone else trust {n}? I don't.", "Watch {n} closely."]
 
 
+def investigate(room, pid, target):
+    """Keep one immediate investigation result private to its Detective."""
+    p, suspect = room["players"][pid], room["players"][target]
+    if room["night"]["detective"]:
+        raise Bad("Your investigation is already confirmed for this night.")
+    room["night"]["detective"] = target
+    correct = suspect["role"] == "mafia"
+    reminder = ("Do not directly reveal who the killer is. Convince the others through discussion and reasoning."
+                if correct else "Keep investigating and listen to the town's discussion.")
+    p["investigation"] = dict(id=uuid.uuid4().hex, day=room["day"], name=suspect["name"],
+                              correct=correct, reminder=reminder)
+    if correct:
+        p["investigated"].add(target)
+    p["notes"].append(f"Night {room['day']}: {suspect['name']} is {'Mafia' if correct else 'not Mafia'}. {reminder}")
+
+
+def proceed_to_vote(room, pid):
+    if room["phase"] != "day" or not room["players"][pid]["alive"]:
+        raise Bad("Only living players can proceed during discussion.")
+    ready = room.setdefault("discussion_ready", set())
+    if pid in ready:
+        return  # Retries never duplicate a vote or chat update.
+    if not discussing(room):
+        raise Bad("Voting is already open.")
+    ready.add(pid)
+    chat_add(room, "town", "", f"{room['players'][pid]['name']} voted to proceed to voting ({len(ready)}/{len(alive(room))} ready).", "sys")
+    if all(i in ready for i in alive(room)):
+        room["discuss_until"] = 0
+
+
+# The legacy skip route now casts the same individual readiness vote.
+@app.post("/api/skip")
+@app.post("/api/proceed")
+def proceed():
+    with lock:
+        room, pid = ctx(request.get_json(force=True))
+        advance(room)
+        proceed_to_vote(room, pid)
+        run_bots(room)
+        return jsonify(ok=True)
+
+
 def run_bots(room):
     """Test bots act automatically so one person can try the game alone."""
     P = room["players"]
@@ -302,7 +347,11 @@ def run_bots(room):
                     mafia_vote(room, i, random.choice([x for x in alive(room) if P[x]["role"] != "mafia"]))
                     moved = True
                 elif r in ("doctor", "detective") and not n[r]:
-                    n[r] = random.choice([x for x in alive(room) if x != i or r == "doctor"])
+                    target = random.choice([x for x in alive(room) if x != i or r == "doctor"])
+                    if r == "detective":
+                        investigate(room, i, target)
+                    else:
+                        n[r] = target
                     moved = True
         elif room["phase"] == "day":
             for i in alive(room):
@@ -311,7 +360,12 @@ def run_bots(room):
                     pool = [x for x in alive(room) if x != i and not (P[i]["role"] == "mafia" and P[x]["role"] == "mafia")]
                     if pool and random.random() < 0.7:
                         chat_add(room, "town", P[i]["name"], random.choice(BOT_LINES).format(n="@" + P[random.choice(pool)]["name"]))
+            for i in alive(room):
+                if discussing(room) and P[i]["bot"] and i not in room.get("discussion_ready", set()):
+                    proceed_to_vote(room, i)
+                    moved = True
             if not discussing(room):
+                advance(room)
                 for i in alive(room):
                     if room["phase"] != "day":
                         break
@@ -372,7 +426,9 @@ def view(room, pid):
                 turn_background=turn_background(room), notices=room.get("notices", []), scores_settled=room.get("scores_settled", False),
                 death_events=room.get("death_events", []), round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
                 mafia_chat_open=me["role"] == "mafia" and me["alive"] and room["phase"] in ("day", "night"),
-                can_skip=me["host"] and (room["phase"] == "day" or (room["phase"] == "night" and room["night_step"] != "mafia")),
+                discussion=dict(ready=len(set(alive(room)) & room.get("discussion_ready", set())),
+                                total=len(alive(room)), voted=pid in room.get("discussion_ready", set())),
+                investigation=me.get("investigation") if me["role"] == "detective" else None,
                 min=MIN_PLAYERS, me=dict(name=me["name"], role=me["role"], alive=me["alive"], host=me["host"],
                                        death_background=me.get("death_background") if not me["alive"] else None),
                 players=players, pick=pick, notes=me["notes"], mafia_picks=mp,
@@ -498,7 +554,7 @@ def start_game(room):
     roles = ["mafia"] * m + sp + ["town"] * (n - m - len(sp))
     random.shuffle(roles)
     for p, r in zip(P.values(), roles):
-        p.update(role=r, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
+        p.update(role=r, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
     room.update(day=0, log=[], winner=None, chat=[], said=set(), ended=False, round_id=uuid.uuid4().hex, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
     say(room, "The game begins. Night falls on the town.")
     start_night(room)
@@ -533,6 +589,10 @@ def mafia_vote(room, pid, target):
         raise Bad("Mafia kill voting is only open during the Mafia turn.")
     if target not in room["players"] or not room["players"][target]["alive"] or room["players"][target]["role"] == "mafia":
         raise Bad("Choose a living player outside the Mafia.")
+    if pid in room["night"]["mafia"]:
+        if room["night"]["mafia"][pid] == target:
+            return
+        raise Bad("Your Mafia target is already confirmed for this turn.")
     room["night"]["mafia"][pid] = target
     chat_add(room, "mafia", "", f"{p['name']} voted to kill {room['players'][target]['name']}.", "sys")
 
@@ -557,6 +617,8 @@ def act():
         n = room["night"]
         if p["role"] == "mafia":
             mafia_vote(room, pid, t)
+        elif p["role"] == "detective":
+            investigate(room, pid, t)
         else:
             n[p["role"]] = t
         run_bots(room)
@@ -613,19 +675,6 @@ def chat():
         return jsonify(ok=True)
 
 
-@app.post("/api/skip")
-def skip_discussion():
-    with lock:
-        room, pid = ctx(request.get_json(force=True))
-        if not room["players"][pid]["host"] or room["phase"] not in ("day", "night"):
-            raise Bad("Only the host can skip a timer.")
-        if room["phase"] == "night" and room["night_step"] == "mafia":
-            raise Bad("The Mafia timer ends only after all Mafia vote or time runs out.")
-        room["step_until" if room["phase"] == "night" else "discuss_until"] = 0
-        run_bots(room)
-        return jsonify(ok=True)
-
-
 @app.post("/api/tally")
 def force_tally():
     with lock:
@@ -643,9 +692,9 @@ def reset():
         room, pid = ctx(request.get_json(force=True))
         if not room["players"][pid]["host"] or room["phase"] != "over":
             raise Bad("Only the host can restart.")
-        room.update(phase="lobby", day=0, log=[], votes={}, winner=None, chat=[], said=set(), ended=False, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
+        room.update(phase="lobby", day=0, log=[], votes={}, discussion_ready=set(), voting_announced=False, winner=None, chat=[], said=set(), ended=False, death_events=[], story_used={}, death_backgrounds_used=[], notices=[], scores_settled=False)
         for p in room["players"].values():
-            p.update(role=None, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set())
+            p.update(role=None, alive=True, death_background=None, notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
         return jsonify(ok=True)
 
 

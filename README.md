@@ -21,14 +21,26 @@ restart. Optional variables: `NIGHT_STEP_SECONDS` (default 30),
 - A game needs at least 3 players and more non-Mafia players than Mafia: at
   least 3, 5, or 7 players respectively. Bots can fill empty seats.
 - Enable Doctor/Detective roles or play with Mafia and Villagers only.
-- The host cannot skip the Mafia turn. It closes when all living Mafia have
-  voted or the timer expires. Votes can be changed until that point.
+- Night timers cannot be skipped by the host. Each confirmed target is final
+  for that turn. Mafia voting closes when all living Mafia have voted or the
+  timer expires. Doctor and Detective turns advance immediately on confirmation
+  or when their existing timer expires. Eliminated roles are skipped automatically.
 - Unanimous votes select that person. Split votes select one random person
   uniformly from the distinct nominated targets. The target is locked once
   voting closes. On timeout, submitted votes count; no votes means no kill.
 - With special roles enabled, the Doctor and Detective act before dawn. The
   Doctor can protect the locked target. The outcome appears in the town record
   when night ends. Without special roles, the kill resolves immediately.
+- During discussion, every living player (including Mafia and special roles)
+  can press **Proceed to vote**. The counter and town chat show readiness. Voting
+  opens when all living players are ready, or after the unchanged discussion
+  timeout. Each player counts once; bots mark themselves ready automatically.
+
+The Detective receives a private right/wrong result immediately after confirming
+one investigation each night. A correct result reminds the Detective not to
+directly reveal who the killer is, but to convince the town through discussion
+and reasoning. Results remain in the Detective's private case file; the reminder
+is guidance, not an automatic chat filter.
 
 ## Mobile controls
 
@@ -78,17 +90,22 @@ restarts, and a return to the lobby. Totals last for the in-memory room session;
 a new room, room expiry, or server restart starts a new session.
 
 - Mafia victory: **+1 to each Mafia member**, including eliminated Mafia.
-- Town victory: **+1 to each surviving non-Mafia player**, including special roles.
+- Town victory: **+1 to each surviving non-Mafia player**; the Detective’s
+  total follows the rule below.
 - Doctor: **+1 per actual prevented kill**, including self-protection. Protecting
   someone who was not attacked earns nothing.
-- Detective: **+1 per distinct Mafia member correctly identified in a game**.
-  Re-investigating the same Mafia or investigating non-Mafia earns nothing.
+- Detective: **2 total points** for correctly identifying at least one Mafia
+  member and surviving a Town win, or **1 total point** for surviving a Town
+  win without a correct identification. The Detective gets **0** if eliminated,
+  Mafia wins, or the host ends the game. Multiple correct identifications do not
+  increase the total beyond 2.
 
-Action points are held privately until the game ends, so changing totals cannot
-reveal the Doctor or Detective. Settlement happens once. Skill points are kept
-even if their earner dies later. A host-ended game settles earned action points
-without a victory bonus; restarting an unfinished game discards pending points
-and preserves previously settled totals.
+Points are held privately until the game ends, so changing totals cannot
+reveal the Doctor or Detective. Settlement happens once. Earned Doctor rescue
+points are kept even if the Doctor dies later. A host-ended game settles earned
+Doctor action points without a victory bonus or Detective survival points.
+Restarting an unfinished game discards pending points and preserves previously
+settled totals.
 
 Actual rescues create a green notification, a gentle chime (when sound is on),
 and one of six shared rescue stories in the town record. The saved player is
@@ -101,6 +118,9 @@ not create a death notification.
 ```sh
 python -m unittest discover -s tests -v
 node --check static/game.js
+node tests/test_music.cjs
+# With a local server running on port 5050:
+node scripts/check-phase-flow.cjs
 ```
 
 The regression suite covers settings, role counts, split and unanimous votes,

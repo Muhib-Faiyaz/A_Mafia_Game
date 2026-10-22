@@ -24,6 +24,15 @@ class GameTests(unittest.TestCase):
         self.mafia = [u for u in self.users if self.room['players'][u['pid']]['role'] == 'mafia']
         self.town = [u for u in self.users if self.room['players'][u['pid']]['role'] != 'mafia']
 
+    def finish_night(self):
+        while self.room['phase'] == 'night':
+            self.room['step_until'] = 0
+            self.post('state', self.host)
+
+    def open_voting(self):
+        self.room['discuss_until'] = 0
+        self.post('state', self.host)
+
     def test_settings_and_roles(self):
         self.start()
         self.assertEqual(len(self.mafia), 2)
@@ -101,8 +110,7 @@ class GameTests(unittest.TestCase):
         self.assertEqual(self.room['night_step'], 'doctor')
         doctor = next(u for u in self.users if self.room['players'][u['pid']]['role'] == 'doctor')
         self.post('act', dict(doctor, target=target))
-        self.post('skip', self.host)
-        self.post('skip', self.host)
+        self.finish_night()
         self.assertTrue(self.room['players'][target]['alive'])
         self.assertEqual(self.room['phase'], 'day')
 
@@ -123,8 +131,7 @@ class GameTests(unittest.TestCase):
             choice.assert_called_once()
         self.assertEqual(self.room['night']['victim'], b)
         self.assertEqual(self.room['night_step'], 'doctor')
-        self.post('skip', self.host)
-        self.post('skip', self.host)
+        self.finish_night()
         self.assertFalse(self.room['players'][b]['alive'])
         self.assertTrue(self.room['players'][a]['alive'])
 
@@ -177,8 +184,7 @@ class GameTests(unittest.TestCase):
         for user in self.mafia:
             self.post('act', dict(user, target=target))
         self.assertEqual(self.post('state', self.host)['death_events'], [])
-        self.post('skip', self.host)
-        self.post('skip', self.host)
+        self.finish_night()
         event = self.post('state', self.host)['death_events'][0]
         self.assertEqual(event['player_id'], target)
         self.assertEqual(event['cause'], 'night')
@@ -197,15 +203,14 @@ class GameTests(unittest.TestCase):
             self.post('act', dict(user, target=target))
         doctor = next(u for u in self.users if self.room['players'][u['pid']]['role'] == 'doctor')
         self.post('act', dict(doctor, target=target))
-        self.post('skip', self.host)
-        self.post('skip', self.host)
+        self.finish_night()
         self.assertEqual(self.post('state', self.host)['death_events'], [])
 
     def test_vote_elimination_has_its_own_story_and_no_duplicate(self):
         self.start(False)
         self.room['step_until'] = 0
         self.post('state', self.host)
-        self.post('skip', self.host)
+        self.open_voting()
         target = self.town[0]['pid']
         self.post('vote', dict(self.mafia[0], target=target))
         self.post('tally', self.host)

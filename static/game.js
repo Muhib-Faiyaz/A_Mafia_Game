@@ -13,7 +13,7 @@ const roles = {
   mafia: ["Mafia", "Work with your team. Choose one victim each night."],
   town: ["Villager", "Find the Mafia. Keep your town alive."],
   doctor: ["Doctor", "Protect one person each night, including yourself."],
-  detective: ["Detective", "Investigate one person each night."],
+  detective: ["Detective", "Investigate one person each night. Keep the result private and persuade the town."],
 };
 const roleName = (r) => roles[r]?.[0] || "Unknown";
 let session = null;
@@ -96,6 +96,7 @@ function leaveLocal() {
   draft = { town: "", mafia: "" };
   localStorage.removeItem("mafia");
   $("#death-notice").close();
+  $("#investigation-dialog").close();
   render();
 }
 function applyState(next) {
@@ -107,8 +108,10 @@ function applyState(next) {
     next.night_step,
     next.voting,
   ].join(":");
-  if (next.round_id !== state?.round_id || next.phase === "lobby")
+  if (next.round_id !== state?.round_id || next.phase === "lobby") {
     $("#death-notice").close();
+    $("#investigation-dialog").close();
+  }
   if (key !== phaseKey) {
     selected = null;
     if (next.round_id !== state?.round_id) revealed = false;
@@ -121,6 +124,7 @@ function applyState(next) {
     render();
   }
   tick();
+  showInvestigation();
   showDeathNotice();
   $("#connection")?.remove();
 }
@@ -204,7 +208,7 @@ ${host ? `<button id="start" class="primary" ${n < needed ? "disabled" : ""}>Beg
 function canAct(p) {
   if (!state.me.alive || !p.alive) return false;
   if (state.phase === "day") return state.voting && !p.you;
-  if (state.phase !== "night" || state.night_step !== state.me.role)
+  if (state.pick || state.phase !== "night" || state.night_step !== state.me.role)
     return false;
   return state.me.role === "mafia"
     ? p.role !== "mafia"
@@ -212,7 +216,7 @@ function canAct(p) {
 }
 function actionLabel() {
   if (state.phase === "day") return state.voting ? "Cast vote" : null;
-  if (state.phase === "night" && state.night_step === state.me.role)
+  if (!state.pick && state.phase === "night" && state.night_step === state.me.role)
     return {
       mafia: "Vote to kill",
       doctor: "Protect",
@@ -228,7 +232,7 @@ function chat(channel) {
     mafia &&
     state.phase === "night" &&
     state.night_step === "mafia" &&
-    state.me.alive;
+    state.me.alive && !state.pick;
   return `<section class="card chat-card ${mafia ? "private" : ""}"><div class="row spread"><h2>${mafia ? "Mafia chat" : "Town chat"}</h2><span class="pill">${mafia ? "Private" : "Public"}</span></div><div class="messages" id="messages-${channel}" role="log" aria-label="${mafia ? "Mafia" : "Town"} messages">${messages.length ? messages.map((c) => `<div class="message ${c.k === "sys" ? "system" : ""}">${c.n ? `<b>${esc(c.n)}</b>` : ""}${esc(c.t)}</div>`).join("") : '<p class="hint">No whispers yet.</p>'}</div>
 ${open ? `<form class="composer" data-channel="${channel}"><input id="input-${channel}" aria-label="${mafia ? "Mafia" : "Town"} message" maxlength="200" autocomplete="off" placeholder="${mafia ? "Whisper to your team…" : "Share your suspicions…"}" value="${esc(draft[channel])}"><button class="primary" aria-label="Send ${channel} message">↑</button></form><p class="hint" style="margin-top:10px">${mafia ? "Only Mafia can see this. Use /vote name during your turn." : "Use /vote name or /skip when voting opens."}</p>` : '<p class="hint">' + (state.phase === "night" ? "The town is asleep. Chat reopens at dawn." : "You can watch, but cannot send messages right now.") + "</p>"}
 ${
@@ -241,7 +245,7 @@ ${
         )
         .join(
           "",
-        )}</div><p class="hint">The last Mafia vote locks the target. Split votes randomly choose one of the nominated people.</p></div>`
+        )}</div><p class="hint">Confirming fixes your target for this turn. The last Mafia vote advances the game. Split votes randomly choose one nominated person.</p></div>`
     : ""
 }
 ${mafia && state.mafia_picks.length ? `<p class="hint" style="margin-top:12px">${state.mafia_picks.map(esc).join("<br>")}</p>` : ""}</section>`;
@@ -275,7 +279,7 @@ function game() {
   return `<div id="top" class="stack"><div class="row spread"><p class="eyebrow">Room ${esc(state.code)} · ${state.players.filter((p) => p.alive).length} alive</p><span class="pill">${over ? "Finished" : night ? "After dark" : "Town meeting"}</span></div>
 <section class="card record"><details id="record" ${recordOpen ? "open" : ""}><summary>Town record <span aria-hidden="true">⌄</span></summary><ol>${state.log.map((l) => `<li>Day ${l.d}: ${esc(l.t)}</li>`).join("")}</ol></details><p class="latest">${esc(state.log[0]?.t || "The town waits.")}</p></section>
 <section class="card phase-card ${night ? "" : "day"}"><div class="row spread"><div><p class="eyebrow">${over ? "The final chapter" : night ? roleName(state.night_step) + " turn" : state.voting ? "Voting open" : "Discussion time"}</p><h1>${title}</h1></div>${!over && state.timer_total ? '<span class="clock" id="clock" aria-label="Time remaining"></span>' : ""}</div><p class="muted">${subtitle}</p>${!over && state.timer_total ? '<div class="progress" aria-hidden="true"><span id="progress"></span></div>' : ""}
-${state.can_skip && (night || !state.voting) ? `<button class="ghost" id="skip-timer" style="margin-top:12px">${night ? "Skip this role" : "Open voting"}</button>` : ""}${night && state.night_step === "mafia" ? '<p class="hint" style="margin-top:12px">This timer cannot be skipped by the host.</p>' : ""}</section>
+${night && state.pick ? '<p class="hint">Your target is confirmed. Waiting for the other Mafia members.</p>' : ""}${night ? '<p class="hint" style="margin-top:12px">Confirmed targets advance the turn automatically. Otherwise, the timer runs to the end.</p>' : !over && !state.voting ? `<div class="stack" style="margin-top:12px"><p id="proceed-count" role="status" aria-live="polite">${state.discussion.ready}/${state.discussion.total} players ready to vote</p>${m.alive ? `<button id="proceed-vote" class="primary" ${state.discussion.voted ? "disabled" : ""}>${state.discussion.voted ? "Waiting for the others…" : "Proceed to vote"}</button>` : ""}<p class="hint">Voting opens when every living player is ready, or when the timer ends.</p></div>` : ""}</section>
 <button id="role" class="role-button" aria-expanded="${revealed}"><span class="role-icon">${revealed ? "♠" : "?"}</span><span><b>${revealed ? roleName(m.role) : "Your secret identity"}</b><small>${revealed ? esc(roles[m.role]?.[1]) : "Tap to reveal. Keep it to yourself."}</small></span></button>
 ${!m.alive ? '<p class="connection">You have been eliminated. Watch the town from the shadows.</p>' : ""}
 ${
@@ -290,7 +294,7 @@ ${
 }
 ${state.notes.length ? `<div class="card"><p class="eyebrow">Detective’s case file</p><p>${state.notes.map(esc).join("<br>")}</p></div>` : ""}
 <section id="players"><p class="hint score-hint">Session scores stay with each player. Points update when the game ends.</p><div class="section-title"><h2>The town</h2><span class="pill">${state.players.length} seats</span></div><div class="players">${state.players.map((p) => `<button class="player ${!p.alive ? "dead" : ""} ${pick === p.id ? "selected" : ""}" data-player="${p.id}" ${canAct(p) ? "" : "disabled"} aria-pressed="${pick === p.id}"><span class="avatar">${esc(p.name[0])}</span><b>${esc(p.name)}</b><span class="player-score">${p.score || 0} point${p.score === 1 ? "" : "s"}${over && p.round_points ? ` · +${p.round_points} this game` : ""}</span><small>${p.you ? "You · " : ""}${p.role ? roleName(p.role) : p.alive ? "Identity unknown" : "Eliminated"}${p.bot ? " · Bot" : ""}</small>${p.votes ? `<span class="votes">${p.votes} vote${p.votes === 1 ? "" : "s"}</span>` : ""}</button>`).join("")}</div>
-${label && m.alive ? `<div class="action">${state.voting ? '<button id="skip-vote" class="ghost">Skip vote (' + state.skips + ")</button>" : ""}<button id="confirm-action" class="primary" ${pick ? "" : "disabled"}>${label}${pickName ? ": " + esc(pickName) : ""}</button><p class="hint">${state.pick ? "Your choice is recorded. You may change it while the turn stays open." : "Tap a player, then confirm your choice."}</p></div>` : ""}
+${label && m.alive ? `<div class="action">${state.voting ? '<button id="skip-vote" class="ghost">Skip vote (' + state.skips + ")</button>" : ""}<button id="confirm-action" class="primary" ${pick ? "" : "disabled"}>${label}${pickName ? ": " + esc(pickName) : ""}</button><p class="hint">${state.pick ? "Your choice is recorded. You may change it while the turn stays open." : "Tap a player, then confirm your choice. Night targets are final."}</p></div>` : ""}
 ${state.voting && m.host ? '<button id="tally" class="ghost" style="width:100%;margin-top:12px">Close voting & count votes</button>' : ""}</section>
 <div id="chats" class="stack">${chat("town")}${m.role === "mafia" ? chat("mafia") : ""}</div>
 ${over && m.host ? '<button id="play-again" class="primary">Restart with fresh roles</button><button id="back-lobby">Back to lobby & settings</button>' : ""}</div>`;
@@ -367,6 +371,34 @@ reducedMotion.addEventListener("change", () => {
     document.getAnimations().forEach((animation) => animation.cancel());
 });
 
+// Private results are acknowledged once per player, investigation and round.
+let investigationSeen = "";
+function showInvestigation() {
+  const result = state?.investigation;
+  if (!session || !result || state.me.role !== "detective" || document.hidden) return;
+  const key = `mafia-investigation:${session.code}:${session.pid}:${state.round_id}`;
+  const identity = key + result.id;
+  if (investigationSeen === identity) return;
+  try { if (sessionStorage.getItem(key) === result.id) return; } catch (_) {}
+  const dialog = $("#investigation-dialog");
+  if (dialog.open || $("#help-dialog").open || $("#death-notice").open) return;
+  $("#investigation-title").textContent = result.correct ? "Your suspicion was right" : "Your suspicion was wrong";
+  $("#investigation-result").textContent = result.name + (result.correct ? " is Mafia." : " is not Mafia.");
+  $("#investigation-reminder").textContent = result.reminder;
+  dialog.dataset.result = result.id;
+  dialog.dataset.key = key;
+  dialog.dataset.identity = identity;
+  $("#game-menu").close();
+  dialog.showModal();
+}
+$("#dismiss-investigation").onclick = () => $("#investigation-dialog").close();
+$("#investigation-dialog").addEventListener("close", () => {
+  const dialog = $("#investigation-dialog");
+  investigationSeen = dialog.dataset.identity;
+  try { sessionStorage.setItem(dialog.dataset.key, dialog.dataset.result); } catch (_) {}
+  showDeathNotice();
+});
+
 // Remember notices per player and round so polling/reloads never replay a death.
 let deathIdentity = "",
   deathSeen = new Set();
@@ -390,7 +422,7 @@ function showDeathNotice() {
       /* In-memory deduplication still works without storage. */
     }
   }
-  if ($("#death-notice").open || $("#help-dialog").open) return;
+  if ($("#death-notice").open || $("#help-dialog").open || $("#investigation-dialog").open) return;
   const event = (state.notices || state.death_events || []).find(
     (event) => !deathSeen.has(event.id),
   );
@@ -443,6 +475,7 @@ function showDeathNotice() {
 }
 $("#dismiss-death").onclick = () => $("#death-notice").close();
 $("#death-notice").addEventListener("close", () => {
+  showInvestigation();
   // A restart may close an old notice before the next state is assigned.
   setTimeout(showDeathNotice, 0);
 });
@@ -563,7 +596,7 @@ function render() {
       420,
     );
   });
-  on("#skip-timer", () => run("skip"));
+  on("#proceed-vote", () => run("proceed"));
   on("#tally", () => run("tally"));
   on("#skip-vote", () => {
     selectTarget("skip");
@@ -658,7 +691,7 @@ function openMenu() {
   const active = state && ["day", "night"].includes(state.phase),
     host = state?.me.host;
   $("#menu-body").innerHTML =
-    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">“It’s In The Fog” by Darren Curtis loops throughout every turn. Sound effects share this volume and mute control. Music fades in when the site opens, or on your first interaction if the browser blocks autoplay. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Session scoring</summary><p>Each Mafia member gets 1 point for a Mafia win. Surviving town members get 1 for a town win. Doctors earn 1 for each actual rescue, and Detectives earn 1 for each different Mafia member correctly identified.</p><p>Points appear only after the game ends. Totals stay with the player through restarts. Restarting an unfinished game discards its unclaimed points.</p></details><details class="music-credits"><summary>Music credits</summary><p><a href="https://breakingcopyright.com/song/darren-curtis-its-in-the-fog" target="_blank" rel="noopener noreferrer">It's In The Fog</a> by <a href="https://www.youtube.com/user/DesperateMeasurez" target="_blank" rel="noopener noreferrer">Darren Curtis</a> | Creative Commons (BY 3.0) | <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">License</a></p><p>Music powered by <a href="https://breakingcopyright.com" target="_blank" rel="noopener noreferrer">BreakingCopyright</a>. Converted to MP3 for playback; loops in game.</p><a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">Full credits ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
+    `<p class="muted">${state ? "Room " + esc(state.code) + " · " + esc(state.me.name) : "Make yourself at home in the shadows."}</p><button id="menu-music">${music.enabled ? "Mute" : "Enable"} soundtrack</button><label class="field">MUSIC VOLUME<input id="volume" class="volume" type="range" min="0" max="100" value="${Math.round(music.volume * 100)}"></label><p class="hint">“It’s In The Fog” by Darren Curtis loops throughout every turn. Sound effects share this volume and mute control. Music fades in when the site opens, or on your first interaction if the browser blocks autoplay. Music pauses when you leave this tab.</p><details class="music-credits"><summary>Session scoring</summary><p>Each Mafia member gets 1 point for a Mafia win. Surviving town members get 1 for a town win (the Detective’s total follows the rule below). Doctors earn 1 for each actual rescue. A Detective who survives a town win gets 2 total points after at least one correct Mafia identification, or 1 without one. An eliminated Detective, a Mafia win, or a host-ended game gives the Detective 0.</p><p>Points appear only after the game ends. Totals stay with the player through restarts. Restarting an unfinished game discards its unclaimed points.</p></details><details class="music-credits"><summary>Music credits</summary><p><a href="https://breakingcopyright.com/song/darren-curtis-its-in-the-fog" target="_blank" rel="noopener noreferrer">It's In The Fog</a> by <a href="https://www.youtube.com/user/DesperateMeasurez" target="_blank" rel="noopener noreferrer">Darren Curtis</a> | Creative Commons (BY 3.0) | <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">License</a></p><p>Music powered by <a href="https://breakingcopyright.com" target="_blank" rel="noopener noreferrer">BreakingCopyright</a>. Converted to MP3 for playback; loops in game.</p><a href="/static/audio/CREDITS.md" target="_blank" rel="noopener">Full credits ↗</a></details>${host && state.phase !== "lobby" ? '<button id="restart-game">Restart game</button>' : ""}${host && active ? '<button id="end-game" class="danger">End game for everyone</button>' : ""}${!host && active ? '<p class="hint">Only the host can end or restart the game.</p>' : ""}`;
   $("#menu-music").onclick = async () => {
     await music.toggle();
     $("#menu-music").textContent =
@@ -939,13 +972,14 @@ $("#help").onclick = openHelp;
 $("#close-help").onclick = $("#finish-help").onclick = () =>
   $("#help-dialog").close();
 $("#help-dialog").addEventListener("close", () =>
-  setTimeout(showDeathNotice, 0),
+  setTimeout(() => { showInvestigation(); showDeathNotice(); }, 0),
 );
 $("#music").onclick = () => music.toggle();
 $("#menu").onclick = openMenu;
 $("#close-menu").onclick = () => $("#game-menu").close();
 document.addEventListener("visibilitychange", () => {
   music.sync();
+  showInvestigation();
   if (!document.hidden) poll(true);
 });
 // Retry blocked autoplay from a real gesture; an explicit mute stays muted.

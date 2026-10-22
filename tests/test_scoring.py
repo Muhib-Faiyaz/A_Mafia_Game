@@ -29,9 +29,7 @@ class ScoringTests(unittest.TestCase):
         for user in self.mafia:
             self.post('act', dict(user, target=victim))
         self.post('act', dict(self.doctor, target=victim))
-        self.post('skip', self.host)
         self.post('act', dict(self.detective, target=investigation))
-        self.post('skip', self.host)
 
     def test_actions_hidden_then_settled_once_on_end(self):
         self.saved_night()
@@ -42,7 +40,7 @@ class ScoringTests(unittest.TestCase):
             self.assertNotIn('investigated', json.dumps(state))
         self.post('end', self.host)
         self.assertEqual(self.players[self.doctor['pid']]['score'], 1)
-        self.assertEqual(self.players[self.detective['pid']]['score'], 1)
+        self.assertEqual(self.players[self.detective['pid']]['score'], 0)
         self.assertEqual(self.players[self.mafia[0]['pid']]['score'], 0)
         game.settle_scores(self.room)
         self.post('state', self.host)
@@ -62,32 +60,30 @@ class ScoringTests(unittest.TestCase):
 
     def test_repeat_rescues_count_but_repeat_identifications_do_not(self):
         self.saved_night()
-        self.post('skip', self.host)
+        self.room['discuss_until'] = 0
         self.post('tally', self.host)
         self.saved_night()
         game.resolve_night(self.room)  # Retries must not duplicate points or notices.
         self.post('end', self.host)
         self.assertEqual(self.players[self.doctor['pid']]['score'], 2)
-        self.assertEqual(self.players[self.detective['pid']]['score'], 1)
+        self.assertEqual(self.players[self.detective['pid']]['score'], 0)
         self.assertEqual(len(self.room['notices']), 2)
         self.assertNotEqual(self.room['notices'][0]['story'], self.room['notices'][1]['story'])
 
     def test_new_identification_and_self_rescue(self):
         self.saved_night(victim=self.doctor['pid'])
-        self.post('skip', self.host)
+        self.room['discuss_until'] = 0
         self.post('tally', self.host)
         self.saved_night(investigation=self.mafia[1]['pid'])
         self.post('end', self.host)
         self.assertEqual(self.players[self.doctor['pid']]['score'], 2)
-        self.assertEqual(self.players[self.detective['pid']]['score'], 2)
+        self.assertEqual(self.players[self.detective['pid']]['score'], 0)
 
     def test_wrong_identification_and_no_attack_do_not_score(self):
         self.room['step_until'] = 0
         self.post('state', self.host)
         self.post('act', dict(self.doctor, target=self.villager['pid']))
-        self.post('skip', self.host)
         self.post('act', dict(self.detective, target=self.villager['pid']))
-        self.post('skip', self.host)
         self.post('end', self.host)
         self.assertTrue(all(p['score'] == 0 for p in self.players.values()))
         self.assertEqual(self.room['notices'], [])
@@ -115,6 +111,46 @@ class ScoringTests(unittest.TestCase):
         for user in self.mafia:
             self.assertEqual(self.players[user['pid']]['score'], 1)
         self.assertEqual(self.players[self.villager['pid']]['score'], 0)
+
+    def town_win(self):
+        for user in self.mafia:
+            self.players[user['pid']]['alive'] = False
+        self.assertTrue(game.check_win(self.room))
+
+    def test_survival_without_investigating_gets_one_on_town_win(self):
+        self.town_win()
+        self.assertEqual(self.players[self.detective['pid']]['score'], 1)
+
+    def test_wrong_identification_gets_one_on_surviving_town_win(self):
+        self.saved_night(investigation=self.villager['pid'])
+        self.town_win()
+        self.assertEqual(self.players[self.detective['pid']]['score'], 1)
+
+    def test_two_correct_identifications_are_capped_at_two_for_surviving_winner(self):
+        self.saved_night()
+        self.room['discuss_until'] = 0
+        self.post('tally', self.host)
+        self.saved_night(investigation=self.mafia[1]['pid'])
+        self.town_win()
+        detective = self.players[self.detective['pid']]
+        self.assertEqual(detective['score'], 2)
+        game.settle_scores(self.room)
+        self.assertEqual(detective['score'], 2)
+        self.assertEqual(detective['round_points'], 2)
+
+    def test_eliminated_detective_gets_zero_despite_correct_identification(self):
+        self.saved_night()
+        self.players[self.detective['pid']]['alive'] = False
+        self.town_win()
+        self.assertEqual(self.players[self.detective['pid']]['score'], 0)
+
+    def test_mafia_win_gives_surviving_detective_zero(self):
+        self.saved_night()
+        for player in self.players.values():
+            player['alive'] = player['role'] in ('mafia', 'detective')
+        self.assertTrue(game.check_win(self.room))
+        self.assertEqual(self.room['winner'], 'mafia')
+        self.assertEqual(self.players[self.detective['pid']]['score'], 0)
 
     def test_scores_follow_player_identity_across_restart_and_reset(self):
         self.saved_night()

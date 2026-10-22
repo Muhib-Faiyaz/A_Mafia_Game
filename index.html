@@ -141,8 +141,9 @@
             <dt><span aria-hidden="true">⌕</span> Detective</dt>
             <dd>
               Investigate one other living player each night. Your private case
-              file tells you at dawn whether they are Mafia. Use that knowledge
-              to help the town without making yourself an easy target.
+              file and private result immediately tell you whether they are Mafia.
+              If correct, do not directly reveal who the killer is: convince
+              the others through discussion and reasoning.
             </dd>
           </div>
         </dl>
@@ -159,13 +160,15 @@
           </li>
           <li>
             <b>Doctor and Detective turns:</b> each role chooses their action
-            when prompted. Everyone else waits. The night result and any private
-            investigation notes arrive at dawn.
+            when prompted. Confirming a target immediately advances to the next
+            turn; otherwise the existing timer applies. The Detective gets an
+            immediate private result. Deaths and rescues are revealed at dawn.
           </li>
           <li>
             <b>Discussion:</b> use town chat to share clues, ask questions, and
-            defend yourself. Voting opens when the timer ends or the host opens
-            it.
+            defend yourself. Every living player can press <b>Proceed to vote</b>.
+            The ready counter and town chat show progress. Voting opens when
+            everyone is ready or the discussion timer ends.
           </li>
           <li>
             <b>Voting:</b> tap another living player and confirm, type
@@ -191,8 +194,10 @@
           <li>Each surviving town player gets 1 point for a town win.</li>
           <li>The Doctor gets 1 point for each successful rescue.</li>
           <li>
-            The Detective gets 1 point for each different Mafia player correctly
-            identified.
+            A Detective who survives a town win gets 2 total points after a
+            correct Mafia identification, or 1 without one. An eliminated
+            Detective gets 0. A Mafia win or a host-ended game also gives the
+            Detective 0.
           </li>
         </ul>
       </section>
@@ -210,6 +215,13 @@
         </button>
       </div>
       <div id="menu-body" class="stack"></div>
+    </dialog>
+    <dialog id="investigation-dialog" aria-labelledby="investigation-title" aria-describedby="investigation-result investigation-reminder">
+      <p class="eyebrow">Private Detective result</p>
+      <h2 id="investigation-title"></h2>
+      <p id="investigation-result"></p>
+      <p id="investigation-reminder"></p>
+      <button id="dismiss-investigation" class="primary">Understood</button>
     </dialog>
     <dialog
       id="death-notice"
