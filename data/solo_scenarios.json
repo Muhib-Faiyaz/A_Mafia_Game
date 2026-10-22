@@ -1,0 +1,1122 @@
+[
+  {
+    "id": "white-pass",
+    "title": "The Last Light at White Pass",
+    "setting": "A mountain inn above a buried road",
+    "anchor": "the oil-stained ledger",
+    "pressure": "Someone bought the silence of this inn before the snow came.",
+    "opening": [
+      "Mara has laid seven places for supper and an eighth for a guest who never came down. The empty glass gathers a skin of ice. When she asks you to fetch the inn's accountant, you find him on the stair, one hand closed around a strip of the supper ledger. His candle has burned a black crescent into the wall.",
+      "Outside, the avalanche has taken the road and the telephone wire with it. Ivo, the porter, returns from the gate carrying a bell without its rope. There will be no one to summon until the pass opens. In the accountant's room, payments marked with two small crosses explain why the inn has been welcoming travelers who never reach the valley.",
+      "You show the surviving guests the ledger. Someone reaches to turn it facedown. Mara puts a bread knife across the page to hold it open. The gesture settles the first argument: nobody leaves alone, and the people sitting nearest the evidence must decide whom to trust."
+    ],
+    "cast": [
+      {
+        "name": "Mara",
+        "occupation": "Innkeeper",
+        "description": "Flour marks her black sleeves; she counts the chairs twice.",
+        "alibi": "I was dividing the bread at the kitchen table before the first alarm.",
+        "secret": "I sold my mother's silver to conceal the inn's debts."
+      },
+      {
+        "name": "Ivo",
+        "occupation": "Porter",
+        "description": "He keeps the broken gate bell inside his coat.",
+        "alibi": "I was checking the drift against the front gate before the first alarm.",
+        "secret": "I opened a guest's trunk to recover wages I was owed."
+      },
+      {
+        "name": "Nell",
+        "occupation": "Seamstress",
+        "description": "A needle stays threaded between her fingers even now.",
+        "alibi": "I was mending a collar beside the east stove before the first alarm.",
+        "secret": "I came here under my sister's name to escape a debt collector."
+      },
+      {
+        "name": "Tomas",
+        "occupation": "Timber surveyor",
+        "description": "He uses his folded map to keep the ledger flat.",
+        "alibi": "I was comparing the road map with the weather notes before the first alarm.",
+        "secret": "I altered a boundary mark to protect a tenant family."
+      },
+      {
+        "name": "Ada",
+        "occupation": "Traveling tutor",
+        "description": "She moves her chair so she can see both doors.",
+        "alibi": "I was marking lessons in the sitting room before the first alarm.",
+        "secret": "I carry letters from a man my family believes is dead."
+      },
+      {
+        "name": "Rafe",
+        "occupation": "Cook",
+        "description": "A burn crosses the hand he refuses to hide.",
+        "alibi": "I was lifting a pot off the back stove before the first alarm.",
+        "secret": "I stole provisions to feed someone sleeping in the old stable."
+      }
+    ]
+  },
+  {
+    "id": "last-ferry",
+    "title": "The Ferry That Missed the Shore",
+    "setting": "A river ferry held between flooded banks",
+    "anchor": "the sealed cargo list",
+    "pressure": "The cargo was supposed to reach the far bank without witnesses.",
+    "opening": [
+      "The ferry strikes the submerged chain hard enough to throw your cup into a stranger's lap. Across the river, the landing lamps go out one at a time. Captain Elian orders the engine stopped. In the sudden quiet, somebody below deck continues knocking until the knocking stops.",
+      "You find the cargo inspector beneath a broken shelf. A seal has been cut from his wrist case, and the duplicate cargo list names people where there should be crates. Two passengers booked through a company that does not exist. The ferry is caught against the chain; the flooded banks offer nowhere safe to put a boat ashore.",
+      "Elian brings everyone into the upper saloon, where the windows can be watched. He asks for the inspector's case. You leave it on the table between the passengers instead. The river takes another lamp from the landing. Whoever arranged this crossing has run out of places to hide the others."
+    ],
+    "cast": [
+      {
+        "name": "Elian",
+        "occupation": "Ferry captain",
+        "description": "He sets his watch on the table and never looks at it.",
+        "alibi": "I was at the wheel when the ferry struck the chain.",
+        "secret": "I took an unofficial passenger aboard to reunite a family."
+      },
+      {
+        "name": "Suri",
+        "occupation": "Deck mechanic",
+        "description": "River water runs from the tool roll on her lap.",
+        "alibi": "I was closing the engine intake when the chain caught us.",
+        "secret": "I had delayed a repair because the company refused to pay for parts."
+      },
+      {
+        "name": "Bram",
+        "occupation": "Cargo clerk",
+        "description": "He can fold a manifest without looking at his hands.",
+        "alibi": "I was counting sacks in the forward hold before the alarm.",
+        "secret": "I changed a weight entry to hide a hungry stowaway."
+      },
+      {
+        "name": "Leena",
+        "occupation": "Schoolteacher",
+        "description": "She wipes the inspector's ink from the table, then stops.",
+        "alibi": "I was reading in the saloon before the alarm below deck.",
+        "secret": "I am carrying examination money that I borrowed without permission."
+      },
+      {
+        "name": "Oren",
+        "occupation": "Cattle buyer",
+        "description": "His clean boots do not match the mud on his luggage.",
+        "alibi": "I was sheltering by the covered stern before the alarm.",
+        "secret": "I forged a buyer's letter to get credit for a failing farm."
+      },
+      {
+        "name": "Mina",
+        "occupation": "Ward attendant",
+        "description": "She keeps the inspector's abandoned scarf over her knees.",
+        "alibi": "I was sorting clean bandages near the saloon stove before the alarm.",
+        "secret": "I brought medicine across the river without the required permit."
+      }
+    ]
+  },
+  {
+    "id": "blackthorn",
+    "title": "A Funeral at Blackthorn",
+    "setting": "A country house after its master's funeral",
+    "anchor": "the unsigned codicil",
+    "pressure": "The dead man's estate has been paying a protection ring.",
+    "opening": [
+      "They have taken the flowers out, but the dining room still smells sweet enough to make you ill. Vera, the housekeeper, removes the late master's place setting. Beneath it lies a codicil written in a hand you recognize from the threats delivered before his death.",
+      "The solicitor arrives from the library without his spectacles. He tries to say something about the estate accounts and falls against the sideboard. Someone has barred the coach gate and cut the carriage traces. In his pocket, you find a note describing two agents sent to recover the master's record of protection payments before the estate changes hands.",
+      "Ansel wants the family seated apart from the staff. Vera carries the master's chair to the middle of the room and sits in it herself. You spread the unsigned document where everyone can see. Whatever their inheritance, they will have to answer the same questions."
+    ],
+    "cast": [
+      {
+        "name": "Vera",
+        "occupation": "Housekeeper",
+        "description": "Her keys hang over the back of the master's chair.",
+        "alibi": "I was clearing the dining room when the library bell rang.",
+        "secret": "I kept wages the late master ordered me to withhold from dismissed staff."
+      },
+      {
+        "name": "Ansel",
+        "occupation": "Estranged nephew",
+        "description": "He smooths a mourning band that is still pinned backward.",
+        "alibi": "I was in the portrait gallery before the solicitor came out.",
+        "secret": "I pawned a family miniature and replaced it with a copy."
+      },
+      {
+        "name": "Celia",
+        "occupation": "Companion",
+        "description": "She remembers how everyone takes tea and offers none.",
+        "alibi": "I was sorting condolence cards in the morning room.",
+        "secret": "I destroyed a letter that would have hurt the master's daughter."
+      },
+      {
+        "name": "Hugh",
+        "occupation": "Estate steward",
+        "description": "A column of figures is written on his cuff.",
+        "alibi": "I was comparing rent receipts in the office before the bell.",
+        "secret": "I reduced tenants' debts without recording the master's permission."
+      },
+      {
+        "name": "Dora",
+        "occupation": "Gardener",
+        "description": "She leaves black earth on the polished arm of her chair.",
+        "alibi": "I was shutting the conservatory windows before the bell.",
+        "secret": "I hid the grave marker of a servant the family refused to acknowledge."
+      },
+      {
+        "name": "Felix",
+        "occupation": "Auction valuer",
+        "description": "He turns every ornament so its chipped side faces him.",
+        "alibi": "I was listing the silver in the dining room before the bell.",
+        "secret": "I promised a buyer first refusal on an object I do not own."
+      }
+    ]
+  },
+  {
+    "id": "reservoir",
+    "title": "The Bell Beneath the Water",
+    "setting": "A hill village above a newly drained reservoir",
+    "anchor": "the surveyor’s notebook",
+    "pressure": "A buried village holds evidence the survey company wants erased.",
+    "opening": [
+      "The old church bell rings from the mud at noon. It has not had a rope since the valley was flooded. On the shore, survey flags stand where doorsteps used to be, and Edda is kneeling at a stone that once belonged to her kitchen.",
+      "By dusk, the surveyor who exposed the bell is dead in the pump shed. His notebook records payments to drive families from the valley before the water rose. Two people working for the company have orders to destroy the original deeds. Rain has closed the hillside track, and the temporary radio mast lies across it.",
+      "You carry the notebook up to the old school, the only lit building above the flood line. Edda refuses to let it rest on the stove where it could disappear into the fire. She gives you a slate instead. You write the first name on it and turn it toward the six waiting faces."
+    ],
+    "cast": [
+      {
+        "name": "Edda",
+        "occupation": "Displaced resident",
+        "description": "She carries a house key polished by years underwater.",
+        "alibi": "I was marking my old doorstep on the exposed shore.",
+        "secret": "I removed a family deed from the surveyor's bag to prevent another seizure."
+      },
+      {
+        "name": "Jory",
+        "occupation": "Pump operator",
+        "description": "He keeps correcting the water level in the margin.",
+        "alibi": "I was checking the upper pump gauge before dusk.",
+        "secret": "I concealed a small leak so the company would not dismiss my crew."
+      },
+      {
+        "name": "Luz",
+        "occupation": "Village archivist",
+        "description": "She has wrapped her dry papers in a child's raincoat.",
+        "alibi": "I was drying parish records in the school before dusk.",
+        "secret": "I copied restricted records to help displaced families challenge their eviction."
+      },
+      {
+        "name": "Marek",
+        "occupation": "Survey assistant",
+        "description": "His boots have been washed more carefully than his hands.",
+        "alibi": "I was resetting flags along the old lane before dusk.",
+        "secret": "I moved a survey flag to keep it away from an unmarked grave."
+      },
+      {
+        "name": "Pia",
+        "occupation": "Boat keeper",
+        "description": "She watches the notebook rather than the door.",
+        "alibi": "I was tying the workboats above the rising water.",
+        "secret": "I used a company boat to take a family to their lost home."
+      },
+      {
+        "name": "Silas",
+        "occupation": "Retired mason",
+        "description": "He brings a fragment of stone to use as a paperweight.",
+        "alibi": "I was checking the cracks around the school chimney.",
+        "secret": "I took stone from the abandoned church to rebuild a neighbor's wall."
+      }
+    ]
+  },
+  {
+    "id": "sleeper",
+    "title": "The Sleeper Before Dawn",
+    "setting": "A night train stranded outside a locked signal box",
+    "anchor": "the conductor’s punch book",
+    "pressure": "The train carries witnesses whose destination was sold.",
+    "opening": [
+      "The train stops so gently that nobody wakes until the lamps fail. Through the window, the signal box shows one red square of light. Corin, the conductor, goes down the corridor with his punch. When the porter comes for you, that punch is lying beside him on the ballast.",
+      "The radio has been dismantled, not broken. In Corin's book, a second set of tickets records six passengers as freight. Someone sold their arrival time to the people they were traveling to testify against. Two agents are aboard to make sure the witnesses never reach the hearing. Beyond the embankment, snow covers the service road.",
+      "The passengers want their compartments locked. You ask them to meet in the dining car first. Nessa lays the punch book between the salt cellars and closes the connecting door. For the first time since boarding, everyone can see who is missing from the conversation."
+    ],
+    "cast": [
+      {
+        "name": "Nessa",
+        "occupation": "Dining-car attendant",
+        "description": "She keeps setting down a cup for the dead conductor.",
+        "alibi": "I was securing the dining-car cupboards when the train stopped.",
+        "secret": "I let a penniless traveler eat on another passenger's account."
+      },
+      {
+        "name": "Arun",
+        "occupation": "Signal apprentice",
+        "description": "He draws the red signal on the condensation with one finger.",
+        "alibi": "I was watching the signal box from the rear vestibule.",
+        "secret": "I failed a safety examination and have not told my supervisor."
+      },
+      {
+        "name": "Bea",
+        "occupation": "Court interpreter",
+        "description": "She answers only after checking which meaning you intended.",
+        "alibi": "I was translating a letter in my compartment before the stop.",
+        "secret": "I secretly warned a witness that their address had been exposed."
+      },
+      {
+        "name": "Dimitri",
+        "occupation": "Instrument seller",
+        "description": "His sample case is tied with two different kinds of string.",
+        "alibi": "I was repairing the latch on my case in the corridor.",
+        "secret": "I replaced a damaged instrument with one borrowed from a rival."
+      },
+      {
+        "name": "Elsa",
+        "occupation": "Ticket auditor",
+        "description": "She knows which ticket has already been examined twice.",
+        "alibi": "I was checking the booking ledger at the front of the carriage.",
+        "secret": "I sold my own travel allowance to pay for a relative's fare."
+      },
+      {
+        "name": "Jonah",
+        "occupation": "Railway cook",
+        "description": "He carries the last warm loaf into the dining car.",
+        "alibi": "I was banking the galley fire when the lights went out.",
+        "secret": "I have been keeping food for railway workers dismissed without wages."
+      }
+    ]
+  },
+  {
+    "id": "quarantine",
+    "title": "The House of Clean Windows",
+    "setting": "A seaside convalescent house under quarantine",
+    "anchor": "the visitors’ register",
+    "pressure": "A smuggling ring has been using patient transfers as cover.",
+    "opening": [
+      "Every window in the house has been washed from the inside. Through them the sea looks close enough to step into. The launch should have brought a health officer at four; instead, it circles once and leaves. At five, Hester finds the house superintendent beside the linen cupboard, with a torn page of the visitors' register folded into his fist.",
+      "You discover the transfer slips he had been checking. The same two escorts have collected patients who were never admitted, moving stolen goods through a quarantine nobody questioned. Their accomplices are still in the house. The launch will not return until the channel is safe, and the superintendent's radio has been emptied of its battery.",
+      "Hester brings clean blankets to the common room, then locks the linen cupboard herself. You put the register under the lamp. Nobody is asked to be brave. They are asked to remember who came through the door."
+    ],
+    "cast": [
+      {
+        "name": "Hester",
+        "occupation": "House matron",
+        "description": "She folds the blanket corners before answering you.",
+        "alibi": "I was counting fresh linen before the superintendent was found.",
+        "secret": "I concealed an unauthorized visit so a patient could see her father."
+      },
+      {
+        "name": "Basil",
+        "occupation": "Launch keeper",
+        "description": "His cap leaves a wet ring on every table.",
+        "alibi": "I was signaling the launch from the landing before five.",
+        "secret": "I accepted payment to carry a letter past the quarantine checks."
+      },
+      {
+        "name": "Noor",
+        "occupation": "Records assistant",
+        "description": "She recognizes a torn page by the shape of its staple.",
+        "alibi": "I was sorting old transfer slips in the records room.",
+        "secret": "I corrected an admission date to protect a colleague from dismissal."
+      },
+      {
+        "name": "Emil",
+        "occupation": "Piano tuner",
+        "description": "He rests his fingers on the keys without sounding them.",
+        "alibi": "I was checking the common-room piano before the alarm.",
+        "secret": "I am avoiding a creditor who believes I left the country."
+      },
+      {
+        "name": "Tessa",
+        "occupation": "Laundry worker",
+        "description": "She has a visitor's ribbon hidden among her work ties.",
+        "alibi": "I was bringing dry blankets upstairs before five.",
+        "secret": "I lent my visitor's pass to someone who was turned away."
+      },
+      {
+        "name": "Vik",
+        "occupation": "Kitchen porter",
+        "description": "He stays beside the serving hatch where he can see outside.",
+        "alibi": "I was peeling potatoes by the kitchen window before the alarm.",
+        "secret": "I have been taking leftovers to an unregistered patient."
+      }
+    ]
+  },
+  {
+    "id": "lanterns",
+    "title": "The Lanterns of Hollow Street",
+    "setting": "A neighborhood festival after the bridge closes",
+    "anchor": "the festival collection book",
+    "pressure": "A protection gang has been taking a share of every stall.",
+    "opening": [
+      "At the festival's last rehearsal, the paper dragon catches against an upstairs shutter. Lin climbs to release it and sees the treasurer seated behind the window, his mouth open around an unfinished warning. Below, the lanterns are being lit in his name.",
+      "His collection book divides every donation into two columns. One pays for the festival; the other feeds a gang that has begun demanding ownership of the street. Two collectors were expected tonight. The footbridge has been declared unsafe, and someone has locked the gate at the far end of the only dry lane.",
+      "Lin cuts the dragon loose. It falls across the empty market tables and hides the names on the book for a moment. You lift its paper head away. The stallholders gather around you, listening to the little fires inside their lanterns."
+    ],
+    "cast": [
+      {
+        "name": "Lin",
+        "occupation": "Lantern maker",
+        "description": "Red paste has dried along the creases of her fingers.",
+        "alibi": "I was freeing the paper dragon from the upstairs shutter.",
+        "secret": "I used festival money to replace lanterns a child accidentally destroyed."
+      },
+      {
+        "name": "Farid",
+        "occupation": "Spice merchant",
+        "description": "He measures every pause with the lid of his tin.",
+        "alibi": "I was closing the spice stall before the lantern lighting.",
+        "secret": "I sold an inherited ring to cover a neighbor's stall fee."
+      },
+      {
+        "name": "Mabel",
+        "occupation": "Festival singer",
+        "description": "She has stopped humming the song everyone expects.",
+        "alibi": "I was rehearsing behind the stage before the treasurer was found.",
+        "secret": "I changed the song list to hide that another singer had lost her voice."
+      },
+      {
+        "name": "Otis",
+        "occupation": "Bridge inspector",
+        "description": "He sets a bent gate key beside the collection book.",
+        "alibi": "I was measuring the split in the bridge railing.",
+        "secret": "I had signed off a repair I knew would need doing again."
+      },
+      {
+        "name": "Yara",
+        "occupation": "Street printer",
+        "description": "She keeps checking whose name is missing from the posters.",
+        "alibi": "I was hanging the last festival notices by the dry lane.",
+        "secret": "I printed anonymous complaints about the protection payments."
+      },
+      {
+        "name": "Ben",
+        "occupation": "Market sweeper",
+        "description": "He holds his broom across the entrance without being asked.",
+        "alibi": "I was collecting broken lantern frames from the market.",
+        "secret": "I hid a stallholder's arrears notice instead of delivering it."
+      }
+    ]
+  },
+  {
+    "id": "salt-level",
+    "title": "The Seventh Salt Level",
+    "setting": "A mine refuge below a sealed shaft",
+    "anchor": "the foreman’s brass tally",
+    "pressure": "The mine’s losses conceal a payroll racket enforced by violence.",
+    "opening": [
+      "The lift comes back without its operator. A brass tally swings from the cage gate, striking it each time the ventilation fans turn. Rosa takes the tally off before the noise brings the whole shift running. The number stamped into it belongs to a level officially closed for years.",
+      "Down there, you find the foreman and a payroll ledger paid out to workers who never existed. The racket's enforcers have used the abandoned level as a store and a threat. Two of them are below ground with you now. The upper cage has been disabled; climbing the service shaft without ventilation would kill the people you are trying to save.",
+      "You return to the refuge room. Rosa distributes the water before anyone argues about the evidence. The tally lies on the bench between the bottles. Each person must reach past it to take a drink."
+    ],
+    "cast": [
+      {
+        "name": "Rosa",
+        "occupation": "Shift coordinator",
+        "description": "She counts water bottles before she counts people.",
+        "alibi": "I was checking the refuge supplies when the empty lift returned.",
+        "secret": "I covered a missing worker's shift so his family would still be paid."
+      },
+      {
+        "name": "Cal",
+        "occupation": "Lift mechanic",
+        "description": "He keeps the ruined cage pin wrapped in a clean cloth.",
+        "alibi": "I was testing the lower cage brake before the alarm.",
+        "secret": "I used an unapproved spare when the proper part never arrived."
+      },
+      {
+        "name": "Ines",
+        "occupation": "Ore recorder",
+        "description": "She reads numbers aloud as if another voice might correct them.",
+        "alibi": "I was checking the day's ore weights near the refuge.",
+        "secret": "I changed a weight entry after a supervisor threatened a loader."
+      },
+      {
+        "name": "Davi",
+        "occupation": "Ventilation hand",
+        "description": "He listens to the fans between every sentence.",
+        "alibi": "I was clearing the intake grille before the lift stopped.",
+        "secret": "I have been hiding an injury to avoid losing my position."
+      },
+      {
+        "name": "Moira",
+        "occupation": "Payroll courier",
+        "description": "She has folded the ledger to keep the dead man's name inside.",
+        "alibi": "I was waiting at the lower landing with the pay packets.",
+        "secret": "I borrowed from an undelivered packet and intended to replace it."
+      },
+      {
+        "name": "Pavel",
+        "occupation": "Tool keeper",
+        "description": "His tool tags are sorted by their owners rather than their size.",
+        "alibi": "I was locking the drill rack before the alarm.",
+        "secret": "I secretly lent tools to dismissed workers trying to find other work."
+      }
+    ]
+  },
+  {
+    "id": "red-curtain",
+    "title": "The Audience Behind the Curtain",
+    "setting": "A touring theater locked after its final rehearsal",
+    "anchor": "the prompt copy",
+    "pressure": "The company’s tour has been carrying blackmail letters.",
+    "opening": [
+      "The prompter misses a cue that everyone knows he would rather die than miss. Onstage, Sol waits with his hand extended toward an empty chair. You go below the footlights and find the prompter's chair overturned beneath the stage.",
+      "A packet of letters has been sewn into his prompt copy. The theater has carried a blackmail network from town to town, with two handlers hidden among the company. He meant to hand the letters to you after rehearsal. Now the fire doors have been chained from within, and the stage telephone has lost its cord.",
+      "Sol calls for the curtain to come down. Rina leaves it open. There is no audience to protect from the sight of them anymore. You set the prompt copy on the stage, and the company steps into the same pool of light."
+    ],
+    "cast": [
+      {
+        "name": "Sol",
+        "occupation": "Leading actor",
+        "description": "He answers to his character's name before his own.",
+        "alibi": "I was onstage waiting for the missed cue.",
+        "secret": "I signed another actor's contract to stop the tour being canceled."
+      },
+      {
+        "name": "Rina",
+        "occupation": "Stage manager",
+        "description": "She keeps her hand on the curtain rope while she listens.",
+        "alibi": "I was calling the last rehearsal from the wing.",
+        "secret": "I hid a safety complaint because I feared the company would lose its theater."
+      },
+      {
+        "name": "Milo",
+        "occupation": "Scenery painter",
+        "description": "A streak of white paint runs through his hair.",
+        "alibi": "I was touching up the garden flat behind the stage.",
+        "secret": "I painted over an older signature on a backdrop I sold as mine."
+      },
+      {
+        "name": "Asha",
+        "occupation": "Costume keeper",
+        "description": "She turns a torn hem inside out before anyone can see it.",
+        "alibi": "I was hanging the funeral costumes in the dressing room.",
+        "secret": "I sold an unused costume to pay a performer's lodging bill."
+      },
+      {
+        "name": "Ewan",
+        "occupation": "Pianist",
+        "description": "He covers the keys with a cloth to end an argument.",
+        "alibi": "I was playing the rehearsal score in the pit.",
+        "secret": "I have been using arrangements written by my estranged brother."
+      },
+      {
+        "name": "Cora",
+        "occupation": "Ticket seller",
+        "description": "She keeps a row of unused tickets like evidence.",
+        "alibi": "I was counting returns at the front desk before the doors were chained.",
+        "secret": "I let a critic enter without payment and concealed the empty seat."
+      }
+    ]
+  },
+  {
+    "id": "observatory",
+    "title": "The Unrecorded Star",
+    "setting": "A hilltop observatory during a winter blackout",
+    "anchor": "the plate cabinet key",
+    "pressure": "An extortion scheme is hidden inside the research accounts.",
+    "opening": [
+      "There is nothing unusual in the sky when the observatory goes dark. That is what Neri says afterward, when you ask why nobody noticed the first missing minute. The director lies under the chart table. His hand has left a red mark where tomorrow's lecture was supposed to be pinned.",
+      "In his accounts, equipment grants have been redirected to an organization that threatens the researchers' families. Two of its collectors arrived under academic names. They need the photographic plates that show an unauthorized nighttime delivery. Outside, ice has taken the descent road; inside, the radio's power lead has been cut cleanly.",
+      "Neri brings the cabinet key to you instead of opening the plates for the room. You leave the cabinet locked. The first thing to examine is not the sky but the six different explanations for the darkness."
+    ],
+    "cast": [
+      {
+        "name": "Neri",
+        "occupation": "Night observer",
+        "description": "She speaks toward the shuttered dome rather than the table.",
+        "alibi": "I was checking the guide telescope when the blackout began.",
+        "secret": "I kept a failed observation out of the official report."
+      },
+      {
+        "name": "Kian",
+        "occupation": "Instrument maker",
+        "description": "He fits the broken power lead together without joining it.",
+        "alibi": "I was cleaning the calibration bench before the blackout.",
+        "secret": "I replaced a costly lens with one from a retired instrument."
+      },
+      {
+        "name": "Vera",
+        "occupation": "Grant secretary",
+        "description": "She can find a payment by the sound of its date.",
+        "alibi": "I was copying expenses in the office before the alarm.",
+        "secret": "I moved money between accounts to keep a junior researcher employed."
+      },
+      {
+        "name": "Lotte",
+        "occupation": "Plate archivist",
+        "description": "She refuses to touch the key with her bare hands.",
+        "alibi": "I was labeling plates beside the cabinet before the blackout.",
+        "secret": "I kept a damaged plate after being ordered to destroy it."
+      },
+      {
+        "name": "Hadi",
+        "occupation": "Weather recorder",
+        "description": "He has carried the frost chart inside his coat.",
+        "alibi": "I was reading the exterior gauge before the blackout.",
+        "secret": "I corrected a missed weather reading using an estimate."
+      },
+      {
+        "name": "June",
+        "occupation": "Visiting lecturer",
+        "description": "Her prepared notes remain folded in the wrong order.",
+        "alibi": "I was rehearsing tomorrow's lecture in the lower hall.",
+        "secret": "I accepted credit for an idea my assistant developed."
+      }
+    ]
+  },
+  {
+    "id": "embassy",
+    "title": "The Embassy Without Flags",
+    "setting": "A closed diplomatic residence awaiting an evacuation",
+    "anchor": "the dispatch pouch",
+    "pressure": "A trafficking network has been selling evacuation places.",
+    "opening": [
+      "By sunset, all the flags have been taken down except the little one on the ambassador's desk. It trembles when the generator starts. Sera finds the evacuation officer in the dispatch room, with a departure stamp pressed into his palm.",
+      "The final passenger list contains six names written twice and a chain of payments for seats that should have been free. Two agents of the brokers remain in the residence. They have taken the radio crystals and disabled the gate motor. The convoy outside will not cross the city until morning; the people inside must keep the original list intact until then.",
+      "Sera asks you to seal the pouch. You ask everyone to watch her do it. For the first time that evening, a routine procedure becomes something nobody is willing to turn away from."
+    ],
+    "cast": [
+      {
+        "name": "Sera",
+        "occupation": "Dispatch secretary",
+        "description": "She folds the empty flag sleeve before touching the pouch.",
+        "alibi": "I was checking dispatch seals before sunset.",
+        "secret": "I added a caretaker's family to an evacuation request without approval."
+      },
+      {
+        "name": "Amir",
+        "occupation": "Motor-pool driver",
+        "description": "He has put every vehicle key in a separate saucer.",
+        "alibi": "I was checking fuel in the courtyard before the generator started.",
+        "secret": "I diverted fuel for a civilian ambulance."
+      },
+      {
+        "name": "Livia",
+        "occupation": "Residence steward",
+        "description": "She serves water in glasses meant for ceremonial guests.",
+        "alibi": "I was clearing the reception room before sunset.",
+        "secret": "I sheltered an unregistered visitor in an unused servant's room."
+      },
+      {
+        "name": "Theo",
+        "occupation": "Communications aide",
+        "description": "He keeps the silent headset around his neck.",
+        "alibi": "I was checking message logs before the radio failed.",
+        "secret": "I delayed sending an order that would have abandoned a colleague."
+      },
+      {
+        "name": "Mara",
+        "occupation": "Document examiner",
+        "description": "She asks you to hold a page to the light, not hand it over.",
+        "alibi": "I was comparing departure stamps in the small office.",
+        "secret": "I returned a confiscated identity card to its owner."
+      },
+      {
+        "name": "Nabil",
+        "occupation": "Kitchen supervisor",
+        "description": "He leaves a chair between the food and the evidence.",
+        "alibi": "I was packing food for the morning convoy.",
+        "secret": "I used official food stores to feed people waiting outside the gate."
+      }
+    ]
+  },
+  {
+    "id": "radio-island",
+    "title": "A Voice After Sign-off",
+    "setting": "An island radio station in a storm",
+    "anchor": "the transmission log",
+    "pressure": "A coastal racket has been hiding instructions inside weather reports.",
+    "opening": [
+      "The voice comes over the station monitor after sign-off. It reads tomorrow's weather in the missing announcer's cadence, then gives an anchorage no fishing boat uses. Fen reaches for the microphone. You take her hand away before she answers.",
+      "The announcer is in the battery room. The broadcast was a recording, and its margin notes turn weather phrases into directions for a coastal smuggling gang. Two people at the station have been feeding it. The launch has broken from its mooring; the only working transmitter has lost a part small enough to hide in a pocket.",
+      "You carry the log into the recording room. Fen takes the spare microphone off its stand and puts it in a drawer. No one is going to speak for the station until the room has decided whom it can believe."
+    ],
+    "cast": [
+      {
+        "name": "Fen",
+        "occupation": "Programme host",
+        "description": "She touches the mute switch whenever someone interrupts.",
+        "alibi": "I was listening to the station monitor after sign-off.",
+        "secret": "I broadcast an unauthorized warning to keep a fishing crew ashore."
+      },
+      {
+        "name": "Idris",
+        "occupation": "Transmitter engineer",
+        "description": "He sorts screws into the lid of an empty tea tin.",
+        "alibi": "I was measuring the transmitter output before the recorded voice began.",
+        "secret": "I used station parts to repair a neighbor's emergency receiver."
+      },
+      {
+        "name": "Alma",
+        "occupation": "Weather reader",
+        "description": "She crosses out a forecast rather than explain a correction.",
+        "alibi": "I was preparing the morning weather sheet.",
+        "secret": "I copied a missing observation from a mainland report."
+      },
+      {
+        "name": "Tobin",
+        "occupation": "Launch keeper",
+        "description": "Salt has dried along the inside of his sleeves.",
+        "alibi": "I was checking the mooring line before the storm worsened.",
+        "secret": "I took the launch out without permission to retrieve a lost net."
+      },
+      {
+        "name": "Ren",
+        "occupation": "Recording assistant",
+        "description": "He knows where the spliced tape joins by touch.",
+        "alibi": "I was boxing old recordings in the archive room.",
+        "secret": "I kept a recording that proves a supervisor stole another person's work."
+      },
+      {
+        "name": "Elsie",
+        "occupation": "Station cook",
+        "description": "She sets the kettle down before its whistle can drown a reply.",
+        "alibi": "I was washing supper dishes before the voice came over the monitor.",
+        "secret": "I have been sending station supplies to my brother on the mainland."
+      }
+    ]
+  },
+  {
+    "id": "orchard",
+    "title": "The Orchard Debt",
+    "setting": "A harvest house beside a locked cider press",
+    "anchor": "the harvest account book",
+    "pressure": "A buying cartel has been collecting debts with hired killers.",
+    "opening": [
+      "The cider press is still turning when you reach the shed. Apples roll against the dead buyer's shoes, bruising where the belt catches them. Iris shuts the motor off. In the quiet, Iris calls the buyer a name she never used in public.",
+      "The harvest account book explains it: the growers were paying a buying cartel to leave them enough fruit to survive. The buyer had begun recording the enforcers' names. Two collectors are among the people waiting for the night's payment. A fallen tree blocks the lane, and the farm's only truck has no distributor cap.",
+      "You bring the book to the long kitchen table. Iris removes the harvest money from beside it and puts it in the flour bin. Whoever speaks first will have to speak about the dead man, not what he was owed."
+    ],
+    "cast": [
+      {
+        "name": "Iris",
+        "occupation": "Orchard manager",
+        "description": "She wipes apple pulp from the ledger's corners.",
+        "alibi": "I was checking the press motor before the buyer was found.",
+        "secret": "I sold part of the crop privately to pay the pickers."
+      },
+      {
+        "name": "Galen",
+        "occupation": "Fruit grader",
+        "description": "He sorts bruised apples while he waits for a question.",
+        "alibi": "I was sorting the last crates outside the shed.",
+        "secret": "I changed a grade mark so a tenant would receive a fairer price."
+      },
+      {
+        "name": "Mina",
+        "occupation": "Account keeper",
+        "description": "She refuses to round a sum even during an argument.",
+        "alibi": "I was adding the harvest wages at the kitchen table.",
+        "secret": "I concealed a shortfall caused by a relative's unpaid loan."
+      },
+      {
+        "name": "Oskar",
+        "occupation": "Truck mechanic",
+        "description": "He keeps checking the empty space where a part should be.",
+        "alibi": "I was patching a tire behind the barn.",
+        "secret": "I sold a spare truck part after my wages were delayed."
+      },
+      {
+        "name": "Tali",
+        "occupation": "Preserve maker",
+        "description": "Her apron pockets are full of unused jar labels.",
+        "alibi": "I was sealing preserves in the back kitchen.",
+        "secret": "I used the orchard's best fruit for a sick neighbor without asking."
+      },
+      {
+        "name": "Hector",
+        "occupation": "Seasonal picker",
+        "description": "He takes the chair nearest the wage envelopes.",
+        "alibi": "I was stacking empty picking baskets before supper.",
+        "secret": "I gave a false name because a former employer is withholding my papers."
+      }
+    ]
+  },
+  {
+    "id": "archive",
+    "title": "The Page That Would Not Burn",
+    "setting": "A municipal archive closed for fumigation",
+    "anchor": "the singed tenancy register",
+    "pressure": "A criminal land company needs the original ownership records destroyed.",
+    "opening": [
+      "The fire in the sorting room goes out before the alarm does. The archive keeper has smothered it with his own coat. He is lying beside the surviving register, one sleeve still smoking. You can read a street name through the hole burned in the cover.",
+      "The register proves that a land company sold homes it never owned. Two hired agents entered with the fumigation crew to destroy the originals. The keeper interrupted them. Now the shutters have been fastened for treatment, the external doors locked, and the alarm line cut. Opening the wrong sealed room would make the whole building unsafe.",
+      "Aline finds a dry blotter large enough for the damaged book. She gives you the clean half and keeps the burned half herself. Nobody argues when you ask them to leave their gloves where everyone can see them."
+    ],
+    "cast": [
+      {
+        "name": "Aline",
+        "occupation": "Conservator",
+        "description": "She catches loose ash on a blotter instead of brushing it away.",
+        "alibi": "I was preparing repair paste in the conservation room.",
+        "secret": "I kept a condemned family photograph after being told to discard it."
+      },
+      {
+        "name": "Rami",
+        "occupation": "Cataloguer",
+        "description": "He knows the missing shelf number without checking.",
+        "alibi": "I was checking shelf labels in the public reading room.",
+        "secret": "I secretly copied a sealed file to help a tenant dispute an eviction."
+      },
+      {
+        "name": "Cleo",
+        "occupation": "Fumigation clerk",
+        "description": "She has written the room-seal numbers on her sleeve.",
+        "alibi": "I was counting sealed-room notices before the alarm.",
+        "secret": "I reported supplies as delivered when the contractor had not sent them."
+      },
+      {
+        "name": "Boris",
+        "occupation": "Building porter",
+        "description": "His key ring has one empty hook he cannot stop touching.",
+        "alibi": "I was inspecting the outer shutters before the alarm.",
+        "secret": "I lent a duplicate key to a dismissed employee collecting personal things."
+      },
+      {
+        "name": "Esme",
+        "occupation": "Local historian",
+        "description": "She keeps a pencil between the pages she will not surrender.",
+        "alibi": "I was comparing street names at the reading table.",
+        "secret": "I published a discovery that an unpaid volunteer actually made."
+      },
+      {
+        "name": "Tahir",
+        "occupation": "Archive courier",
+        "description": "He leaves his delivery bag open so it can be searched.",
+        "alibi": "I was sorting outgoing requests at the dispatch desk.",
+        "secret": "I opened a returned letter to find an address for a displaced family."
+      }
+    ]
+  },
+  {
+    "id": "circus",
+    "title": "The Last Circle of Sawdust",
+    "setting": "A small circus wintering behind a flooded causeway",
+    "anchor": "the ringmaster’s route book",
+    "pressure": "A traveling extortion ring has been borrowing the circus’s papers.",
+    "opening": [
+      "The ringmaster promised this would be the last winter they spent sleeping beside the animals' empty stalls. At the farewell rehearsal, his whistle sounds once from behind the canvas. Nobody moves until it sounds again in a different hand.",
+      "You find him in the ticket wagon. His route book names towns the circus never visited and payments from shops the performers never saw. Two collectors have been using its travel papers as cover. The causeway is underwater, and someone has unhitched the only roadworthy wagon and hidden its coupling.",
+      "Luka rolls a drum into the center ring and spreads the route book across it. The others come to the circle without waiting for their names. In the cold tent, you can hear each person finding a place to stand."
+    ],
+    "cast": [
+      {
+        "name": "Luka",
+        "occupation": "Percussionist",
+        "description": "He steadies the drum with a shoe so the evidence will not slide.",
+        "alibi": "I was packing the rehearsal instruments before the whistle sounded.",
+        "secret": "I pawned a cymbal to pay for a sick performer's lodging."
+      },
+      {
+        "name": "Zoya",
+        "occupation": "Aerial performer",
+        "description": "She coils her safety rope around an empty chair.",
+        "alibi": "I was checking the rigging before the farewell rehearsal.",
+        "secret": "I hid a damaged rope to keep a frightened apprentice from losing work."
+      },
+      {
+        "name": "Nico",
+        "occupation": "Wagon carpenter",
+        "description": "He lays a measuring rule across his knees.",
+        "alibi": "I was checking wheel hubs behind the main tent.",
+        "secret": "I took wood from a client's order to repair the sleeping wagon."
+      },
+      {
+        "name": "Petra",
+        "occupation": "Wardrobe keeper",
+        "description": "She has sewn a coat lining with a different color of thread.",
+        "alibi": "I was repairing the ringmaster's old coat.",
+        "secret": "I altered a costume to hide another performer's unpaid debts."
+      },
+      {
+        "name": "Ilan",
+        "occupation": "Ticket accountant",
+        "description": "He squares the unsold tickets before he answers.",
+        "alibi": "I was closing the winter ticket account.",
+        "secret": "I let a creditor believe the circus had already left town."
+      },
+      {
+        "name": "Sabine",
+        "occupation": "Equestrian trainer",
+        "description": "She leaves the riding crop outside the ring.",
+        "alibi": "I was bringing the last tack into dry storage.",
+        "secret": "I secretly sold unused equipment to buy feed during the flood."
+      }
+    ]
+  },
+  {
+    "id": "courthouse",
+    "title": "The Hearing Before Morning",
+    "setting": "A provincial courthouse after a witness’s death",
+    "anchor": "the clerk’s docket",
+    "pressure": "A protection syndicate has infiltrated the hearing against it.",
+    "opening": [
+      "The courthouse clock has been stopped at the hour the hearing should begin. It is still night. You find the chief witness seated on a corridor bench, his sworn statement folded neatly inside his coat. Someone has laid his hat on the chair reserved for the judge.",
+      "The clerk's docket shows two substitute officials admitted under orders nobody signed. The case concerns a protection syndicate that has been buying both verdicts and silence. The substitutes cannot be identified from the damaged admission sheet. The iron street gate is barred, and the telephone cable has been pulled down into the flooded cellar.",
+      "Nadia brings the witness's hat to the hearing room. She does not put it on the judge's bench. She places it beside the public seats and asks you to keep the docket open until someone can finish what he came to say."
+    ],
+    "cast": [
+      {
+        "name": "Nadia",
+        "occupation": "Junior clerk",
+        "description": "She places the witness's hat where an empty seat can be seen.",
+        "alibi": "I was arranging the public benches before the witness was found.",
+        "secret": "I warned a witness about an address exposed in a court filing."
+      },
+      {
+        "name": "Alec",
+        "occupation": "Court usher",
+        "description": "He keeps one admission card apart from the rest.",
+        "alibi": "I was checking the side entrance before the alarm.",
+        "secret": "I let a witness's relative enter after visiting hours."
+      },
+      {
+        "name": "Soraya",
+        "occupation": "Interpreter",
+        "description": "She corrects the wording of an accusation before its target can answer.",
+        "alibi": "I was reviewing the witness's statement in the small office.",
+        "secret": "I softened an insulting translation to prevent a witness from withdrawing."
+      },
+      {
+        "name": "Henrik",
+        "occupation": "Building caretaker",
+        "description": "He can identify a key by its weight in his palm.",
+        "alibi": "I was checking the cellar water level.",
+        "secret": "I concealed a repair bill I paid from an emergency fund without approval."
+      },
+      {
+        "name": "Bina",
+        "occupation": "Petition writer",
+        "description": "Her ink bottle has been wrapped in a borrowed handkerchief.",
+        "alibi": "I was copying a petition at the public counter.",
+        "secret": "I signed for a client who could not return before the deadline."
+      },
+      {
+        "name": "Oscar",
+        "occupation": "Hearing reporter",
+        "description": "He leaves a blank line where a confident answer should be.",
+        "alibi": "I was checking yesterday's notes in the hearing room.",
+        "secret": "I omitted an unverified allegation that an editor ordered me to publish."
+      }
+    ]
+  },
+  {
+    "id": "monastery",
+    "title": "The Guesthouse at Saint Oran",
+    "setting": "A monastery guesthouse above a flooded ford",
+    "anchor": "the pilgrim donation roll",
+    "pressure": "A gang has been hiding ransom payments among charitable gifts.",
+    "opening": [
+      "The bell for the evening meal rings with the wrong rhythm. Brother Amos stops halfway through laying the table. You follow him to the counting room, where the guestmaster lies beneath a cupboard of folded blankets. A bowl of donation coins has been turned upside down over his hand.",
+      "The donation roll marks certain gifts with the initials of missing travelers. He had discovered that two people staying in the guesthouse were collecting ransom money through the charity account. The ford has risen above the roadside crosses. Someone has removed the bridge planks kept for emergencies and cut the rope of the signal bell.",
+      "Amos brings the roll back to the dining room but leaves the coins where they fell. The people waiting for supper make room for the empty bowl. You ask each of them to say why they came here."
+    ],
+    "cast": [
+      {
+        "name": "Amos",
+        "occupation": "Guesthouse brother",
+        "description": "He lays an empty bowl in the center of the table.",
+        "alibi": "I was setting out supper when the bell rang incorrectly.",
+        "secret": "I used restricted donations to shelter a family without papers."
+      },
+      {
+        "name": "Leda",
+        "occupation": "Pilgrim guide",
+        "description": "Her map is patched with pieces of old prayer cards.",
+        "alibi": "I was drying travelers' coats in the entrance hall.",
+        "secret": "I led a debtor by an unregistered route to protect him from collectors."
+      },
+      {
+        "name": "Rufus",
+        "occupation": "Stone restorer",
+        "description": "White dust has worked into the buckle of his belt.",
+        "alibi": "I was covering unfinished stonework before the rain.",
+        "secret": "I sold rejected stone to pay a helper the contract did not cover."
+      },
+      {
+        "name": "Salma",
+        "occupation": "Herbal gardener",
+        "description": "She labels every jar before offering anyone a drink.",
+        "alibi": "I was moving seedlings under the cloister roof.",
+        "secret": "I gave valuable plants to a village whose garden had flooded."
+      },
+      {
+        "name": "Cyril",
+        "occupation": "Donation recorder",
+        "description": "He turns a full page without wetting his fingers.",
+        "alibi": "I was checking receipts in the guesthouse office.",
+        "secret": "I delayed recording a gift to stop it being seized for an unrelated debt."
+      },
+      {
+        "name": "Elin",
+        "occupation": "Traveling binder",
+        "description": "She keeps her repair thread knotted around one finger.",
+        "alibi": "I was repairing a hymnal in the common room.",
+        "secret": "I opened a sealed book to recover a letter hidden in its binding."
+      }
+    ]
+  },
+  {
+    "id": "winter-market",
+    "title": "The Coin Under the Ice",
+    "setting": "A covered winter market after the gates freeze shut",
+    "anchor": "the customs receipt box",
+    "pressure": "A counterfeit ring has been buying the silence of market officials.",
+    "opening": [
+      "They find the customs officer beneath the fountain, where a sheet of new ice holds his inspection badge against the stone. Around the square, the market shutters are closing. Sef asks you whether the badge should be taken out. You tell him to leave it until everyone has seen where it lies.",
+      "In the officer's receipt box, genuine coins have been attached to counterfeit receipts. He had isolated two distributors working through tonight's traders. The cold has locked the outer gates, and the winch that could break them free has been dismantled from the inside. No one can summon the watch through the thick market walls.",
+      "Sef carries a brazier into the weighing room. The traders follow the heat, one keeping a hand over a pocket the whole way. You place the receipt box on the scales. It outweighs nothing, but nobody offers to lift it."
+    ],
+    "cast": [
+      {
+        "name": "Sef",
+        "occupation": "Market warden",
+        "description": "He carries the brazier himself rather than call an assistant.",
+        "alibi": "I was inspecting the frozen outer gate.",
+        "secret": "I let a family trade without paying the winter stall charge."
+      },
+      {
+        "name": "Anja",
+        "occupation": "Coin tester",
+        "description": "She listens to coins before looking at their faces.",
+        "alibi": "I was checking change at the weighing desk.",
+        "secret": "I passed a worn coin I should have rejected to help a hungry seller."
+      },
+      {
+        "name": "Kamal",
+        "occupation": "Cloth trader",
+        "description": "He has wrapped the receipt box in his cheapest cloth.",
+        "alibi": "I was covering cloth bales beside the west arcade.",
+        "secret": "I used a false supplier's name to avoid an unfair levy."
+      },
+      {
+        "name": "Greta",
+        "occupation": "Scale keeper",
+        "description": "She tests the empty scales twice before anyone speaks.",
+        "alibi": "I was checking the market weights in the weighing room.",
+        "secret": "I kept an official from confiscating a widow's damaged weights."
+      },
+      {
+        "name": "Musa",
+        "occupation": "Lamp seller",
+        "description": "His spare wicks are tied around his wrist.",
+        "alibi": "I was lighting the inner passage before the officer was found.",
+        "secret": "I took oil from the market store after an overnight worker lost heat."
+      },
+      {
+        "name": "Veda",
+        "occupation": "Traveling cook",
+        "description": "She offers the last hot cup to the person least willing to take it.",
+        "alibi": "I was cleaning my food stall before the shutters closed.",
+        "secret": "I borrowed a trader's permit after mine was seized for an old debt."
+      }
+    ]
+  },
+  {
+    "id": "flood-hotel",
+    "title": "The Rooms Above the Water",
+    "setting": "A riverside hotel cut off by a rising flood",
+    "anchor": "the reservation ledger",
+    "pressure": "A criminal property scheme has been emptying the riverfront.",
+    "opening": [
+      "The hotel lift opens on a wall of black water. On the stairs above it, Anouk finds the property agent holding a room key between his teeth. He has been trying to keep it from the people who killed him. The key opens a cabinet of reservation records, not a guest room.",
+      "The records show houses booked for demolition while their owners were still living in them. Two enforcers came to retrieve the signatures the agent kept as insurance. Floodwater has covered the street, and the rescue launch cannot enter the current around the hotel. Someone has emptied the emergency flares onto the flooded lower floor.",
+      "Anouk moves the guest ledger to the breakfast room and begins counting clean chairs. You take the key from its envelope. Before the next launch can reach them, these people have to decide who is entitled to hold it."
+    ],
+    "cast": [
+      {
+        "name": "Anouk",
+        "occupation": "Hotel manager",
+        "description": "She counts dry chairs as if they were rooms she could still offer.",
+        "alibi": "I was moving guests to the upper floor before the lift alarm.",
+        "secret": "I kept a displaced family in a room listed as unoccupied."
+      },
+      {
+        "name": "Imran",
+        "occupation": "Night porter",
+        "description": "He has pinned abandoned room keys inside his coat.",
+        "alibi": "I was checking the upper fire doors before the alarm.",
+        "secret": "I let a former guest collect belongings without signing the visitor book."
+      },
+      {
+        "name": "Sela",
+        "occupation": "Property typist",
+        "description": "She keeps rereading a signature she recognizes.",
+        "alibi": "I was sorting the agent's reservation copies in the lounge.",
+        "secret": "I copied a forged signature to warn its supposed owner."
+      },
+      {
+        "name": "Gregor",
+        "occupation": "Boiler engineer",
+        "description": "He wrings river water from a clean hotel towel.",
+        "alibi": "I was isolating the lower-floor heating circuit.",
+        "secret": "I concealed an overdue boiler inspection to keep the hotel open."
+      },
+      {
+        "name": "Nia",
+        "occupation": "Breakfast cook",
+        "description": "She has saved one unbroken plate from the lower kitchen.",
+        "alibi": "I was carrying dry food upstairs before the lift alarm.",
+        "secret": "I used hotel stores to feed people waiting on the quay."
+      },
+      {
+        "name": "Luc",
+        "occupation": "Traveling buyer",
+        "description": "He has changed out of wet shoes but kept the muddy laces.",
+        "alibi": "I was securing sample cases in my upper-floor room.",
+        "secret": "I accepted a commission on a sale I knew would later be canceled."
+      }
+    ]
+  },
+  {
+    "id": "glasshouse",
+    "title": "The Last Night of the Glasshouse",
+    "setting": "A botanical estate under a hail-blackened roof",
+    "anchor": "the seed exchange ledger",
+    "pressure": "A trafficking ring has hidden its accounts in botanical shipments.",
+    "opening": [
+      "Hail covers the glasshouse roof until the moon looks buried. At the center bench, a rare seed has opened in a dish lined with the curator's notes. The curator will not see it. Eira finds him in the potting shed, with the exchange ledger clamped beneath his coat.",
+      "The ledger routes crates through gardens that have never ordered plants. Two handlers of the ring arrived for tonight's seed auction. The curator had been copying their private account marks into his cultivation notes. A fallen iron frame blocks the drive; someone has drained the estate vehicle and removed the telephone's speaking piece.",
+      "Eira puts the open seed under a bell jar and leaves the key beside it. Nothing in the room needs another careless hand. You ask the six visitors to come to the central bench, where the ledger can be read without being carried away."
+    ],
+    "cast": [
+      {
+        "name": "Eira",
+        "occupation": "Propagation keeper",
+        "description": "She sets a bell jar down before replying to an accusation.",
+        "alibi": "I was checking the germination dishes before the hail began.",
+        "secret": "I sent valuable seeds to a garden whose funding had been withdrawn."
+      },
+      {
+        "name": "Anton",
+        "occupation": "Glass repairer",
+        "description": "He has wrapped the broken speaking piece in his work cloth.",
+        "alibi": "I was covering a cracked pane along the west wall.",
+        "secret": "I reused old glass after being ordered to bill for new panels."
+      },
+      {
+        "name": "Meera",
+        "occupation": "Exchange secretary",
+        "description": "She traces crate numbers without touching the ink.",
+        "alibi": "I was sorting seed exchange requests at the desk.",
+        "secret": "I copied a restricted request to expose a fraudulent seller."
+      },
+      {
+        "name": "Jules",
+        "occupation": "Plant illustrator",
+        "description": "Green pigment has dried over an unfinished signature.",
+        "alibi": "I was sketching a cutting beside the central bench.",
+        "secret": "I signed an illustration completed partly by an uncredited apprentice."
+      },
+      {
+        "name": "Sana",
+        "occupation": "Estate driver",
+        "description": "She holds the empty fuel can by its handle, away from everyone.",
+        "alibi": "I was securing the vehicle before the storm reached the drive.",
+        "secret": "I used estate fuel to take a sick neighbor to the village."
+      },
+      {
+        "name": "Lev",
+        "occupation": "Visiting grower",
+        "description": "He has kept the auction catalogue folded to the same page.",
+        "alibi": "I was checking auction specimens in the side house.",
+        "secret": "I brought a cutting from a collection I was not permitted to enter."
+      }
+    ]
+  }
+]

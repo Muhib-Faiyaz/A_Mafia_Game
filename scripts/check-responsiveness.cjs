@@ -24,6 +24,7 @@ const assert = require("node:assert/strict");
     return r.json();
   };
   await page.goto("http://127.0.0.1:5000");
+  await page.locator("#online-play").click();
   await page.locator("#name").fill("Fast host");
   let requests = [];
   page.on("request", (r) => {

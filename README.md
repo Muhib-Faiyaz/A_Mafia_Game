@@ -42,6 +42,46 @@ directly reveal who the killer is, but to convince the town through discussion
 and reasoning. Results remain in the Detective's private case file; the reminder
 is guidance, not an automatic chat filter.
 
+## Online play and solo stories
+
+The first screen offers **Online play** (the existing create/join room workflow)
+and **Solo run**. Solo run chooses one of 20 original, authored mystery openings
+and introduces six named characters before starting any timer. The latest case
+is excluded when choosing another story in the same browser.
+
+You play the Detective, with six NPCs including two randomized Mafia, a Doctor,
+and three Villagers. Their occupations, relationships, and personal secrets do
+not determine their faction. The opening night protects the human player so
+there is a first conversation; after that, normal targeting rules apply. Night
+and discussion durations are unchanged. Solo rooms reject outside players and
+cast/settings changes. Leaving a solo run deletes its private room.
+
+The case dossier remains available during play. Ask a character in town chat:
+
+- `@Mara, where were you before the first alarm?`
+- `@Mara, what are you hiding?`
+- `@Mara, who do you trust?`
+- `@Mara, who are you?`
+
+Use the actual name in your cast. Characters give their own accounts, protect
+embarrassing personal information, and may disclose it after further questioning
+or a statement of trust. Alibis refer to the first alarm, not newly invented
+night events. Disclosed honesty and pre-existing relationships modestly affect
+other bots' suspicions; neither proves innocence. Up to four additional direct
+player-interview replies per character per day are reserved beyond the ordinary
+six-message bot budget. Results, eliminations, and endings stay within the
+selected case's setting. Replay keeps the cast and redeals Mafia roles; choosing
+another story starts a new room and resets session scores.
+
+These are authored openings and bounded character interactions, not full novels
+or unrestricted AI improvisation. No external AI service or credentials are
+needed. In-memory progress survives a page reload but not a server restart.
+
+The MIT-licensed [novel-writing skill](.agents/skills/novel-writing/SKILL.md) was
+re-downloaded and verified at its pinned revision, then applied to the original
+scenario prose and character knowledge model. See [solo story design and source
+notes](docs/solo-story-design.md) and `data/solo_scenarios.json`.
+
 ## Talking with bots
 
 Bots now use a small local dialogue and voting model rather than random chat
@@ -158,6 +198,7 @@ node tests/test_music.cjs
 # With a local server running on port 5050:
 node scripts/check-phase-flow.cjs
 node scripts/check-bot-chat.cjs
+node scripts/check-solo.cjs
 ```
 
 The regression suite covers settings, role counts, split and unanimous votes,

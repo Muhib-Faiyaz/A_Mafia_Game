@@ -11,7 +11,7 @@ Both are unchanged copies from Addy Osmani's `web-quality-skills` at revision `a
 
 ## Implemented
 
-- Server-rendered landing content, including create/join controls, a clear game description, and rules. The JavaScript landing view uses the same copy; regression tests detect drift. The game remains a client-driven app after entry.
+- Server-rendered landing content, including online/solo mode choices, a clear game description, and rules. Create/join controls appear after choosing Online play. The JavaScript landing view uses the same copy; regression tests detect drift. The game remains a client-driven app after entry.
 - A descriptive title and meta description, Open Graph and Twitter sharing metadata, and schema.org `WebApplication` JSON-LD describing the free browser game. No fabricated reviews, ratings, or ranking claims.
 - A single canonical homepage. `/index.html` and `/static/index.html` redirect permanently to `/`.
 - `/robots.txt` allows the public page and rendering assets. API and health responses carry `X-Robots-Tag: noindex`; the robots file also excludes them. These are indexing directives, not access controls.

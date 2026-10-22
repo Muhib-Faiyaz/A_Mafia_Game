@@ -28,6 +28,7 @@ const base = process.argv[2] || 'http://127.0.0.1:5050';
       await page.setViewportSize({width, height: 900});
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `No overflow at ${width}px`);
     }
+    await page.locator('#online-play').click();
     await page.locator('#name').fill('SEO check');
     await page.locator('#entry button[type="submit"]').click();
     await page.waitForFunction(() => state?.phase === 'lobby');

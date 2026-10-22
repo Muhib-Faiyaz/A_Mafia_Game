@@ -60,6 +60,10 @@ def read_message(text, players):
 def hear(brain, message, context):
     interpretation = read_message(message['t'], context['players'])
     speaker = message['speaker']
+    if message.get('disclosure'):
+        brain.setdefault('disclosed', set()).add(speaker)
+    if interpretation['stances'].get(context['self'], 0) < 0:
+        brain.setdefault('story_trust', {})[speaker] = 1
     if speaker == context['self']:
         return
     # A bot's new stated preference replaces its previous accusation. Human
@@ -96,6 +100,12 @@ def scores(brain, context):
     for speaker, target in context['votes'].items():
         if speaker in players and not players[speaker]['bot'] and target in totals:
             totals[target] += 0.5
+    for target, prior in context.get('relationships', {}).items():
+        if target in totals:
+            totals[target] += prior
+    for target in brain.get('disclosed', set()):
+        if target in totals:
+            totals[target] -= 0.4  # Acknowledged honesty, never proof of innocence.
     return totals
 
 
