@@ -31,11 +31,19 @@ let state = null,
   polling = null,
   updateEpoch = 0,
   busy = false;
-let draft = { town: "", mafia: "" },
+let draft = { town: "", mafia: "", team: "" },
   recordOpen = false,
   caseOpen = false,
   entryMode = "",
-  entryName = "";
+  entryName = "",
+  teamOpen = false;
+const invitationParams = new URLSearchParams(location.search);
+let pendingInvite = invitationParams.get("case") && invitationParams.get("invite")
+  ? { code: invitationParams.get("case"), invite: invitationParams.get("invite") } : null;
+function clearInvitation() {
+  pendingInvite = null;
+  if (invitationParams.has("invite")) history.replaceState(null, "", location.pathname + location.hash);
+}
 function toast(message) {
   $("#toast").textContent = message;
   $("#toast").classList.add("visible");
@@ -73,13 +81,17 @@ async function run(route, body = {}) {
       try { localStorage.setItem("mafia-last-case", data.state.scenario.id); } catch (_) {}
     }
     if (data.pid) {
+      if (route === "solo-join") clearInvitation();
+      draft = { town: "", mafia: "", team: "" };
+      selected = null;
+      revealed = false;
       session = { code: data.code, pid: data.pid };
       localStorage.setItem("mafia", JSON.stringify(session));
     }
     if (["start", "restart", "reset"].includes(route)) {
       revealed = false;
       selected = null;
-      draft = { town: "", mafia: "" };
+      draft = { town: "", mafia: "", team: "" };
     }
     updateEpoch++;
     if (data.state) applyState(data.state);
@@ -99,9 +111,11 @@ function leaveLocal() {
   signature = phaseKey = "";
   entryMode = "";
   caseOpen = false;
+  teamOpen = false;
+  clearInvitation();
   selected = null;
   revealed = false;
-  draft = { town: "", mafia: "" };
+  draft = { town: "", mafia: "", team: "" };
   localStorage.removeItem("mafia");
   $("#death-notice").close();
   $("#investigation-dialog").close();
@@ -125,6 +139,7 @@ function applyState(next) {
     if (next.round_id !== state?.round_id) revealed = false;
     phaseKey = key;
   }
+  if (next.team && ((next.me.friend && !state?.team) || next.team.count > (state?.team?.count || 0))) teamOpen = true;
   state = next;
   const sig = JSON.stringify({ ...next, timer_left: 0 });
   if (sig !== signature) {
@@ -202,6 +217,15 @@ function home() {
 <div class="mode-choices" aria-label="Choose how to play"><button id="online-play" class="mode-choice"><strong>Online play</strong><span>Create a room or join your friends.</span></button><button id="solo-run" class="mode-choice solo-choice"><strong>Solo run</strong><span>One Detective. Six strangers. Twenty possible stories.</span></button></div>
 <div class="card stack game-overview"><h2>Play the Mafia board game online</h2><p>Mafia · After dark brings the social deduction party game to your browser. Each player joins on their own phone or computer, and the game moderates the night actions, discussion, and voting.</p><h2>How to play Mafia with friends</h2><ol><li>Create a room and share its four-letter code with your friends.</li><li>Choose 1–3 Mafia and optional Doctor and Detective roles. Add bots to fill empty seats or try the game solo.</li><li>At night, Mafia choose a victim, the Doctor can protect a player, and the Detective can investigate someone.</li><li>During the day, discuss who you suspect and vote. The town wins by eliminating every Mafia member; Mafia win when they match the town in numbers.</li></ol><h2>What do you need to play?</h2><p>A modern browser and an internet connection. Rooms support 3–20 players, including bots. No account, app installation, physical board, or separate moderator is required. Each player uses their own device to keep their role secret.</p></div></section>`;
 }
+function invitationScreen() {
+  return `<section id="top" class="card stack"><p class="eyebrow">A shared solo story</p><h1>Join the Detective team.</h1><p>Up to two friends can help the lead Detective. Share investigations, plan in private, and act through one team vote. You do not get a separate character.</p>${session ? '<p class="hint">Joining switches this tab to the invited case. Your current case stays open.</p>' : ""}<form id="invite-entry" class="stack"><label class="field">Your alias<input id="friend-name" maxlength="16" autocomplete="nickname" required></label><button class="primary" type="submit">Join this case</button></form><button id="cancel-invite" class="ghost">Back</button></section>`;
+}
+function detectiveTeam() {
+  const team = state.team;
+  if (!team) return "";
+  const invite = team.invite_path ? new URL(team.invite_path, location.origin).href : "";
+  return `<details id="team-panel" class="card" ${teamOpen ? "open" : ""}><summary>Detective team · ${team.count}/2 friends${invite ? " · Invite friends" : ""}</summary><div class="stack" style="margin-top:16px"><p class="hint">One protected Detective, one shared investigation, one readiness vote, and one ballot. Any teammate can confirm a choice; talk here before acting. The lead speaks for the team in town chat and controls the case.</p><ul class="team-members">${team.members.map(member => `<li>${esc(member.name)}${member.lead ? " · Lead Detective" : " · Friend"}${member.you ? " · You" : ""}</li>`).join("")}</ul>${invite ? `<label class="field">Invite link<input id="solo-invite-link" value="${esc(invite)}" readonly aria-label="Solo invitation link"></label><button id="copy-solo-invite" ${team.count >= team.cap ? "disabled" : ""}>${team.count >= team.cap ? "Team full · two friends joined" : "Copy invite link"}</button><p class="hint">Anyone with this link can join while a friend seat is free. Maximum: two friends.</p>` : ""}${chat("team")}<button id="leave-team" class="ghost">${state.me.friend ? "Leave Detective team" : "Close this case for everyone"}</button></div></details>`;
+}
 function entryScreen() {
   const solo = entryMode === "solo";
   return `<section id="top" class="stack opening-scene"><div class="intro opening-intro"><p class="opening-title">Mafia<span>After dark</span></p><h1>${solo ? "Enter the story." : "Gather your friends."}</h1><p class="opening-description">${solo ? "Play the Detective in one of 20 mysteries. Meet six characters, question their accounts, and persuade them before the killers take control." : "Create a private room, or enter the code your host shared."}</p></div><form id="entry" class="card stack"><label class="field">Your alias<input id="name" maxlength="16" autocomplete="nickname" value="${esc(entryName)}" placeholder="What should we call you?" required></label><button class="primary" type="submit">${solo ? "Enter a story" : "Create a room"}</button>${solo ? '<small>Read the opening before the first timer starts. No signup or AI service required.</small>' : '<label class="field">Have an invitation?<input id="code" maxlength="4" autocapitalize="characters" placeholder="4-letter room code"></label><button type="button" id="join">Join the town</button><small>3–20 players · Optional bots</small>'}</form><button id="choose-mode" class="ghost">Back to play options</button></section>`;
@@ -211,7 +235,7 @@ function caseContent() {
   return `<div class="case-prose">${story.opening.map(p => `<p>${esc(p)}</p>`).join("")}</div><section class="stack case-cast"><h2>The people in the room</h2><p class="hint">Their occupations and histories are public. Their Mafia roles are assigned separately. An embarrassing secret is not proof of murder.</p>${story.cast.map(p => `<article class="case-person"><h3>${esc(p.name)} <small>${esc(p.occupation)}</small></h3><p>${esc(p.description)}</p><p class="hint">${esc(p.relationship)}</p></article>`).join("")}</section>`;
 }
 function soloBriefing() {
-  return `<section id="top" class="stack case-scene"><div><p class="eyebrow">Solo run · One of 20 cases</p><h1>${esc(state.scenario.title)}</h1><p class="muted">${esc(state.scenario.setting)}</p></div>${caseContent()}<div class="card stack"><h2>Your part in this story</h2><p>You are ${esc(state.me.name)}, the Detective. Two members of this group are working for the syndicate; one other person has the Doctor's protective ability. Investigate at night and persuade the others in town chat. A vote removes a suspect from the group. The town wins when both Mafia are out.</p><p class="hint">Nothing is timed yet. Begin when you are ready. Your opening night is protected so you can meet the cast; later nights are dangerous. The normal night and discussion timers apply once you begin.</p><button id="start" class="primary">Begin the first night</button><button id="leave" class="ghost">Back to play options</button></div></section>`;
+  return `<section id="top" class="stack case-scene"><div><p class="eyebrow">Solo run · One of 20 cases</p><h1>${esc(state.scenario.title)}</h1><p class="muted">${esc(state.scenario.setting)}</p></div>${detectiveTeam()}${caseContent()}<div class="card stack"><h2>Your part in this story</h2><p>You are ${esc(state.me.name)}, the Detective. Two members of this group are working for the syndicate; one other person has the Doctor's protective ability. Investigate at night and persuade the others in town chat. A vote removes a suspect from the group. The town wins when both Mafia are out.</p><p class="hint">Nothing is timed yet. Begin when you are ready. You cannot be killed or voted out in solo mode. The case can still end in a Mafia victory. The normal night and discussion timers apply once you begin.</p>${state.me.host ? '<button id="start" class="primary">Begin the first night</button>' : '<p class="hint">The lead Detective will begin the first night.</p>'}<button id="leave" class="ghost">Back to play options</button></div></section>`;
 }
 function caseDossier() {
   return `<details id="case-dossier" class="card case-scene" ${caseOpen ? "open" : ""}><summary>Case dossier · ${esc(state.scenario.title)}</summary><p class="hint">${esc(state.scenario.setting)}</p>${caseContent()}</details>${state.scenario.epilogue ? `<section class="card case-prose"><h2>The final account</h2><p>${esc(state.scenario.epilogue)}</p></section>` : ""}`;
@@ -228,7 +252,7 @@ function lobby() {
 ${host ? `<button id="start" class="primary" ${n < needed ? "disabled" : ""}>Begin the night</button>` : '<p class="muted">The host will begin when everyone is ready.</p>'}<button id="leave" class="ghost">Leave this room</button></section>`;
 }
 function canAct(p) {
-  if (!state.me.alive || !p.alive) return false;
+  if (!state.me.alive || !p.alive || p.protected) return false;
   if (state.phase === "day") return state.voting && !p.you;
   if (state.pick || state.phase !== "night" || state.night_step !== state.me.role)
     return false;
@@ -247,16 +271,16 @@ function actionLabel() {
   return null;
 }
 function chat(channel) {
-  const mafia = channel === "mafia",
-    messages = mafia ? state.mafia_chat : state.chat,
-    open = mafia ? state.mafia_chat_open : state.chat_mode;
+  const mafia = channel === "mafia", team = channel === "team",
+    messages = team ? state.team_chat : mafia ? state.mafia_chat : state.chat,
+    open = team ? !!state.team : mafia ? state.mafia_chat_open : state.chat_mode;
   const kill =
     mafia &&
     state.phase === "night" &&
     state.night_step === "mafia" &&
     state.me.alive && !state.pick;
-  return `<section class="card chat-card ${mafia ? "private" : ""}"><div class="row spread"><h2>${mafia ? "Mafia chat" : "Town chat"}</h2><span class="pill">${mafia ? "Private" : "Public"}</span></div><div class="messages" id="messages-${channel}" role="log" aria-label="${mafia ? "Mafia" : "Town"} messages">${messages.length ? messages.map((c) => `<div class="message ${c.k === "sys" ? "system" : ""}">${c.n ? `<b>${esc(c.n)}</b>` : ""}${esc(c.t)}</div>`).join("") : '<p class="hint">No whispers yet.</p>'}</div>
-${open ? `<form class="composer" data-channel="${channel}"><input id="input-${channel}" aria-label="${mafia ? "Mafia" : "Town"} message" maxlength="200" autocomplete="off" placeholder="${mafia ? "Whisper to your team…" : "Share your suspicions…"}" value="${esc(draft[channel])}"><button class="primary" aria-label="Send ${channel} message">↑</button></form><p class="hint" style="margin-top:10px">${mafia ? "Only Mafia can see this. Use /vote name during your turn." : "Bots listen to accusations and defenses. Try “I suspect Alex”, “I trust Alex”, or “@Bot 1, why Alex?” Use full player names. Use /vote name or /skip when voting opens."}</p>` : '<p class="hint">' + (state.phase === "night" ? "The town is asleep. Chat reopens at dawn." : "You can watch, but cannot send messages right now.") + "</p>"}
+  return `<section class="card chat-card ${mafia ? "private" : ""}"><div class="row spread"><h2>${team ? "Detective team chat" : mafia ? "Mafia chat" : "Town chat"}</h2><span class="pill">${team || mafia ? "Private" : "Public"}</span></div><div class="messages" id="messages-${channel}" role="log" aria-label="${team ? "Detective team" : mafia ? "Mafia" : "Town"} messages">${messages.length ? messages.map((c) => `<div class="message ${c.k === "sys" ? "system" : ""}">${c.n ? `<b>${esc(c.n)}</b>` : ""}${esc(c.t)}</div>`).join("") : '<p class="hint">No whispers yet.</p>'}</div>
+${open ? `<form class="composer" data-channel="${channel}"><input id="input-${channel}" aria-label="${team ? "Detective team" : mafia ? "Mafia" : "Town"} message" maxlength="${team ? 500 : 200}" autocomplete="off" placeholder="${team ? "Plan with your friends…" : mafia ? "Whisper to your team…" : "Share your suspicions…"}" value="${esc(draft[channel])}"><button class="primary" aria-label="Send ${channel} message">↑</button></form><p class="hint" style="margin-top:10px">${team ? "Only the Detective team can read this. Bots do not hear these messages. This chat is open throughout the case." : mafia ? "Only Mafia can see this. Use /vote name during your turn." : "Bots listen to accusations and defenses. Try “I suspect Alex”, “I trust Alex”, or “@Bot 1, why Alex?” Use full player names. Use /vote name or /skip when voting opens."}</p>` : '<p class="hint">' + (state.phase === "night" ? "The town is asleep. Chat reopens at dawn." : "You can watch, but cannot send messages right now.") + "</p>"}
 ${
   kill
     ? `<div class="stack" style="margin-top:18px"><p class="eyebrow">Choose the victim</p><div class="targets">${state.players
@@ -315,11 +339,11 @@ ${
     : ""
 }
 ${state.notes.length ? `<div class="card"><p class="eyebrow">Detective’s case file</p><p>${state.notes.map(esc).join("<br>")}</p></div>` : ""}
-<section id="players"><p class="hint score-hint">Session scores stay with each player. Points update when the game ends.</p><div class="section-title"><h2>The town</h2><span class="pill">${state.players.length} seats</span></div><div class="players">${state.players.map((p) => `<button class="player ${!p.alive ? "dead" : ""} ${pick === p.id ? "selected" : ""}" data-player="${p.id}" ${canAct(p) ? "" : "disabled"} aria-pressed="${pick === p.id}"><span class="avatar">${esc(p.name[0])}</span><b>${esc(p.name)}</b><span class="player-score">${p.score || 0} point${p.score === 1 ? "" : "s"}${over && p.round_points ? ` · +${p.round_points} this game` : ""}</span><small>${p.you ? "You · " : ""}${p.role ? roleName(p.role) : p.alive ? "Identity unknown" : "Eliminated"}${p.bot ? state.mode === "solo" ? " · Character" : " · Bot" : ""}</small>${p.votes ? `<span class="votes">${p.votes} vote${p.votes === 1 ? "" : "s"}</span>` : ""}</button>`).join("")}</div>
+<section id="players"><p class="hint score-hint">Session scores stay with each player. Points update when the game ends.</p><div class="section-title"><h2>The town</h2><span class="pill">${state.players.length} seats</span></div><div class="players">${state.players.map((p) => `<button class="player ${!p.alive ? "dead" : ""} ${pick === p.id ? "selected" : ""}" data-player="${p.id}" ${canAct(p) ? "" : "disabled"} aria-pressed="${pick === p.id}"><span class="avatar">${esc(p.name[0])}</span><b>${esc(p.name)}</b><span class="player-score">${p.score || 0} point${p.score === 1 ? "" : "s"}${over && p.round_points ? ` · +${p.round_points} this game` : ""}</span><small>${p.you ? state.team ? "Detective team · " : "You · " : ""}${p.role ? roleName(p.role) : p.alive ? "Identity unknown" : "Eliminated"}${p.bot ? state.mode === "solo" ? " · Character" : " · Bot" : ""}</small>${p.votes ? `<span class="votes">${p.votes} vote${p.votes === 1 ? "" : "s"}</span>` : ""}</button>`).join("")}</div>
 ${label && m.alive ? `<div class="action">${state.voting ? '<button id="skip-vote" class="ghost">Skip vote (' + state.skips + ")</button>" : ""}<button id="confirm-action" class="primary" ${pick ? "" : "disabled"}>${label}${pickName ? ": " + esc(pickName) : ""}</button><p class="hint">${state.pick ? "Your choice is recorded. You may change it while the turn stays open." : "Tap a player, then confirm your choice. Night targets are final."}</p></div>` : ""}
 ${state.voting && m.host ? '<button id="tally" class="ghost" style="width:100%;margin-top:12px">Close voting & count votes</button>' : ""}</section>
-<div id="chats" class="stack">${chat("town")}${m.role === "mafia" ? chat("mafia") : ""}</div>
-${over && m.host ? state.mode === "solo" ? '<button id="play-again" class="primary">Replay this case with fresh roles</button><button id="new-case">Choose another story</button>' : '<button id="play-again" class="primary">Restart with fresh roles</button><button id="back-lobby">Back to lobby & settings</button>' : ""}</div>`;
+<div id="chats" class="stack">${detectiveTeam()}${chat("town")}${m.role === "mafia" ? chat("mafia") : ""}</div>
+${state.mode === "solo" && m.friend ? '<button id="leave-solo-friend" class="ghost">Leave Detective team</button>' : ""}${over && m.host ? state.mode === "solo" ? '<button id="play-again" class="primary">Replay this case with fresh roles</button><button id="new-case">Choose another story</button>' : '<button id="play-again" class="primary">Restart with fresh roles</button><button id="back-lobby">Back to lobby & settings</button>' : ""}</div>`;
 }
 function atmosphere() {
   if (!state) return "home";
@@ -509,7 +533,7 @@ function render() {
     scrolls = {};
   const members = $(".members"),
     memberScroll = members?.scrollTop;
-  for (const ch of ["town", "mafia"]) {
+  for (const ch of ["town", "mafia", "team"]) {
     const el = $("#messages-" + ch);
     if (el)
       scrolls[ch] = {
@@ -551,7 +575,7 @@ function render() {
     document.body.style.removeProperty("--turn-background");
   }
   $("#nav").hidden = !state || state.phase === "lobby";
-  const markup = !session
+  const markup = pendingInvite && (!session || session.code !== pendingInvite.code.toUpperCase()) ? invitationScreen() : !session
     ? entryMode ? entryScreen() : home()
     : !state
       ? '<p class="muted">Entering the town…</p>'
@@ -576,11 +600,19 @@ function render() {
     if (el) el.onclick = handler;
   };
   on("#learn-game", openHelp);
+  if ($("#invite-entry")) $("#invite-entry").onsubmit = async event => {
+    event.preventDefault();
+    const old = state?.me.friend ? session : null;
+    if (await run("solo-join", { ...pendingInvite, name: $("#friend-name").value })) {
+      if (old) { try { await api("leave", old); } catch (_) {} }
+    }
+  };
+  on("#cancel-invite", () => { clearInvitation(); render(); });
   for (const [id, mode] of [["#online-play", "online"], ["#solo-run", "solo"]]) {
     on(id, () => { entryMode = mode; render(); $("#name")?.focus(); });
   }
   on("#choose-mode", () => { entryMode = ""; render(); });
-  if (!session && entryMode) {
+  if (!session && entryMode && $("#entry")) {
     $("#name").oninput = e => { entryName = e.target.value; };
     $("#entry").onsubmit = (e) => {
       e.preventDefault();
@@ -592,7 +624,7 @@ function render() {
       run("join", { name: $("#name").value, code: $("#code").value }),
     );
   }
-  if (state?.phase === "lobby" && state.mode !== "solo") {
+  if (state?.phase === "lobby" && state.mode !== "solo" && !$("#invite-entry")) {
     const save = () =>
       run("settings", {
         mafia_count: Number($("#count").value),
@@ -613,7 +645,16 @@ function render() {
       if (await run("leave")) leaveLocal();
     });
   }
-  if (state?.mode === "solo") {
+  if (state?.mode === "solo" && !$("#invite-entry")) {
+    if ($("#team-panel")) $("#team-panel").ontoggle = () => { teamOpen = $("#team-panel").open; };
+    on("#copy-solo-invite", async () => {
+      const input = $("#solo-invite-link");
+      try { await navigator.clipboard.writeText(input.value); toast("Invite link copied. You can invite up to two friends."); }
+      catch (_) { input.focus(); input.select(); toast("Select and copy this invite link."); }
+    });
+    const leaveTeam = async () => { if (await run("leave")) leaveLocal(); };
+    on("#leave-team", leaveTeam);
+    on("#leave-solo-friend", leaveTeam);
     on("#start", () => run("start"));
     on("#leave", async () => { if (await run("leave")) leaveLocal(); });
     on("#new-case", async () => {
@@ -682,7 +723,7 @@ function render() {
       if (!text) return;
       draft[ch] = "";
       input.value = "";
-      if (!(await run("chat", { channel: ch, text }))) {
+      if (!(await run(ch === "team" ? "team-chat" : "chat", { channel: ch, text }))) {
         draft[ch] = text;
         const current = $("#input-" + ch);
         if (current) current.value = text;
@@ -690,7 +731,7 @@ function render() {
       $("#input-" + ch)?.focus({ preventScroll: true });
     };
   });
-  for (const ch of ["town", "mafia"]) {
+  for (const ch of ["town", "mafia", "team"]) {
     const el = $("#messages-" + ch),
       old = scrolls[ch];
     if (el) el.scrollTop = !old || old.end ? el.scrollHeight : old.top;

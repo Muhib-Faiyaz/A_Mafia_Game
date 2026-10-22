@@ -1,6 +1,6 @@
 """Mafia — a Flask app where the server acts as the neutral Moderator.
 State lives in memory, so run a single worker (see Procfile)."""
-import math, os, random, re, string, threading, time, uuid
+import math, os, random, re, secrets, string, threading, time, uuid
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory, render_template_string, make_response, redirect
 from urllib.parse import urlsplit
@@ -34,13 +34,31 @@ def _bad(e):
     return jsonify(error=e.msg), e.code
 
 
-def ctx(d):
+def ctx(d, allow_friends=False):
     room = rooms.get(str(d.get("code", "")).strip().upper())
-    pid = d.get("pid")
-    if not room or pid not in room["players"]:
+    viewer = d.get("pid")
+    if not room:
+        raise Bad("Room not found. It may have expired.", 404)
+    if viewer in room["players"]:
+        pid = viewer
+    elif room.get('mode') == 'solo' and viewer in room.get('friends', {}):
+        if not allow_friends:
+            raise Bad("Only the lead Detective can use that control.", 403)
+        pid = room['lead_pid']
+    else:
         raise Bad("Room not found. It may have expired.", 404)
     room["t"] = time.time()
     return room, pid
+
+
+def protected_player(room, pid):
+    return room.get('mode') == 'solo' and pid == room.get('lead_pid')
+
+
+def team_message(room, name, text, kind='msg'):
+    room['team_seq'] = room.get('team_seq', 0) + 1
+    room.setdefault('team_chat', []).append(dict(n=name, t=text, k=kind, seq=room['team_seq']))
+    del room['team_chat'][:-100]
 
 
 def clean(n):
@@ -182,7 +200,7 @@ def choose_death_background(room):
 def record_death(room, pid, cause):
     """Publish one shared story only when an elimination actually happens."""
     player = room["players"][pid]
-    if not player["alive"]:
+    if not player["alive"] or protected_player(room, pid):
         return
     player["alive"] = False
     player["death_background"] = choose_death_background(room)
@@ -228,6 +246,8 @@ def resolve_night(room):
         return
     n["resolved"] = True
     victim = n["victim"]
+    if protected_player(room, victim):
+        victim = n["victim"] = None
     if victim and victim != n["doctor"]:
         record_death(room, victim, "night")
         room["dawn"] = f"{P[victim]['name']} was killed."
@@ -247,6 +267,8 @@ def resolve_night(room):
 def tally(room):
     P, counts = room["players"], {}
     for t in room["votes"].values():
+        if protected_player(room, t):
+            continue
         counts[t] = counts.get(t, 0) + 1
     top = max(counts.values(), default=0)
     leaders = [t for t, c in counts.items() if c == top]
@@ -271,6 +293,8 @@ def cast_vote(room, pid, t):
         raise Bad("You can't vote right now.")
     if discussing(room):
         raise Bad("Voting opens when the discussion timer ends.")
+    if protected_player(room, t):
+        raise Bad("The Detective team cannot be voted out in a solo story.")
     if t != "skip" and (t not in P or not P[t]["alive"] or t == pid):
         raise Bad("Pick another living player, or skip.")
     prev = room["votes"].get(pid)
@@ -329,7 +353,7 @@ def proceed_to_vote(room, pid):
 @app.post("/api/proceed")
 def proceed():
     with lock:
-        room, pid = ctx(request.get_json(force=True))
+        room, pid = ctx(request.get_json(force=True), allow_friends=True)
         advance(room)
         proceed_to_vote(room, pid)
         run_bots(room)
@@ -339,7 +363,7 @@ def proceed():
 def bot_context(room, pid):
     """Only public facts and the bot's own permitted team information."""
     player = room["players"][pid]
-    return dict(self=pid, character=player.get("character"),
+    return dict(self=pid, protected={room['lead_pid']} if room.get('mode') == 'solo' else set(), character=player.get("character"),
                 relationships=player.get("relationships", {}),
                 players=[dict(id=i, name=p["name"], alive=p["alive"], bot=p["bot"]) for i, p in room["players"].items()],
                 allies={i for i in alive(room, "mafia")} if player["role"] == "mafia" else set(),
@@ -415,7 +439,7 @@ def run_bots(room):
                 if not p["bot"] or r != step:
                     continue
                 if r == "mafia" and i not in n["mafia"]:
-                    choices = [x for x in alive(room) if P[x]["role"] != "mafia" and not (room.get("mode") == "solo" and room["day"] == 1 and not P[x]["bot"])]
+                    choices = [x for x in alive(room) if P[x]["role"] != "mafia" and not protected_player(room, x)]
                     mafia_vote(room, i, random.choice(choices))
                     moved = True
                 elif r in ("doctor", "detective") and not n[r]:
@@ -469,6 +493,17 @@ def turn_background(room):
 
 
 def view(room, pid):
+    viewer = pid
+    friend = room.get('friends', {}).get(viewer)
+    if friend:
+        pid = room['lead_pid']
+    team_access = room.get('mode') == 'solo' and (viewer == room.get('lead_pid') or friend is not None)
+    team = None
+    if team_access:
+        team = dict(cap=2, count=len(room['friends']), lead_name=room['players'][room['lead_pid']]['name'],
+                    members=[dict(name=room['players'][room['lead_pid']]['name'], lead=True, you=viewer == room['lead_pid'])] +
+                            [dict(name=f['name'], lead=False, you=viewer == fid) for fid, f in room['friends'].items()],
+                    invite_path=(f"/?case={room['code']}&invite={room['invite_token']}" if not friend else None))
     P, me, over = room["players"], room["players"][pid], room["phase"] == "over"
     vc = {}
     if room["phase"] == "day":
@@ -486,7 +521,7 @@ def view(room, pid):
     players = []
     for i, p in P.items():
         known = over or i == pid or (me["role"] == "mafia" and p["role"] == "mafia")
-        players.append(dict(id=i, name=p["name"], bot=p["bot"], alive=p["alive"], host=p["host"], you=i == pid,
+        players.append(dict(id=i, name=p["name"], protected=protected_player(room, i), bot=p["bot"], alive=p["alive"], host=p["host"], you=i == pid,
                             role=p["role"] if known else None, votes=vc.get(i, 0), score=p.get("score", 0),
                             round_points=p.get("round_points", 0) if over else 0))
     mode = None
@@ -496,14 +531,14 @@ def view(room, pid):
         mode = "town"
     chat = [dict(c) for c in room["chat"] if c["ch"] == "town"][-80:]
     mafia_chat = [dict(c) for c in room["chat"] if c["ch"] == "mafia"][-80:] if me["role"] == "mafia" else []
-    return dict(code=room["code"], mode=room.get("mode", "online"), scenario=solo_story.public_case(room), chat=chat, chat_mode=mode, phase=room["phase"], day=room["day"], winner=room.get("winner"),
+    return dict(code=room["code"], team=team, team_chat=list(room.get("team_chat", [])) if team_access else [], mode=room.get("mode", "online"), scenario=solo_story.public_case(room), chat=chat, chat_mode=mode if not friend else None, phase=room["phase"], day=room["day"], winner=room.get("winner"),
                 turn_background=turn_background(room), notices=room.get("notices", []), scores_settled=room.get("scores_settled", False),
                 death_events=room.get("death_events", []), round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
                 mafia_chat_open=me["role"] == "mafia" and me["alive"] and room["phase"] in ("day", "night"),
                 discussion=dict(ready=len(set(alive(room)) & room.get("discussion_ready", set())),
                                 total=len(alive(room)), voted=pid in room.get("discussion_ready", set())),
                 investigation=me.get("investigation") if me["role"] == "detective" else None,
-                min=MIN_PLAYERS, me=dict(name=me["name"], role=me["role"], alive=me["alive"], host=me["host"],
+                min=MIN_PLAYERS, me=dict(name=friend["name"] if friend else me["name"], friend=bool(friend), role=me["role"], alive=me["alive"], host=me["host"] and not friend,
                                        death_background=me.get("death_background") if not me["alive"] else None),
                 players=players, pick=pick, notes=me["notes"], mafia_picks=mp,
                 skips=vc.get("skip", 0),
@@ -532,6 +567,7 @@ def create():
         pid = add_player(room, name, host=True)
         if request.path == '/api/solo':
             room['mode'] = 'solo'
+            room.update(lead_pid=pid, friends={}, team_chat=[], invite_token=secrets.token_urlsafe(24))
             room['scenario'] = solo_story.choose(d.get('previous_scenario'))
             room['settings'] = dict(special_roles=True, mafia_count=2)
             cast = []
@@ -563,7 +599,7 @@ def join():
         raise Bad("No room with that code.", 404)
     with lock:
         if room.get("mode") == "solo":
-            raise Bad("Solo stories are private. Choose Online play to join friends.")
+            raise Bad("Ask the lead Detective for a solo invitation link, or choose Online play.")
         if room["phase"] != "lobby":
             raise Bad("That game has already started.")
         if len(room["players"]) >= MAX_PLAYERS:
@@ -572,12 +608,56 @@ def join():
     return jsonify(code=room["code"], pid=pid)
 
 
+@app.post('/api/solo-join')
+def join_solo_team():
+    d = request.get_json(force=True)
+    name = clean(d.get('name'))
+    if not name:
+        raise Bad('Enter your name first.')
+    with lock:
+        room = rooms.get(str(d.get('code', '')).strip().upper())
+        token = d.get('invite')
+        if (not room or room.get('mode') != 'solo' or not isinstance(token, str) or not token.isascii()
+                or not secrets.compare_digest(token, room['invite_token'])):
+            raise Bad('This invitation is invalid or has expired.', 404)
+        if len(room['friends']) >= 2:
+            raise Bad('This Detective team already has two friends. The team is full.')
+        names = [p['name'].casefold() for p in room['players'].values()] + [f['name'].casefold() for f in room['friends'].values()]
+        if name.casefold() in names:
+            raise Bad('That name is already in this case. Choose another alias.')
+        fid = uuid.uuid4().hex
+        room['friends'][fid] = dict(name=name, last=0)
+        room['t'] = time.time()
+        team_message(room, '', name + ' joined the Detective team.', 'sys')
+        return jsonify(code=room['code'], pid=fid)
+
+
+@app.post('/api/team-chat')
+def detective_team_chat():
+    d = request.get_json(force=True)
+    with lock:
+        room, pid = ctx(d, allow_friends=True)
+        viewer = d.get('pid')
+        if room.get('mode') != 'solo' or (viewer != room.get('lead_pid') and viewer not in room['friends']):
+            raise Bad('This chat is only for the Detective team.', 403)
+        text = ' '.join(str(d.get('text', '')).split())[:500]
+        if not text:
+            raise Bad('Type a message first.')
+        author = room['friends'].get(viewer, room['players'][pid])
+        if time.time() - author.get('team_last', 0) < 0.8:
+            raise Bad('Slow down a little.')
+        author['team_last'] = time.time()
+        team_message(room, author['name'], text)
+        return jsonify(ok=True)
+
+
 @app.post("/api/state")
 def state():
     with lock:
-        room, pid = ctx(request.get_json(force=True))
+        d = request.get_json(force=True)
+        room, pid = ctx(d, allow_friends=True)
         run_bots(room)
-        return jsonify(view(room, pid))
+        return jsonify(view(room, d.get("pid")))
 
 
 @app.post("/api/bot")
@@ -602,8 +682,13 @@ def bot():
 @app.post("/api/leave")
 def leave():
     with lock:
-        room, pid = ctx(request.get_json(force=True))
-        if room.get("mode") == "solo":
+        d = request.get_json(force=True)
+        room, pid = ctx(d, allow_friends=True)
+        viewer = d.get('pid')
+        if viewer in room.get('friends', {}):
+            member = room['friends'].pop(viewer)
+            team_message(room, '', member['name'] + ' left the Detective team.', 'sys')
+        elif room.get("mode") == "solo":
             del rooms[room["code"]]
         elif room["phase"] == "lobby":
             was = room["players"].pop(pid)
@@ -701,8 +786,8 @@ def mafia_vote(room, pid, target):
         raise Bad("Mafia kill voting is only open during the Mafia turn.")
     if target not in room["players"] or not room["players"][target]["alive"] or room["players"][target]["role"] == "mafia":
         raise Bad("Choose a living player outside the Mafia.")
-    if room.get("mode") == "solo" and room["day"] == 1 and not room["players"][target]["bot"]:
-        raise Bad("The Detective is protected during the opening night of a solo story.")
+    if protected_player(room, target):
+        raise Bad("The Detective team is protected throughout a solo story.")
     if pid in room["night"]["mafia"]:
         if room["night"]["mafia"][pid] == target:
             return
@@ -715,7 +800,7 @@ def mafia_vote(room, pid, target):
 def act():
     with lock:
         d = request.get_json(force=True)
-        room, pid = ctx(d)
+        room, pid = ctx(d, allow_friends=True)
         P, p, t = room["players"], room["players"][pid], d.get("target")
         advance(room)
         if room["phase"] != "night" or not p["alive"] or p["role"] not in ("mafia", "doctor", "detective"):
@@ -743,7 +828,7 @@ def act():
 def vote():
     with lock:
         d = request.get_json(force=True)
-        room, pid = ctx(d)
+        room, pid = ctx(d, allow_friends=True)
         cast_vote(room, pid, d.get("target"))
         run_bots(room)
         return jsonify(ok=True)
@@ -835,7 +920,7 @@ def deliver_response(response):
                 pid = payload.get("pid", data.get("pid"))
                 with lock:
                     room = rooms.get(code)
-                    if room and pid in room["players"]:
+                    if room and (pid in room["players"] or pid in room.get("friends", {})):
                         payload["state"] = view(room, pid)
                         response.set_data(app.json.dumps(payload))
     elif request.path.startswith("/static/") and Path(request.path).suffix.lower() in (".webp", ".png", ".jpg", ".jpeg", ".ttf", ".woff2", ".mp3"):

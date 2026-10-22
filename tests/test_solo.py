@@ -100,15 +100,18 @@ class SoloTests(unittest.TestCase):
         self.assertIn(npc, other['brain']['disclosed'])
         self.assertNotIn('secret', state['scenario']['cast'][0])
 
-    def test_protected_opening_still_allows_normal_targeting_from_second_night(self):
+    def test_detective_is_protected_on_every_solo_night(self):
         identity = self.create()
         room = game.rooms[identity['code']]
         self.post('start', identity)
         self.assertNotEqual(room['night']['victim'], identity['pid'])
-        game.start_night(room)
-        mafia = game.alive(room, 'mafia')[0]
-        game.mafia_vote(room, mafia, identity['pid'])
-        self.assertEqual(room['night']['mafia'][mafia], identity['pid'])
+        for _ in range(3):
+            game.start_night(room)
+            mafia = game.alive(room, 'mafia')[0]
+            with self.assertRaises(game.Bad):
+                game.mafia_vote(room, mafia, identity['pid'])
+            game.run_bots(room)
+            self.assertNotEqual(room['night']['victim'], identity['pid'])
 
     def test_direct_interviews_have_a_bounded_reserve_after_normal_chat_budget(self):
         identity = self.create()

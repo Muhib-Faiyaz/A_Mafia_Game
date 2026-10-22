@@ -112,7 +112,7 @@ def scores(brain, context):
 def choose_target(brain, context):
     totals = scores(brain, context)
     candidates = [p['id'] for p in context['players'] if p['alive'] and p['id'] != context['self']
-                  and p['id'] not in context['allies'] and brain['checks'].get(p['id']) is not False]
+                  and p['id'] not in context['allies'] and p['id'] not in context.get('protected', set()) and brain['checks'].get(p['id']) is not False]
     if not candidates:
         return 'skip'
     known = [pid for pid in candidates if brain['checks'].get(pid) is True]

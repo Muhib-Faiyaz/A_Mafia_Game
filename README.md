@@ -51,10 +51,27 @@ is excluded when choosing another story in the same browser.
 
 You play the Detective, with six NPCs including two randomized Mafia, a Doctor,
 and three Villagers. Their occupations, relationships, and personal secrets do
-not determine their faction. The opening night protects the human player so
-there is a first conversation; after that, normal targeting rules apply. Night
-and discussion durations are unchanged. Solo rooms reject outside players and
-cast/settings changes. Leaving a solo run deletes its private room.
+not determine their faction. The Detective cannot be killed or voted out during
+any solo round, though Mafia can still win by reaching parity with the town.
+Night and discussion durations are unchanged; the cast and settings stay fixed.
+
+Open **Detective team · Invite friends** in the briefing or during play, then
+copy the invitation link. Up to **two friends** can join before or after the
+first night. They help with the same Detective seat, keeping the cast at seven:
+
+- One shared investigation per night. The first confirmed target is final,
+  and every teammate receives the same private result and case notes.
+- One shared readiness vote and one ballot. Any teammate can submit a choice;
+  changing a ballot replaces the team's vote while voting remains open.
+- A separate **Detective team chat**, available throughout the case. Bots and
+  town chat never receive these messages. Only the lead speaks in town chat.
+- Start, restart, and end controls remain with the lead. Friends can leave to
+  free a friend seat; closing the case or choosing another story as lead closes
+  the old room for everyone. Reloading resumes each participant's own session.
+
+Treat the invitation link as private: anyone holding it can fill an open friend
+seat. A room code alone cannot join a solo case. Detective points belong to the
+single Detective seat; inviting friends does not multiply points.
 
 The case dossier remains available during play. Ask a character in town chat:
 
@@ -199,6 +216,7 @@ node tests/test_music.cjs
 node scripts/check-phase-flow.cjs
 node scripts/check-bot-chat.cjs
 node scripts/check-solo.cjs
+node scripts/check-solo-team.cjs
 ```
 
 The regression suite covers settings, role counts, split and unanimous votes,

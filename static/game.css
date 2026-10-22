@@ -902,3 +902,9 @@ body[data-eliminated="true"]::before {
 @media (max-width: 520px) { .mode-choices { grid-template-columns: 1fr; } .mode-choice { min-height: 120px; } }
 
 section.case-scene { padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(18, 14, 18, 0.97); }
+
+#team-panel summary { cursor: pointer; font-weight: 600; padding-block: 8px; }
+.team-members { margin: 0; padding-left: 1.3rem; }
+#solo-invite-link { font-size: 0.85rem; min-width: 0; width: 100%; }
+#team-panel .chat-card { padding: 16px; }
+#team-panel .messages { max-height: 280px; }
