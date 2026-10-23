@@ -65,6 +65,10 @@ class BotLanguageTests(unittest.TestCase):
 
 class BotInteractionTests(unittest.TestCase):
     def setUp(self):
+        # The dedicated timing suite covers real delays; these fixtures exercise actions.
+        delay = patch.object(game, 'BOT_TURN_DELAY', 0, create=True)
+        delay.start()
+        self.addCleanup(delay.stop)
         game.rooms.clear()
         self.client = game.app.test_client()
         self.host = self.post('create', {'name': 'Host'})

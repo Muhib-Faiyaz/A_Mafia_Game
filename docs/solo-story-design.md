@@ -2,8 +2,8 @@
 
 Solo mode has seven original thriller cases, each with six witnesses, one fixed
 Mafia culprit, a Doctor, and the human Detective seat. The case timeline and
-solution are authored together. Replaying a case preserves its culprit; a new
-case offers a new mystery. Online rooms retain their configurable roles and
+solution are authored together. The selector supports an explicit title or Random, with source labels.
+Replaying a case preserves its culprit; a new case offers a new mystery. Online rooms retain their configurable roles and
 social-deduction dialogue.
 
 ## Writing skill and craft
@@ -27,91 +27,80 @@ Required information: an identifiable victim, a reason for the meeting, an
 obstacle to outside help, the criminal interest at stake, and independent ways
 to test the culprit's account. Forbidden shortcuts: automatic villain
 confessions, evidence that changes to fit randomized roles, invented facts in
-answer to unsupported prompts, identical alibis at each dawn, ghost dialogue,
+answer to unsupported prompts, repeated account spam within a round, ghost dialogue,
 and a definitive accusation based on one ambiguous observation.
 
-## The cases
+## The cases and sources
 
-| Case | Central question | Sources that can be compared |
-| --- | --- | --- |
-| The Ninth Bell | Why does an old distress call contain tonight's sound? | Bell timing, roof access, a speaking tube, reel stock |
-| A Room Kept Warm | Why is an empty hospice room heated during an evacuation? | A borrowed key, an empty chair, luggage tracks, an altered transfer |
-| The Witness in Carriage Six | Can a stamped receipt establish an alibi? | Departure signal, porter records, a spare key, a missing journey |
-| What the River Returned | Which building was actually surveyed? | A displaced door, drain plans, a missing fold, a surviving impression |
-| The Last Dress Rehearsal | Who could have heard a cue that was never called? | A disconnected monitor, rehearsal audio, a gallery route, a brake pin |
-| The Winter Seed | Is a continuous label proof of a continuous sample? | Envelope stock, a duplicate label, arrival records, an omitted handover |
-| The House Below the Tide | When did a shared memory become a manufactured account? | Original notes, adjacent photographs, a hire carbon, a repeated omitted journey |
+The [public catalog](story-catalog.md) records every title and source. Five
+original novel-writing cases remain, The Ninth Photograph combines two earlier
+novel-writing cases, and The Quiet Sentence is new work applying the downloaded
+Story Skills genre-craft and scene-craft references. Both skill packages remain
+installed alongside novel-writing. Every case has explicit reconstruction prose
+covering means, opportunity, motive, and the other characters' relevant actions.
 
-Each case has two independent chains that challenge its culprit, plus a
-comparison that separates an innocent person's wrongdoing from the central
-crime. Comparisons require every supporting item to have been published. The
-culprit answers with an authored qualification or deflection, not a confession.
-The initial murder chronology never changes as later watches and votes occur.
+## Manual rounds, statements, and decisions
 
-## Runtime conversation and consequences
+`solo_story.discussion` runs once when a gathering begins. It publishes one
+current account per living witness and archives pre-watch material from missing
+witnesses. A per-round ledger prevents repeated polling from issuing accounts
+again. One fresh pre-watch observation joins the round's account without a
+second speech. No clock or background polling advances a solo phase.
 
-`solo_story.discussion` is a separate solo conversation engine. It uses no
-online dialogue templates. `bot_brain.read_message` is shared only as a parser
-for names, accusations, defenses, and direct address.
+The Detective team shares a one-question allowance for the round. A selected
+living witness can be asked for a missing detail, hidden motive, or correction.
+Answers come from that person's authored observation, admission, or correction;
+the before/after statement is retained. The quota and revision are updated under
+the room lock, so simultaneous friend requests cannot create two questions.
+An already recorded answer cannot be asked again. Starting the next round makes
+one new question available. There is no free-text public-question parser.
 
-- Initial accounts appear once, paced over time. At most two unsolicited
-  observations appear per day. Repeated polls or new days do not replay them.
-- Direct questions can publish an account or an observation. A first request
-  for a secret receives that character's defensive response. Trust or renewed
-  pressure can produce the private admission once.
-- Natural questions about case topics can elicit relevant observations.
-  Inspecting the scene reveals one authored exhibit at a time.
-- Published combinations trigger a witness's comparison and the subject's
-  response. Every line and comparison is remembered for the entire run.
-- Unsupported or exhausted questions return a private interface hint. They do
-  not create a fictitious answer or recycle an accusation.
-- Characters under guard or dead stop speaking. Their signed pre-watch accounts
-  and observations can be read as archived material. Unspoken personal
-  admissions cannot conveniently be recovered from their notes.
+Scene inspection and comparisons are separate actions. Public exhibits remain
+available; sealed observations of inactive witnesses can be recovered without
+inventing new dialogue or a convenient private admission. Comparisons require
+all their sources. A personal shame is not automatic proof of murder.
 
-Ballots use only public comparisons and the Detective team's explicit claims.
-One unsupported accusation cannot force a chorus of votes; one partial
-comparison plus a player's argument can change the outcome. Two corroborating
-comparisons carry more weight than a single defense. Repeated claims replace
-rather than accumulate. Hidden roles and the private solution are not inputs to
-these beliefs. Private Detective and team-chat findings are never fed into them.
-
-The Mafia's later target selection reacts to witnesses who publicly supply
-information and corroboration. The Doctor can protect an exposed witness based
-on the same public record. Publishing evidence therefore changes both the
-argument and the next watch's risk. Outcomes include case-specific endings,
-the absent witnesses, the evidence preserved, and the comparisons made. A
-completed game also exposes the fixed solution and chronology for review.
+Ballots use public comparisons and structured Suspect/Defend/Withdraw stances.
+A single comparison plus the team's suspicion can move a witness above the
+voting threshold; an unsupported accusation alone cannot. Defending lowers the
+pressure, withdrawing removes the claim, and repeating it does not accumulate
+weight. Private Detective findings and team chat are never automatic vote inputs.
+The Mafia reacts to publicly useful witnesses when choosing a later target;
+the Doctor can protect an exposed witness without learning the hidden solution.
 
 ## Interface and existing rules
 
-The briefing is untimed. During play, the case dossier retains the opening and
-cast. The case journal offers account, observation, and private-question buttons,
-scene inspection, comparisons, and a durable record beyond the chat buffer.
-The lead can also type questions in town chat. Friends share the journal but
-continue discussing privately and acting through the same Detective seat.
+The story picker and untimed briefing precede the case. The Case journal tab
+contains the current phase, investigations, questions, revisions, evidence,
+persuasion, and final ballot. The Dossier tab contains setup, cast, sources, and
+reconstruction. Chat displays public accounts and private team conversation.
+Each tab explains its purpose, and the journal explains the voting rules.
 
-Solo has exactly one Mafia, one Doctor, four Villagers, and the Detective.
-The two-friend cap, one shared ballot, one investigation, shared scoring, and
-lead-only game controls remain. Normal timers apply. The Detective is protected
-from vote-outs and ordinary night attacks. On a final-chance night (two town
-members and one Mafia left), a Detective who has not identified the living Mafia
-can be killed; a correct finding before dawn restores protection. Doctor rescues
-still apply. Removing the sole Mafia ends the case immediately in a town win.
+Every solo phase waits for Proceed. Confirming a Detective target does not end
+the turn; the team can read its result before proceeding to dawn. The team can
+proceed without investigating. There is no timer fallback in solo. Proceed from
+the gathering opens the final vote; a confirmed ballot completes the count.
 
-Live state remains in memory. Reloads resume the session; a server restart ends
-it. No external text-generation service or API key is required. These are authored
-interactive mysteries with bounded language handling.
+Solo still has one Mafia, one Doctor, four Villagers, and the Detective. Two
+invited friends share that seat, its question allowance, actions, ballot, and
+score. Lead controls case start/replay/end. Vote-out protection and the existing
+final-chance night rule remain. Removing the sole Mafia ends the case in a town
+win. A host-ended case also provides the reconstruction, even without a winner.
+
+State is in memory. Reloads resume the browser session; a server restart ends
+it. No external generation service is used. Data, authored responses, source
+links, and structured decisions keep the case internally consistent.
 
 ## Validation and editorial checks
 
 Tests cover all seven cases, source references, independent clue chains, hidden
-content, fixed-role replay, aliases, finite dialogue, pressure and trust, archived
-accounts, evidence-dependent ballots, public-information boundaries, and target
+content, fixed-role replay, aliases, one-question quotas, structured persuasion,
+archived accounts, evidence-dependent ballots, public-information boundaries, and target
 selection. Team, final-night, online game, scoring, and phase tests remain in place.
-`scripts/check-solo-journal.cjs` completes an inquiry through public chat and
-ballots. Browser checks cover the journal controls, evidence persistence, truthful mode
-copy, mobile layout, shared sessions, and existing online flows.
+`scripts/check-solo-journal.cjs` checks structured questions, changed statements,
+shared quotas, explicit phases, evidence persistence, truthful mode copy, mobile
+layout, shared sessions, and the final reconstruction. Other browser checks
+cover the existing online flows.
 
 The prose review checks access and timing in each case: a sound cannot establish
 a face; a signature can establish arrival without duration; a label cannot

@@ -15,33 +15,77 @@ class SoloTests(unittest.TestCase):
 
     def post(self, route, body, status=200):
         response = self.client.post('/api/' + route, json=body)
-        self.assertEqual(response.status_code, status, response.get_json())
+        self.assertEqual(response.status_code, status, (response.get_json() or {}).get('error', route))
         return response.get_json()
 
     def create(self, case=None, name='Reader'):
         with patch.object(solo_story, 'choose', return_value=copy.deepcopy(case or solo_story.SCENARIOS[0])):
             return self.post('solo', dict(name=name, include_state=True))
 
+    def test_new_solo_controls_reject_npc_sessions_and_cannot_stack_team_claims(self):
+        identity = self.create()
+        room = game.rooms[identity['code']]
+        npc = next(pid for pid, player in room['players'].items() if player['bot'])
+        routes = {
+            'solo-question': dict(target=npc, question='detail'),
+            'solo-influence': dict(target=npc, stance='suspect'),
+            'solo-evidence': dict(action='inspect'),
+            'solo-proceed': {},
+        }
+        for route, body in routes.items():
+            self.post(route, dict(code=identity['code'], pid=npc, **body), 403)
+        self.assertEqual(room['story']['claims'], {})
+        self.assertEqual(room['story']['revisions'], [])
+
+    def detective_turn(self, identity):
+        self.post('solo-proceed', identity)
+        self.post('solo-proceed', identity)
+        state = self.post('state', identity)
+        self.assertEqual(state['night_step'], 'detective')
+        return state
+
     def day(self, case=None):
         identity = self.create(case)
         self.post('start', identity)
+        self.detective_turn(identity)
         room = game.rooms[identity['code']]
-        room.update(phase='day', discuss_until=time.time() + 10000)
+        # Story fixtures keep the whole cast available; mortality has separate coverage.
+        room['night']['victim'] = None
+        self.post('solo-proceed', identity)
+        self.assertEqual(room['phase'], 'day')
         return identity, room
 
-    def tell(self, identity, text):
-        game.rooms[identity['code']]['players'][identity['pid']]['last'] = 0
-        return self.post('chat', dict(identity, text=text, include_state=True))
+    def next_round(self, identity):
+        room = game.rooms[identity['code']]
+        self.post('proceed', identity)
+        self.post('vote', dict(identity, target='skip'))
+        self.assertEqual(room['phase'], 'night')
+        self.detective_turn(identity)
+        room['night']['victim'] = None
+        self.post('solo-proceed', identity)
+        self.assertEqual(room['phase'], 'day')
 
     def publisher(self, room):
         return lambda name, text, kind='msg': game.chat_add(room, 'town', name, text, kind)
 
-    def test_seven_complete_cases_have_consistent_references_and_two_independent_clue_chains(self):
+    def available_question(self, state, question='detail', exclude=None):
+        for actor in state['scenario']['cast']:
+            if actor['alive'] and actor['id'] != exclude:
+                for option in actor['question_options']:
+                    if option['id'] == question and option['available']:
+                        return actor, option
+        self.fail('No available ' + question + ' question')
+
+    def test_seven_cases_have_valid_canon_question_content_and_recorded_origins(self):
         self.assertEqual(len(solo_story.SCENARIOS), 7)
         self.assertEqual(len({s['id'] for s in solo_story.SCENARIOS}), 7)
         self.assertEqual(len({tuple(s['opening']) for s in solo_story.SCENARIOS}), 7)
+        self.assertEqual(sum(len(s['origin']['combined_from']) == 2 for s in solo_story.SCENARIOS), 1)
+        self.assertTrue(any('story-skills' in json.dumps(s['origin']) for s in solo_story.SCENARIOS))
         for case in solo_story.SCENARIOS:
             with self.subTest(case=case['id']):
+                self.assertTrue(case['origin']['label'])
+                self.assertTrue(case['origin']['skills'])
                 self.assertEqual(len(case['opening']), 3)
                 self.assertEqual(len(case['cast']), 6)
                 keys = {p['key'] for p in case['cast']}
@@ -51,14 +95,13 @@ class SoloTests(unittest.TestCase):
                 self.assertNotEqual(case['culprit'], case['doctor'])
                 clues = {c['id']: c for c in case['clues']}
                 self.assertEqual(len(clues), len(case['clues']))
-                prose = [c['text'] for c in case['clues']]
-                self.assertEqual(len(prose), len(set(prose)))
-                for p in case['cast']:
-                    self.assertTrue(all(p[field] for field in ['account', 'observation', 'secret', 'description', 'relationship', 'defense']))
+                for actor in case['cast']:
+                    for field in ['account', 'observation', 'secret', 'correction', 'description', 'relationship']:
+                        self.assertTrue(actor[field], field)
                     for kind in ['account', 'observation', 'admission']:
-                        self.assertIn(p['key'] + '-' + kind, clues)
+                        self.assertIn(actor['key'] + '-' + kind, clues)
                         field = 'secret' if kind == 'admission' else kind
-                        self.assertEqual(clues[p['key'] + '-' + kind]['text'], p[field])
+                        self.assertEqual(clues[actor['key'] + '-' + kind]['text'], actor[field])
                 for link in case['connections']:
                     self.assertIn(link['speaker'], keys)
                     self.assertIn(link['subject'], keys)
@@ -66,21 +109,45 @@ class SoloTests(unittest.TestCase):
                     self.assertTrue(set(link['requires']) <= clues.keys())
                 against = [link for link in case['connections'] if link['subject'] == case['culprit'] and link['effect'] > 0]
                 self.assertGreaterEqual(len(against), 2)
-                self.assertNotEqual(set(against[0]['requires']), set(against[1]['requires']))
                 self.assertTrue(any(link['effect'] < 0 for link in case['connections']))
                 self.assertGreaterEqual(len(case['timeline']), 5)
-                self.assertEqual(len(case['chapters']), 3)
+                self.assertTrue(case['reconstruction'])
+                culprit = next(p for p in case['cast'] if p['key'] == case['culprit'])
+                self.assertIn(culprit['name'], ' '.join(case['reconstruction']))
 
-    def test_every_case_starts_paused_private_and_uses_exactly_one_canonical_mafia(self):
+    def test_story_catalog_exposes_selection_and_origins_without_the_solution(self):
+        response = self.client.get('/api/stories')
+        self.assertEqual(response.status_code, 200)
+        catalog = response.get_json()['stories']
+        self.assertEqual({s['id'] for s in catalog}, {s['id'] for s in solo_story.SCENARIOS})
+        for entry in catalog:
+            self.assertTrue(entry['title'])
+            self.assertTrue(entry['setting'])
+            self.assertTrue(entry['origin']['label'])
+            for private in ['culprit', 'doctor', 'clues', 'connections', 'timeline', 'solution', 'reconstruction']:
+                self.assertNotIn(private, entry)
+
+    def test_player_can_choose_any_case_or_request_random_without_mutating_canon(self):
+        for case in solo_story.SCENARIOS:
+            selected = self.post('solo', dict(name='Reader', scenario_id=case['id'], previous_scenario=case['id'], include_state=True))
+            self.assertEqual(selected['state']['scenario']['id'], case['id'])
+        before = set(game.rooms)
+        self.post('solo', dict(name='Reader', scenario_id='missing-case'), 400)
+        self.assertEqual(set(game.rooms), before)
+        previous = solo_story.SCENARIOS[0]['id']
+        selected = self.post('solo', dict(name='Reader', scenario_id='random', previous_scenario=previous, include_state=True))
+        self.assertNotEqual(selected['state']['scenario']['id'], previous)
+        room = game.rooms[selected['code']]
+        room['scenario']['cast'][0]['name'] = 'Changed'
+        self.assertFalse(any(c['cast'][0]['name'] == 'Changed' for c in solo_story.SCENARIOS))
+
+    def test_every_case_is_paused_private_and_has_one_fixed_mafia(self):
         for case in solo_story.SCENARIOS:
             with self.subTest(case=case['id']):
                 identity = self.create(case)
                 room = game.rooms[identity['code']]
                 state = identity['state']
-                self.assertEqual(state['mode'], 'solo')
-                self.assertEqual(state['scenario']['id'], case['id'])
                 self.assertEqual(state['phase'], 'lobby')
-                self.assertEqual(state['timer_total'], 0)
                 self.assertEqual(state['settings']['mafia_count'], 1)
                 self.assertEqual(len(state['players']), 7)
                 serialized = json.dumps(state, ensure_ascii=False)
@@ -88,196 +155,269 @@ class SoloTests(unittest.TestCase):
                     self.assertNotIn(clue['text'], serialized)
                 self.assertNotIn(case['solution'], serialized)
                 self.assertNotIn('culprit', state['scenario'])
-                with patch.object(game.time, 'time', return_value=time.time() + 600):
-                    self.assertEqual(self.post('state', identity)['phase'], 'lobby')
                 self.post('start', identity)
                 roles = [p['role'] for p in room['players'].values()]
                 self.assertEqual(roles.count('mafia'), 1)
                 self.assertEqual(roles.count('doctor'), 1)
                 self.assertEqual(roles.count('town'), 4)
-                ids = solo_story.cast_ids(room)
-                self.assertEqual(room['players'][ids[case['culprit']]]['role'], 'mafia')
-                self.assertEqual(room['night_step'], 'detective')
-                self.assertNotEqual(room['night']['victim'], identity['pid'])
+                self.assertEqual(room['players'][solo_story.cast_ids(room)[case['culprit']]]['role'], 'mafia')
+                self.assertEqual(room['night_step'], 'mafia')
 
-    def test_solo_rooms_reject_public_joining_and_cast_or_rule_changes(self):
+    def test_solo_turns_have_no_deadlines_and_advance_only_when_proceeded(self):
         identity = self.create()
-        self.post('join', dict(code=identity['code'], name='Outsider'), 400)
-        self.post('bot', dict(identity, count=1), 400)
-        self.post('settings', dict(identity, mafia_count=2), 400)
-        self.assertEqual(len(game.rooms[identity['code']]['players']), 7)
+        self.post('start', identity)
+        for step in ['mafia', 'doctor', 'detective']:
+            before = self.post('state', identity)
+            self.assertEqual(before['night_step'], step)
+            self.assertEqual((before['timer_left'], before['timer_total']), (0, 0))
+            with patch.object(game.time, 'time', return_value=time.time() + 24 * 3600):
+                for _ in range(3):
+                    after = self.post('state', identity)
+                    self.assertEqual(after['night_step'], step)
+            self.post('solo-proceed', identity)
+        day = self.post('state', identity)
+        self.assertEqual(day['phase'], 'day')
+        self.assertFalse(day['voting'])
+        self.assertEqual((day['timer_left'], day['timer_total']), (0, 0))
+        with patch.object(game.time, 'time', return_value=time.time() + 24 * 3600):
+            self.assertFalse(self.post('state', identity)['voting'])
+        self.post('proceed', identity)
+        self.assertTrue(self.post('state', identity)['voting'])
 
-    def test_alias_collision_updates_accounts_clues_and_solution_consistently(self):
-        identity = self.create(name='Mara')
+    def test_investigation_records_immediately_but_waits_for_explicit_proceed(self):
+        identity = self.create()
+        self.post('start', identity)
+        self.detective_turn(identity)
         room = game.rooms[identity['code']]
-        self.assertIn('Mara Vale', [p['name'] for p in identity['state']['scenario']['cast']])
-        account = next(c for c in room['scenario']['clues'] if c['id'] == 'ivo-account')
-        self.assertEqual(room['scenario']['cast'][0]['key'], 'mara')
-        self.assertIn('Mara Vale', room['scenario']['connections'][2]['text'])
-        self.assertNotIn('Mara Vale', solo_story.SCENARIOS[0]['connections'][2]['text'])
-        self.assertEqual(len({p['name'] for p in room['players'].values()}), 7)
+        target = game.alive(room, 'mafia')[0]
+        self.post('act', dict(identity, target=target))
+        state = self.post('state', identity)
+        self.assertTrue(state['investigation']['correct'])
+        self.assertEqual(state['phase'], 'night')
+        self.assertEqual(state['night_step'], 'detective')
+        self.post('act', dict(identity, target=target), 400)
+        self.post('solo-proceed', identity)
+        self.assertEqual(self.post('state', identity)['phase'], 'day')
 
-    def test_last_case_can_be_excluded_without_mutating_catalog(self):
-        with patch.object(solo_story.random, 'choice', side_effect=lambda cases: cases[0]):
-            selected = solo_story.choose(solo_story.SCENARIOS[0]['id'])
-        self.assertNotEqual(selected['id'], solo_story.SCENARIOS[0]['id'])
-        selected['cast'][0]['name'] = 'Changed'
-        self.assertNotEqual(solo_story.SCENARIOS[1]['cast'][0]['name'], 'Changed')
-
-    def test_trust_changes_disclosure_and_repeated_questions_do_not_repeat_prose(self):
-        identity, room = self.day()
-        actor = room['players'][solo_story.cast_ids(room)['mara']]
-        self.tell(identity, '@Mara, what are you hiding?')
-        self.assertNotIn('mara-admission', room['story']['revealed'])
-        self.tell(identity, 'I trust Mara')
-        self.tell(identity, '@Mara, what are you hiding?')
-        self.assertEqual(room['story']['revealed']['mara-admission']['text'], actor['character']['secret'])
-        before = len([c for c in room['chat'] if c['n'] == 'Mara'])
-        for _ in range(5):
-            response = self.tell(identity, '@Mara, what are you hiding?')
-        self.assertEqual(before, len([c for c in room['chat'] if c['n'] == 'Mara']))
-        self.assertIn('No new testimony', response['feedback'])
-
-    def test_repeated_pressure_discloses_a_new_fact_once_without_trust(self):
-        identity, room = self.day()
-        self.tell(identity, '@Mara, what are you hiding?')
-        self.tell(identity, '@Mara, please be honest about your secret')
-        self.assertIn('mara-admission', room['story']['revealed'])
-        self.assertEqual(sum(c['t'] == room['players'][solo_story.cast_ids(room)['mara']]['character']['secret'] for c in room['chat']), 1)
-
-    def test_solo_uses_no_online_reply_and_does_not_repeat_at_each_dawn(self):
+    def test_accounts_appear_once_per_witness_per_round_without_online_templates(self):
         identity, room = self.day()
         with patch.object(bot_brain, 'reply', side_effect=AssertionError('Online reply used in solo')):
-            for day in range(1, 6):
-                room['day'] = day
-                for _ in range(12):
-                    room['story']['last_spoke'] = 0
-                    game.bot_discussion(room)
-            self.tell(identity, '@Mara, what is your account?')
-        speeches = [c['t'] for c in room['chat'] if c['k'] == 'msg' and c['n'] != 'Reader']
-        self.assertEqual(len(speeches), len(set(speeches)))
-        self.assertFalse(any('I lean towards' in text for text in speeches))
-        self.assertEqual(len(room['story']['chapters']), 3)
+            for _ in range(15):
+                self.post('state', identity)
+        living_witnesses = {pid for pid, p in room['players'].items() if p['bot'] and p['alive']}
+        self.assertEqual(set(room['story']['account_rounds'][1]), living_witnesses)
+        for actor in room['scenario']['cast']:
+            messages = [c for c in room['chat'] if c['n'] == actor['name'] and c['day'] == 1 and actor['account'] in c['t']]
+            self.assertEqual(len(messages), 1, actor['name'])
+        first_round_count = len(room['chat'])
+        for _ in range(8):
+            self.post('state', identity)
+        self.assertEqual(len(room['chat']), first_round_count)
+        self.next_round(identity)
+        self.assertEqual(set(room['story']['account_rounds'][2]), living_witnesses)
+        second_round_count = len(room['chat'])
+        for _ in range(8):
+            self.post('state', identity)
+        self.assertEqual(len(room['chat']), second_round_count)
+        self.assertFalse(any('I lean towards' in c['t'] for c in room['chat']))
 
-    def test_missing_witnesses_only_contribute_pre_watch_notes_not_new_dialogue_or_secrets(self):
+    def test_one_selected_question_changes_testimony_and_blocks_all_other_questions_that_round(self):
         identity, room = self.day()
-        pid = solo_story.cast_ids(room)['mara']
-        game.record_death(room, pid, 'night')
-        self.tell(identity, '@Mara, what is your account?')
-        self.tell(identity, '@Mara, what did you notice?')
-        self.tell(identity, '@Mara, what are you hiding?')
-        self.assertTrue(room['story']['revealed']['mara-account']['archived'])
-        self.assertNotIn('mara-admission', room['story']['revealed'])
-        self.assertFalse(any(c['n'] == 'Mara' for c in room['chat']))
-        self.assertTrue(any('sealed pre-watch notes' in c['t'] for c in room['chat']))
+        before = self.post('state', identity)
+        actor, option = self.available_question(before)
+        profile = room['players'][actor['id']]['character']
+        self.post('solo-question', dict(identity, target=actor['id'], question=option['id']))
+        after = self.post('state', identity)
+        quota = after['scenario']['interrogation']
+        self.assertTrue(quota['used'])
+        self.assertEqual(quota['target_name'], actor['name'])
+        self.assertEqual(quota['question_id'], option['id'])
+        changed = next(p for p in after['scenario']['cast'] if p['id'] == actor['id'])
+        self.assertNotEqual(changed['statement'], actor['statement'])
+        self.assertFalse(any(q['available'] for p in after['scenario']['cast'] for q in p['question_options']))
+        self.assertIn(profile['observation'], json.dumps(after['scenario'], ensure_ascii=False))
+        other = next(p for p in after['scenario']['cast'] if p['alive'] and p['id'] != actor['id'])
+        self.post('solo-question', dict(identity, target=other['id'], question='motive'), 400)
+        self.post('solo-question', dict(identity, target=actor['id'], question='correction'), 400)
+        for _ in range(5):
+            self.post('state', identity)
+        speeches = [c for c in room['chat'] if c['n'] == actor['name'] and c['t'] == profile['observation']]
+        self.assertLessEqual(len(speeches), 1)
+        self.next_round(identity)
+        state = self.post('state', identity)
+        self.assertFalse(state['scenario']['interrogation']['used'])
+        options = next(p for p in state['scenario']['cast'] if p['id'] == actor['id'])['question_options']
+        self.assertFalse(next(q for q in options if q['id'] == 'detail')['available'])
+        self.post('solo-question', dict(identity, target=other['id'], question='motive'))
+        self.assertTrue(self.post('state', identity)['scenario']['interrogation']['used'])
 
-    def test_evidence_is_not_public_until_revealed_and_connections_require_all_sources(self):
+    def test_each_of_the_three_questions_publishes_the_matching_authored_change(self):
+        for question, field in [('detail', 'observation'), ('motive', 'secret'), ('correction', 'correction')]:
+            with self.subTest(question=question):
+                identity, room = self.day()
+                state = self.post('state', identity)
+                actor, _ = self.available_question(state, question)
+                self.post('solo-question', dict(identity, target=actor['id'], question=question))
+                public = self.post('state', identity)['scenario']
+                changed = next(p for p in public['cast'] if p['id'] == actor['id'])
+                self.assertNotEqual(changed['statement'], actor['statement'])
+                self.assertIn(room['players'][actor['id']]['character'][field], json.dumps(public, ensure_ascii=False))
+
+    def test_question_validation_does_not_consume_the_only_question(self):
         identity, room = self.day()
-        link = room['scenario']['connections'][0]
-        clues = {c['id']: c for c in room['scenario']['clues']}
-        for key in link['requires'][:-1]:
-            solo_story.reveal(room, clues[key], self.publisher(room))
-        self.assertFalse(solo_story.connect(room, self.publisher(room)))
-        self.assertNotIn(link['text'], json.dumps(game.view(room, identity['pid']), ensure_ascii=False))
-        solo_story.reveal(room, clues[link['requires'][-1]], self.publisher(room))
-        self.assertTrue(solo_story.connect(room, self.publisher(room)))
-        state = game.view(room, identity['pid'])
-        self.assertEqual(state['scenario']['connections'][0]['sources'], link['requires'])
-        self.assertNotIn('effect', state['scenario']['connections'][0])
+        state = self.post('state', identity)
+        actor, _ = self.available_question(state)
+        for target, question in [('missing', 'detail'), (identity['pid'], 'detail'), (actor['id'], 'free-text')]:
+            self.post('solo-question', dict(identity, target=target, question=question), 400)
+            self.assertFalse(self.post('state', identity)['scenario']['interrogation']['used'])
+        dead = next(pid for pid, p in room['players'].items() if p['bot'] and pid != actor['id'])
+        game.record_death(room, dead, 'night')
+        self.post('solo-question', dict(identity, target=dead, question='detail'), 400)
+        self.assertFalse(self.post('state', identity)['scenario']['interrogation']['used'])
+
+    def test_questions_close_during_voting_and_night(self):
+        identity, room = self.day()
+        actor, _ = self.available_question(self.post('state', identity))
+        self.post('proceed', identity)
+        self.post('solo-question', dict(identity, target=actor['id'], question='motive'), 400)
+        self.assertFalse(self.post('state', identity)['scenario']['interrogation']['used'])
+        self.post('vote', dict(identity, target='skip'))
+        self.post('solo-question', dict(identity, target=actor['id'], question='motive'), 400)
+        self.assertFalse(self.post('state', identity)['scenario']['interrogation']['used'])
+
+    def test_no_typed_public_questions_or_accusations_and_private_team_chat_stays_available(self):
+        identity, _ = self.day()
+        for text in ['What happened?', 'I suspect someone', '/vote someone']:
+            self.post('chat', dict(identity, text=text), 400)
+        self.post('team-chat', dict(identity, text='Let us compare these statements.'))
+        state = self.post('state', identity)
+        self.assertTrue(any(c['t'] == 'Let us compare these statements.' for c in state['team_chat']))
+        self.assertFalse(any(c['t'] == 'Let us compare these statements.' for c in state['chat']))
+
+    def test_inspection_and_comparison_do_not_consume_question_and_hide_unpublished_content(self):
+        identity, room = self.day()
+        state = self.post('state', identity)
+        docs = [c for c in room['scenario']['clues'] if c['kind'] == 'document']
+        self.assertNotIn(docs[0]['text'], json.dumps(state, ensure_ascii=False))
+        self.post('solo-evidence', dict(identity, action='inspect'))
+        state = self.post('state', identity)
+        self.assertTrue(any(e['kind'] == 'document' for e in state['scenario']['journal']))
+        self.post('solo-evidence', dict(identity, action='compare'))
+        self.assertFalse(self.post('state', identity)['scenario']['interrogation']['used'])
+        self.post('solo-evidence', dict(identity, action='invent'), 400)
         self.assertNotIn(room['scenario']['solution'], json.dumps(state, ensure_ascii=False))
 
-    def test_each_case_can_be_solved_by_combining_testimony_and_exhibits(self):
-        for case in solo_story.SCENARIOS:
-            with self.subTest(case=case['id']):
-                identity, room = self.day(case)
-                ids = solo_story.cast_ids(room)
-                culprit = ids[case['culprit']]
-                voter = next(pid for key, pid in ids.items() if key != case['culprit'])
-                self.assertEqual(solo_story.vote_target(room, voter), 'skip')
-                for clue in case['clues']:
-                    solo_story.reveal(room, clue, self.publisher(room))
-                while solo_story.connect(room, self.publisher(room)):
-                    pass
-                self.assertEqual(solo_story.vote_target(room, voter), culprit)
-                self.assertEqual(len(room['story']['connections']), 3)
-                self.assertTrue(any(c['n'] == room['players'][culprit]['name'] and c['t'] == case['connections'][0]['reply'] for c in room['chat']))
+    def test_scene_inspection_recovers_missing_witness_observations_without_question_or_ghost_dialogue(self):
+        identity, room = self.day()
+        ids = solo_story.cast_ids(room)
+        unseen = next(c for c in room['scenario']['clues'] if c['kind'] == 'observation' and c['id'] not in room['story']['revealed'])
+        target = ids[unseen['source']]
+        name = room['players'][target]['name']
+        game.record_death(room, target, 'night')
+        before = len([m for m in room['chat'] if m['n'] == name])
+        for _ in range(len(room['scenario']['clues'])):
+            self.post('solo-evidence', dict(identity, action='inspect'))
+            if unseen['id'] in room['story']['revealed']:
+                break
+        self.assertTrue(room['story']['revealed'][unseen['id']]['archived'])
+        self.assertEqual(len([m for m in room['chat'] if m['n'] == name]), before)
+        self.assertFalse(self.post('state', identity)['scenario']['interrogation']['used'])
+        self.assertNotIn(unseen['source'] + '-admission', room['story']['revealed'])
 
-    def test_all_seven_cases_complete_through_public_interviews_and_actual_ballots(self):
+    def test_all_cases_are_winnable_with_one_question_per_round_and_public_evidence(self):
         for case in solo_story.SCENARIOS:
             with self.subTest(case=case['id']):
                 identity = self.create(case)
                 room = game.rooms[identity['code']]
-                self.post('start', identity)
                 ids = solo_story.cast_ids(room)
-                self.post('act', dict(identity, target=ids[case['doctor']]))
-                self.assertEqual(room['phase'], 'day')
-                for character in case['cast']:
-                    name = character['name']
-                    self.tell(identity, f'@{name}, what is your account?')
-                    self.tell(identity, f'@{name}, what did you notice?')
-                    if room['players'][ids[character['key']]]['alive']:
-                        self.tell(identity, f'I trust {name}')
-                        self.tell(identity, f'@{name}, what are you hiding?')
-                for _ in range(2):
-                    self.tell(identity, 'Inspect the scene for evidence.')
                 culprit = ids[case['culprit']]
-                self.tell(identity, 'I suspect ' + room['players'][culprit]['name'])
-                self.assertTrue(room['story']['connections'])
-                self.post('proceed', identity)
-                self.assertEqual(room['phase'], 'day')
-                self.post('vote', dict(identity, target=culprit))
-                self.assertEqual(room['winner'], 'town')
-                self.assertEqual(room['players'][identity['pid']]['round_points'], 1)
+                clues = {c['id']: c for c in case['clues']}
+                self.post('start', identity)
+                positive = [link for link in case['connections'] if link['subject'] == case['culprit'] and link['effect'] > 0]
+                for _ in range(6):
+                    self.detective_turn(identity)
+                    self.post('act', dict(identity, target=culprit))
+                    self.post('solo-proceed', identity)
+                    if room['phase'] == 'over':
+                        break
+                    # All public exhibits and recorded notes may be inspected, but living
+                    # people may receive only the one selected question each round.
+                    for _ in range(len(case['clues'])):
+                        before = len(room['story']['revealed'])
+                        self.post('solo-evidence', dict(identity, action='inspect'))
+                        if len(room['story']['revealed']) == before:
+                            break
+                    revealed = set(room['story']['revealed'])
+                    supported = any(link['id'] in room['story']['connections'] for link in positive)
+                    if not supported:
+                        state = self.post('state', identity)
+                        candidates = []
+                        for link in positive:
+                            missing = [clues[key] for key in link['requires'] if key not in revealed]
+                            if any(c['source'] and not room['players'][ids[c['source']]]['alive'] for c in missing):
+                                continue
+                            for clue in missing:
+                                question = {'observation': 'detail', 'admission': 'motive', 'correction': 'correction'}.get(clue['kind'])
+                                if question:
+                                    actor = next(p for p in state['scenario']['cast'] if p['id'] == ids[clue['source']])
+                                    if any(q['id'] == question and q['available'] for q in actor['question_options']):
+                                        candidates.append((len(missing), actor['id'], question))
+                        self.assertTrue(candidates, 'No legal remaining path to a corroborated case')
+                        _, target, question = min(candidates)
+                        self.post('solo-question', dict(identity, target=target, question=question))
+                    supported = any(link['id'] in room['story']['connections'] for link in positive)
+                    if supported:
+                        self.post('solo-influence', dict(identity, target=culprit, stance='suspect'))
+                    self.post('proceed', identity)
+                    self.post('vote', dict(identity, target=culprit if supported else 'skip'))
+                    if room['phase'] == 'over':
+                        break
+                self.assertEqual(room.get('winner'), 'town', case['id'])
                 self.assertEqual(self.post('state', identity)['scenario']['solution'], case['solution'])
 
-    def test_player_arguments_change_votes_but_repeated_claims_do_not_multiply(self):
+    def test_structured_influence_changes_votes_without_stacking_or_consuming_question(self):
         identity, room = self.day()
         ids = solo_story.cast_ids(room)
-        link = room['scenario']['connections'][0]
+        link = next(c for c in room['scenario']['connections'] if c['effect'] > 0)
         clues = {c['id']: c for c in room['scenario']['clues']}
         for key in link['requires']:
             solo_story.reveal(room, clues[key], self.publisher(room))
         solo_story.connect(room, self.publisher(room))
-        voter = ids['ada']
-        self.assertEqual(solo_story.vote_target(room, voter), 'skip')
-        self.tell(identity, 'I suspect Elias')
-        self.assertEqual(solo_story.vote_target(room, voter), ids['elias'])
-        score = solo_story.suspicion(room, voter)[ids['elias']]
-        self.tell(identity, 'I suspect Elias')
-        self.assertEqual(solo_story.suspicion(room, voter)[ids['elias']], score)
-        self.tell(identity, 'I trust Elias')
-        self.assertEqual(solo_story.vote_target(room, voter), 'skip')
+        target = ids[link['subject']]
+        voter = next(pid for pid, p in room['players'].items() if p['bot'] and pid != target)
+        self.post('solo-influence', dict(identity, target=target, stance='suspect'))
+        self.assertEqual(solo_story.vote_target(room, voter), target)
+        score = solo_story.suspicion(room, voter)[target]
+        self.post('solo-influence', dict(identity, target=target, stance='suspect'))
+        self.assertEqual(solo_story.suspicion(room, voter)[target], score)
+        self.assertFalse(self.post('state', identity)['scenario']['interrogation']['used'])
+        self.post('solo-influence', dict(identity, target=target, stance='defend'))
+        self.assertLess(solo_story.suspicion(room, voter)[target], score)
+        self.post('solo-influence', dict(identity, target=target, stance='neutral'))
+        self.post('solo-influence', dict(identity, target='missing', stance='suspect'), 400)
+        self.post('solo-influence', dict(identity, target=target, stance='nonsense'), 400)
 
     def test_votes_do_not_read_hidden_roles_or_unpublished_solution(self):
         identity, room = self.day()
         ids = solo_story.cast_ids(room)
-        voter = ids['ada']
+        voter = ids[room['scenario']['doctor']]
         before = solo_story.suspicion(room, voter)
-        room['players'][ids['elias']]['role'], room['players'][ids['mara']]['role'] = 'town', 'mafia'
+        culprit = ids[room['scenario']['culprit']]
+        innocent = next(pid for pid in ids.values() if pid not in (culprit, voter))
+        room['players'][culprit]['role'], room['players'][innocent]['role'] = 'town', 'mafia'
         room['scenario']['solution'] = 'The author knows something else.'
         self.assertEqual(before, solo_story.suspicion(room, voter))
-        self.assertEqual(solo_story.vote_target(room, voter), 'skip')
 
-    def test_public_revelations_change_the_killers_next_target(self):
-        identity, room = self.day()
-        ids = solo_story.cast_ids(room)
-        link = room['scenario']['connections'][0]
-        clues = {c['id']: c for c in room['scenario']['clues']}
-        for key in link['requires']:
-            solo_story.reveal(room, clues[key], self.publisher(room))
-        solo_story.connect(room, self.publisher(room))
-        choices = [pid for key, pid in ids.items() if key != room['scenario']['culprit']]
-        self.assertEqual(solo_story.night_target(room, ids['elias'], choices), ids['mara'])
-
-    def test_search_and_general_topic_questions_publish_relevant_material(self):
-        identity, room = self.day()
-        self.tell(identity, 'What do we know about the bell?')
-        self.assertIn('mara-observation', room['story']['revealed'])
-        self.tell(identity, 'Inspect the scene for evidence.')
-        self.assertIn('splice', room['story']['revealed'])
-        self.tell(identity, 'Search the scene for evidence.')
-        self.assertIn('service', room['story']['revealed'])
-        self.assertEqual(self.tell(identity, 'Search the scene for evidence.')['feedback'][:16], 'No new testimony')
+    def test_alias_collision_updates_all_private_and_public_case_references(self):
+        case = solo_story.SCENARIOS[0]
+        actor = case['cast'][0]
+        identity = self.create(case, name=actor['name'])
+        room = game.rooms[identity['code']]
+        renamed = room['scenario']['cast'][0]
+        self.assertEqual(renamed['name'], actor['name'] + ' Vale')
+        self.assertEqual(renamed['key'], actor['key'])
+        self.assertEqual(len({p['name'] for p in room['players'].values()}), 7)
+        self.assertEqual(case['cast'][0]['name'], actor['name'])
 
     def test_context_has_only_the_current_characters_private_background(self):
         identity = self.create()
@@ -288,36 +428,39 @@ class SoloTests(unittest.TestCase):
         for pid in actors[1:]:
             self.assertNotIn(room['players'][pid]['character']['secret'], repr(context))
 
-    def test_replay_preserves_solution_but_clears_testimony_and_updates_ending(self):
+    def test_completed_and_host_ended_cases_explain_who_did_what_and_why(self):
+        for finished in [False, True]:
+            with self.subTest(finished=finished):
+                identity, room = self.day()
+                if finished:
+                    game.record_death(room, game.alive(room, 'mafia')[0], 'vote')
+                    game.check_win(room)
+                else:
+                    self.post('end', identity)
+                scenario = self.post('state', identity)['scenario']
+                self.assertEqual(scenario['solution'], room['scenario']['solution'])
+                self.assertEqual(scenario['timeline'], room['scenario']['timeline'])
+                self.assertEqual(scenario['reconstruction'], room['scenario']['reconstruction'])
+                self.assertTrue(scenario['reconstruction'])
+
+    def test_replay_preserves_culprit_but_clears_the_case_and_question_quota(self):
         identity, room = self.day()
-        roles = {pid: p['role'] for pid, p in room['players'].items()}
-        self.tell(identity, 'Inspect the scene.')
+        actor, option = self.available_question(self.post('state', identity))
+        self.post('solo-question', dict(identity, target=actor['id'], question=option['id']))
         self.post('end', identity)
-        self.assertNotIn('solution', self.post('state', identity)['scenario'])
+        roles = {pid: p['role'] for pid, p in room['players'].items()}
         self.post('restart', identity)
         self.assertEqual(roles, {pid: p['role'] for pid, p in room['players'].items()})
-        self.assertEqual(room['story']['revealed'], {})
-        mafia = game.alive(room, 'mafia')[0]
-        game.record_death(room, mafia, 'vote')
-        game.check_win(room)
-        state = self.post('state', identity)
-        self.assertEqual(state['winner'], 'town')
-        self.assertEqual(state['scenario']['solution'], room['scenario']['solution'])
-        self.assertIn(room['players'][mafia]['name'], state['scenario']['consequences'])
-        self.post('leave', identity)
-        self.assertNotIn(identity['code'], game.rooms)
+        self.assertEqual(self.post('state', identity)['scenario']['journal'], [])
+        self.assertFalse(self.post('state', identity)['scenario']['interrogation']['used'])
+        self.assertEqual(room['night_step'], 'mafia')
 
-    def test_detective_is_protected_on_ordinary_solo_nights_regardless_of_round_number(self):
+    def test_solo_rooms_reject_public_joining_and_cast_or_rule_changes(self):
         identity = self.create()
-        room = game.rooms[identity['code']]
-        self.post('start', identity)
-        for _ in range(3):
-            game.start_night(room)
-            mafia = game.alive(room, 'mafia')[0]
-            with self.assertRaises(game.Bad):
-                game.mafia_vote(room, mafia, identity['pid'])
-            game.run_bots(room)
-            self.assertNotEqual(room['night']['victim'], identity['pid'])
+        self.post('join', dict(code=identity['code'], name='Outsider'), 400)
+        self.post('bot', dict(identity, count=1), 400)
+        self.post('settings', dict(identity, mafia_count=2), 400)
+        self.assertEqual(len(game.rooms[identity['code']]['players']), 7)
 
     def test_online_rooms_keep_their_normal_workflow(self):
         identity = self.post('create', dict(name='Host', include_state=True))

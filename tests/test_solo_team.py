@@ -1,4 +1,6 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
+import threading
 import time
 import unittest
 from unittest.mock import patch
@@ -16,11 +18,24 @@ class SoloTeamTests(unittest.TestCase):
 
     def post(self, route, body, status=200):
         response = self.client.post('/api/' + route, json=body)
-        self.assertEqual(response.status_code, status, response.get_json())
+        self.assertEqual(response.status_code, status, (response.get_json() or {}).get('error', route))
         return response.get_json()
 
     def join(self, name='Friend'):
         return self.post('solo-join', dict(self.invite, name=name, include_state=True))
+
+    def detective_turn(self, identity=None):
+        identity = identity or self.lead
+        self.post('solo-proceed', identity)
+        self.post('solo-proceed', identity)
+        self.assertEqual(self.room['night_step'], 'detective')
+
+    def day(self):
+        self.post('start', self.lead)
+        self.detective_turn()
+        self.room['night']['victim'] = None
+        self.post('solo-proceed', self.lead)
+        self.assertEqual(self.room['phase'], 'day')
 
     def test_invitation_required_and_two_friends_do_not_add_player_seats(self):
         self.post('solo-join', dict(code=self.lead['code'], name='Friend'), 404)
@@ -113,6 +128,7 @@ class SoloTeamTests(unittest.TestCase):
     def test_investigation_is_one_shared_final_result_and_one_scoring_record(self):
         a, b = self.join('One'), self.join('Two')
         self.post('start', self.lead)
+        self.detective_turn(a)
         target = game.alive(self.room, 'mafia')[0]
         self.post('act', dict(a, target=target))
         results = [self.post('state', identity)['investigation'] for identity in [self.lead, a, b]]
@@ -146,7 +162,7 @@ class SoloTeamTests(unittest.TestCase):
     def test_ballots_replace_one_shared_vote_and_never_add_friend_votes(self):
         a, b = self.join('One'), self.join('Two')
         self.post('start', self.lead)
-        self.room.update(phase='day', discuss_until=0, votes={})
+        self.room.update(phase='day', discuss_until=0, voting_announced=True, solo_voting=True, votes={})
         targets = [pid for pid in self.room['players'] if pid != self.lead['pid']]
         with patch.object(game, 'run_bots'):
             self.post('vote', dict(a, target=targets[0]))
@@ -173,7 +189,7 @@ class SoloTeamTests(unittest.TestCase):
         self.assertEqual(self.room['dawn'], 'Nobody was killed last night.')
         self.assertEqual(self.room['death_events'], [])
         self.assertEqual(sum(p['pending_points'] for p in self.room['players'].values() if p['role'] == 'doctor'), 0)
-        self.room.update(phase='day', discuss_until=0)
+        self.room.update(phase='day', discuss_until=0, voting_announced=True, solo_voting=True)
         for pid in game.alive(self.room):
             if pid == lead:
                 continue
@@ -215,11 +231,11 @@ class SoloTeamTests(unittest.TestCase):
     def choose_detective_as_victim(self, mafia):
         for pid in mafia:
             game.mafia_vote(self.room, pid, self.lead['pid'])
-        game.advance(self.room)
+        self.post('solo-proceed', self.lead)
         self.assertEqual(self.room['night']['victim'], self.lead['pid'])
         # Deliberately protect somebody else; this test is about Detective findings.
         self.room['night']['doctor'] = mafia[0]
-        game.advance(self.room)
+        self.post('solo-proceed', self.lead)
         self.assertEqual(self.room['night_step'], 'detective')
 
     def test_final_night_wrong_investigation_can_kill_the_shared_detective(self):
@@ -229,6 +245,7 @@ class SoloTeamTests(unittest.TestCase):
         self.choose_detective_as_victim(mafia)
         innocent = game.alive(self.room, 'doctor')[0]
         self.post('act', dict(friend, target=innocent))
+        self.post('solo-proceed', friend)
         state = self.post('state', friend)
         self.assertFalse(state['me']['alive'])
         self.assertFalse(state['investigation']['correct'])
@@ -244,6 +261,7 @@ class SoloTeamTests(unittest.TestCase):
         mafia = self.final_chance_night()
         self.choose_detective_as_victim(mafia)
         self.post('act', dict(friend, target=mafia[0]))
+        self.post('solo-proceed', friend)
         state = self.post('state', self.lead)
         self.assertTrue(state['me']['alive'])
         self.assertTrue(state['investigation']['correct'])
@@ -252,11 +270,12 @@ class SoloTeamTests(unittest.TestCase):
         self.assertEqual(self.room['dawn'], 'Nobody was killed last night.')
         self.assertEqual(self.room['players'][game.alive(self.room, 'doctor')[0]]['pending_points'], 0)
 
-    def test_final_night_timeout_without_a_finding_can_also_be_fatal(self):
+    def test_final_night_waits_indefinitely_but_explicit_skip_can_be_fatal(self):
         mafia = self.final_chance_night(mafia_count=1)
         self.choose_detective_as_victim(mafia)
-        self.room['step_until'] = time.time() - 1
-        game.advance(self.room)
+        with patch.object(game.time, 'time', return_value=time.time() + 86400):
+            self.assertEqual(self.post('state', self.lead)['night_step'], 'detective')
+        self.post('solo-proceed', self.lead)
         self.assertEqual(self.room['winner'], 'mafia')
         self.assertFalse(self.room['players'][self.lead['pid']]['alive'])
 
@@ -289,13 +308,48 @@ class SoloTeamTests(unittest.TestCase):
             return lead if lead in choices else choices[0]
         with patch.object(game.random, 'choice', side_effect=pick_detective):
             game.run_bots(self.room)
+        self.assertEqual(self.room['night']['mafia'][game.alive(self.room, 'mafia')[0]], lead)
+        self.assertEqual(self.room['night_step'], 'mafia')
+        self.detective_turn()
         self.assertEqual(self.room['night']['victim'], lead)
-        self.assertEqual(self.room['night_step'], 'detective')
         # Daytime voting protection stays in place even after a dangerous night.
-        self.room.update(phase='day', discuss_until=0)
+        self.room.update(phase='day', discuss_until=0, voting_announced=True, solo_voting=True)
         with self.assertRaises(game.Bad):
             game.cast_vote(self.room, game.alive(self.room, 'mafia')[0], lead)
         self.assertFalse(game.view(self.room, lead)['me']['at_risk'])
+
+    def test_friends_share_the_same_single_question_for_the_round(self):
+        a, b = self.join('One'), self.join('Two')
+        self.day()
+        state = self.post('state', a)
+        target = next(p for p in state['scenario']['cast'] if p['alive'] and any(q['id'] == 'detail' and q['available'] for q in p['question_options']))
+        self.post('solo-question', dict(a, target=target['id'], question='detail'))
+        for identity in [self.lead, a, b]:
+            self.assertTrue(self.post('state', identity)['scenario']['interrogation']['used'])
+        other = next(p for p in state['scenario']['cast'] if p['alive'] and p['id'] != target['id'])
+        self.post('solo-question', dict(b, target=other['id'], question='motive'), 400)
+        self.post('solo-question', dict(self.lead, target=target['id'], question='correction'), 400)
+        self.post('solo-influence', dict(b, target=other['id'], stance='suspect'))
+        self.assertTrue(self.post('state', self.lead)['scenario']['interrogation']['used'])
+
+    def test_simultaneous_friend_questions_consume_only_one_shared_slot(self):
+        a, b = self.join('One'), self.join('Two')
+        self.day()
+        state = self.post('state', self.lead)
+        targets = [p for p in state['scenario']['cast'] if p['alive'] and any(q['id'] == 'detail' and q['available'] for q in p['question_options'])][:2]
+        barrier = threading.Barrier(2)
+        def ask(identity, target):
+            with game.app.test_client() as client:
+                barrier.wait()
+                response = client.post('/api/solo-question', json=dict(identity, target=target['id'], question='detail'))
+                return response.status_code
+        with ThreadPoolExecutor(max_workers=2) as workers:
+            first = workers.submit(ask, a, targets[0])
+            second = workers.submit(ask, b, targets[1])
+            statuses = [first.result(), second.result()]
+        self.assertEqual(sorted(statuses), [200, 400])
+        self.assertTrue(self.post('state', self.lead)['scenario']['interrogation']['used'])
+        self.assertEqual(len(self.room['story']['revisions']), 1)
 
     def test_online_game_has_no_solo_team_or_immunity(self):
         identity = self.post('create', dict(name='Host', include_state=True))

@@ -7,16 +7,28 @@ import copy
 import json
 import random
 import re
-import time
 from pathlib import Path
-from bot_brain import read_message
 
 SCENARIOS = tuple(json.loads((Path(__file__).parent / 'data/solo_scenarios.json').read_text()))
-REPLY_DELAY = 4
+QUESTIONS = (
+    dict(id='detail', label='What detail did you leave out?'),
+    dict(id='motive', label='Why did you hold that back?'),
+    dict(id='correction', label='What would you correct in your account?'),
+)
 
 
-def choose(previous=None):
-    return copy.deepcopy(random.choice([s for s in SCENARIOS if s['id'] != previous]))
+def catalog():
+    return [dict(id=case['id'], title=case['title'], setting=case['setting'],
+                 pressure=case['pressure'], origin=copy.deepcopy(case.get('origin', {}))) for case in SCENARIOS]
+
+
+def choose(previous=None, selected=None):
+    if selected and selected != 'random':
+        case = next((case for case in SCENARIOS if case['id'] == selected), None)
+        if not case:
+            raise ValueError('Choose a story from the list, or select Random.')
+        return copy.deepcopy(case)
+    return copy.deepcopy(random.choice([case for case in SCENARIOS if case['id'] != previous]))
 
 
 def rename(case, old, new):
@@ -31,8 +43,41 @@ def rename(case, old, new):
 
 
 def initialize(room):
-    room['story'] = dict(revealed={}, connections={}, said=set(), cursor=0, last_spoke=0,
-                         asks={}, trust={}, claims={}, chapters=[], day=0, auto={}, feedback='')
+    room['story'] = dict(revealed={}, connections={}, said=set(), claims={}, chapters=[], day=0,
+                         question_round=None, question_target=None, question_id=None, statements={},
+                         account_rounds={}, revisions=[], feedback='')
+
+
+def question_state(room):
+    story = room.get('story', {})
+    used = story.get('question_round') == room['day']
+    target = room['players'].get(story.get('question_target'), {}) if used else {}
+    return dict(round=room['day'], used=used, target_name=target.get('name'),
+                question_id=story.get('question_id') if used else None,
+                choices=[dict(choice) for choice in QUESTIONS])
+
+
+def question_clue(room, pid, question):
+    profile = room['players'][pid]['character']
+    kind = {'detail': 'observation', 'motive': 'admission', 'correction': 'correction'}[question]
+    if kind != 'correction':
+        return next(c for c in room['scenario']['clues'] if c['source'] == profile['key'] and c['kind'] == kind)
+    return dict(id=profile['key'] + '-correction', source=profile['key'], kind='correction', day=1,
+                title=profile['name'] + ' · Correction', text=profile.get('correction', profile['defense']))
+
+
+def question_options(room, pid):
+    story = room.get('story', {})
+    phase_open = room['phase'] == 'day' and not room.get('solo_voting', False)
+    result = []
+    for choice in QUESTIONS:
+        clue = question_clue(room, pid, choice['id'])
+        reason = ('The witness is no longer available.' if not room['players'][pid]['alive'] else
+                  'Questions open during the round discussion.' if not phase_open else
+                  'Your team has already asked its one question this round.' if question_state(room)['used'] else
+                  'This answer is already recorded in your journal.' if clue['id'] in story.get('revealed', {}) else '')
+        result.append(dict(choice, available=not reason, reason=reason))
+    return result
 
 
 def cast_ids(room):
@@ -45,9 +90,14 @@ def public_case(room):
         return None
     story = room.get('story', {})
     result = {key: case[key] for key in ('id', 'title', 'setting', 'anchor', 'pressure', 'opening')}
+    result['origin'] = copy.deepcopy(case.get('origin', {}))
+    result['interrogation'] = question_state(room)
+    result['revisions'] = list(story.get('revisions', []))
     result['cast'] = [dict(id=pid, name=p['name'], occupation=p['character']['occupation'],
                            description=p['character']['description'], relationship=p['character']['relationship'],
-                           alive=p['alive'], topics=p['character']['topics'])
+                           alive=p['alive'], topics=p['character']['topics'],
+                           statement=story.get('statements', {}).get(pid),
+                           question_options=question_options(room, pid))
                       for pid, p in room['players'].items() if p.get('character')]
     result['journal'] = list(story.get('revealed', {}).values())
     result['connections'] = list(story.get('connections', {}).values())
@@ -56,13 +106,14 @@ def public_case(room):
         winner = room.get('winner')
         result['epilogue'] = (case['ending_win'] if winner == 'town' else case['ending_loss'] if winner == 'mafia'
                               else 'The inquiry is suspended. The signed accounts remain in the file, but there is no verdict.')
-        if winner:
-            result['solution'] = case['solution']
-            result['timeline'] = case['timeline']
-            lost = [p['name'] for p in room['players'].values() if p.get('character') and not p['alive']]
-            result['consequences'] = (
-                ('Absent from the final gathering: ' + ', '.join(lost) + '. ' if lost else 'Every witness remains at the table. ')
-                + f"Your file preserves {len(result['journal'])} accounts and exhibits, with {len(result['connections'])} comparisons made before the verdict.")
+        result['solution'] = case['solution']
+        result['timeline'] = case['timeline']
+        result['reconstruction'] = list(case.get('reconstruction', [case['solution']]))
+        lost = [p['name'] for p in room['players'].values() if p.get('character') and not p['alive']]
+        result['consequences'] = (
+            ('Absent from the final gathering: ' + ', '.join(lost) + '. ' if lost else 'Every witness remains at the table. ')
+            + f"Your file preserves {len(result['journal'])} accounts and exhibits, with {len(result['connections'])} comparisons made before the verdict.")
+
     return result
 
 
@@ -116,126 +167,125 @@ def connect(room, publish):
             sources=list(link['requires']), text=link['text'] if speaker['alive'] and subject['alive'] else
             'These recorded accounts concern ' + subject['name'] + '. Their sources remain in the journal.',
             day=room['day'])
-        if subject['alive']:
-            say_once(room, publish, 'reply:' + link['id'], subject['name'], link['reply'])
         return True
     return False
 
 
-def interview(room, pid, text, intent, publish):
-    """Bounded, authored answers; repeat requests consult memory rather than reprint."""
-    player, story = room['players'][pid], room['story']
-    profile = player.get('character')
-    if not profile:
-        return False
-    key = profile['key']
-    clues = {c['kind']: c for c in room['scenario']['clues'] if c['source'] == key}
-    text = text.casefold()
-    if re.search(r'\b(secret|hiding|hide|truth|honest|motive|come clean)\b', text):
-        if not player['alive']:
-            story['feedback'] = 'That witness cannot be questioned. Their recorded account and observations remain available.'
-            return False
-        story['asks'][pid] = story['asks'].get(pid, 0) + 1
-        if story['trust'].get(pid, 0) > 0 or story['asks'][pid] >= 2:
-            return reveal(room, clues['admission'], publish)
-        return say_once(room, publish, 'defense:' + key, player['name'], profile['defense'])
-    if re.search(r'\b(where|alibi|account|what happened|timeline|notes)\b', text):
-        return reveal(room, clues['account'], publish)
-    if (re.search(r'\b(see|saw|hear|heard|notice|noticed|evidence|remember|detail|clue|why)\b', text)
-            or any(re.search(r'\b' + re.escape(topic) + r'\b', text) for topic in profile['topics'])):
-        return reveal(room, clues['observation'], publish)
-    if intent['stances'].get(pid, 0) > 0 and player['alive']:
-        return say_once(room, publish, 'defense:' + key, player['name'], profile['defense'])
-    if intent['stances'].get(pid, 0) < 0:
-        return reveal(room, clues['observation'], publish)
-    return False
-
-
-def respond(room, message, publish):
+def ask_question(room, target, question, publish):
+    if room['phase'] != 'day' or room.get('solo_voting', False):
+        raise ValueError('Ask your one question during the round discussion, before proceeding to vote.')
+    if question not in {choice['id'] for choice in QUESTIONS}:
+        raise ValueError('Choose one of the three questions.')
+    if target not in room['players'] or not room['players'][target].get('character') or not room['players'][target]['alive']:
+        raise ValueError('Choose a living witness.')
     story = room['story']
-    roster = [dict(id=pid, name=p['name']) for pid, p in room['players'].items()]
-    intent = read_message(message['t'], roster)
-    for target, stance in intent['stances'].items():
-        if target in room['players'] and room['players'][target].get('character'):
-            story['claims'][(message['speaker'], target)] = stance
-            story['trust'][target] = 1 if stance < 0 else -1
-    addressed = intent['addressed']
-    if not addressed and len(intent['mentions']) == 1:
-        addressed = intent['mentions'][0]
-    if addressed:
-        return interview(room, addressed, message['t'], intent, publish)
-    text = message['t'].casefold()
-    if re.search(r'\b(compare|contradict|inconsistent|disagree|match)\b', text):
-        return connect(room, publish)
-    if re.search(r'\b(search|inspect|examine|check|look)\b', text):
-        documents = [c for c in room['scenario']['clues'] if c['kind'] == 'document']
-        matched = [c for c in documents if any(re.search(r'\b' + re.escape(topic) + r'\b', text) for topic in c['topics'])]
-        for clue in matched or documents:
-            if reveal(room, clue, publish):
-                return True
-        return False
-    if intent['question']:
+    if question_state(room)['used']:
+        raise ValueError('Your team can ask only one question to one witness in this round.')
+    clue = question_clue(room, target, question)
+    if clue['id'] in story['revealed']:
+        raise ValueError('This answer is already recorded. Choose a question with a new answer.')
+    # Room lock in the API makes the shared team quota and statement revision atomic.
+    story.update(question_round=room['day'], question_target=target, question_id=question)
+    before = story['statements'].get(target, room['players'][target]['character']['account'])
+    reveal(room, clue, publish)
+    after = (clue['text'] if question == 'correction' else before + '\nAdditional testimony: ' + clue['text'])
+    story['statements'][target] = after
+    story['revisions'].append(dict(round=room['day'], name=room['players'][target]['name'],
+        target=target, question=next(choice['label'] for choice in QUESTIONS if choice['id'] == question),
+        before=before, after=after, response=clue['text']))
+    while connect(room, publish):
+        pass
+
+
+def influence(room, lead, target, stance, publish):
+    if room['phase'] != 'day':
+        raise ValueError('Influence the witnesses during the day.')
+    if target not in room['players'] or not room['players'][target].get('character') or not room['players'][target]['alive']:
+        raise ValueError('Choose a living witness.')
+    if stance not in ('suspect', 'defend', 'neutral'):
+        raise ValueError('Choose Suspect, Defend, or Withdraw.')
+    claims = room['story']['claims']
+    previous = claims.get((lead, target))
+    value = {'suspect': 2, 'defend': -2, 'neutral': None}[stance]
+    if value == previous:
+        return
+    if value is None:
+        claims.pop((lead, target), None)
+    else:
+        claims[(lead, target)] = value
+    name = room['players'][target]['name']
+    text = {'suspect': f'The Detective team asks the witnesses to consider a case against {name}.',
+            'defend': f'The Detective team speaks in defense of {name}.',
+            'neutral': f'The Detective team withdraws its position on {name}.'}[stance]
+    publish('', text, 'sys')
+
+
+def evidence(room, action, publish):
+    if room['phase'] != 'day':
+        raise ValueError('Inspect and compare evidence during the day.')
+    if action == 'inspect':
+        for clue in room['scenario']['clues']:
+            if clue['kind'] == 'document' and reveal(room, clue, publish):
+                while connect(room, publish):
+                    pass
+                return
         ids = cast_ids(room)
         for clue in room['scenario']['clues']:
-            if (clue['kind'] == 'observation' and room['players'][ids[clue['source']]]['alive']
-                    and any(re.search(r'\b' + re.escape(topic) + r'\b', text) for topic in clue['topics'])):
-                if reveal(room, clue, publish):
-                    return True
-    # Multiple named accusations still affect votes, even without an addressed reply.
-    return False
+            if (clue['kind'] == 'observation' and not room['players'][ids[clue['source']]]['alive']
+                    and reveal(room, clue, publish)):
+                while connect(room, publish):
+                    pass
+                return 'Recovered a missing witness’s sealed pre-watch observation.'
+        return 'All scene exhibits and available sealed notes are already recorded in the journal.'
+
+    if action == 'compare':
+        if not connect(room, publish):
+            return 'No new comparison is supported yet. Read the accounts, inspect the scene, or use your one question.'
+        while connect(room, publish):
+            pass
+        return
+    raise ValueError('Choose Inspect the scene or Compare accounts.')
 
 
 def discussion(room, publish):
+    """One account per living witness per round; polling has no narrative side effects."""
     if room['phase'] != 'day':
         return False
     if 'story' not in room:
         initialize(room)
     story, case = room['story'], room['scenario']
-    now = time.time()
-    if story['day'] != room['day']:
-        story['day'] = room['day']
-        index = room['day'] - 1
-        if index < len(case['chapters']):
-            title, text = case['chapters'][index]
-            story['chapters'].append(dict(day=room['day'], title=title, text=text))
-            publish('', title + ': ' + text, 'sys')
-    messages = [c for c in room['chat'] if c['ch'] == 'town' and c['k'] == 'msg'
-                and c.get('speaker') in room['players'] and not room['players'][c['speaker']]['bot']
-                and c['seq'] > story['cursor']]
-    if messages:
-        # Each message is consumed once, including across day boundaries.
-        moved = False
-        for message in messages:
-            story['cursor'] = max(story['cursor'], message['seq'])
-            story['feedback'] = ''
-            answered = respond(room, message, publish)
-            moved = answered or moved
-            if not answered and not story['feedback']:
-                story['feedback'] = 'No new testimony. Check the case journal, ask about another detail, or compare the accounts you have collected.'
-        # A witness may answer another witness's newly published evidence immediately.
-        moved = connect(room, publish) or moved
-        story['last_spoke'] = now
-        return moved
-    if now - story['last_spoke'] < REPLY_DELAY:
+    if story['day'] == room['day']:
         return False
-    story['last_spoke'] = now
-    if connect(room, publish):
-        return True
+    story['day'] = room['day']
+    index = room['day'] - 1
+    if index < len(case['chapters']):
+        title, text = case['chapters'][index]
+        story['chapters'].append(dict(day=room['day'], title=title, text=text))
+        publish('', title + ': ' + text, 'sys')
     ids = cast_ids(room)
-    # First accounts are never reissued at dawn. Inactive witnesses do not chat.
+    accounts = story['account_rounds'].setdefault(room['day'], {})
+    # Add one fresh pre-watch detail to this round's account, not a second speech.
     for clue in case['clues']:
-        if clue['kind'] == 'account' and room['players'][ids[clue['source']]]['alive']:
-            if reveal(room, clue, publish):
-                return True
-    # Only two fresh unsolicited observations per day; questions drive the rest.
-    count = story['auto'].get(room['day'], 0)
-    if count < 2:
-        for clue in case['clues']:
-            if clue['kind'] == 'observation' and room['players'][ids[clue['source']]]['alive']:
-                if reveal(room, clue, publish):
-                    story['auto'][room['day']] = count + 1
-                    return True
-    return False
+        if clue['kind'] == 'observation' and clue['id'] not in story['revealed']:
+            pid = ids[clue['source']]
+            if reveal(room, clue, lambda *args: None):
+                before = story['statements'].get(pid, room['players'][pid]['character']['account'])
+                story['statements'][pid] = before + '\nAdditional testimony: ' + clue['text']
+                break
+    for clue in case['clues']:
+        if clue['kind'] != 'account':
+            continue
+        pid = ids[clue['source']]
+        if not room['players'][pid]['alive']:
+            reveal(room, clue, publish)
+            continue
+        text = story['statements'].setdefault(pid, clue['text'])
+        accounts[pid] = text
+        reveal(room, clue, lambda *args: None)
+        publish(room['players'][pid]['name'], text, 'msg')
+    while connect(room, publish):
+        pass
+    return True
 
 
 def suspicion(room, pid):

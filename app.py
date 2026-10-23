@@ -21,6 +21,7 @@ rooms, lock = {}, threading.RLock()
 MIN_PLAYERS, MAX_PLAYERS = 3, 20
 STEP = int(os.environ.get("NIGHT_STEP_SECONDS", 30))  # mafia, then doctor, then detective
 STEPS = ("mafia", "doctor", "detective")
+BOT_TURN_DELAY = 5
 DISCUSS = int(os.environ.get("DISCUSS_SECONDS", 120))  # 2 minutes of talking before votes open
 
 
@@ -102,6 +103,8 @@ def alive(room, role=None):
 
 
 def discussing(room):
+    if room.get('mode') == 'solo':
+        return room['phase'] == 'day' and not room.get('solo_voting', False)
     return room["phase"] == "day" and time.time() < room.get("discuss_until", 0)
 
 
@@ -112,12 +115,14 @@ def start_night(room):
     room["votes"] = {}
     room["discussion_ready"] = set()
     room["voting_announced"] = False
-    room["night_step"], room["step_until"] = STEPS[0], time.time() + STEP
+    room['step_started'] = time.time()
+    room['solo_voting'] = False
+    room["night_step"], room["step_until"] = STEPS[0], room['step_started'] + STEP
 
 
 def advance(room):
     """Advance on confirmed actions, or keep the existing timeout fallback."""
-    while room["phase"] == "night":
+    while room["phase"] == "night" and room.get("mode") != "solo":
         role = room["night_step"]
         complete = (all(i in room["night"]["mafia"] for i in alive(room, "mafia"))
                     if role == "mafia" else bool(room["night"].get(role)) or not alive(room, role))
@@ -132,16 +137,19 @@ def advance(room):
                       (room["settings"]["special_roles"] and any(p["role"] == role for p in room["players"].values())))
         i = steps.index(room["night_step"])
         if i + 1 < len(steps):
-            room["night_step"], room["step_until"] = steps[i + 1], time.time() + STEP
+            room['step_started'] = time.time()
+            room["night_step"], room["step_until"] = steps[i + 1], room['step_started'] + STEP
         else:
             resolve_night(room)
 
     if room["phase"] == "day" and not discussing(room) and not room.get("voting_announced"):
         room["voting_announced"] = True
-        chat_add(room, "town", "", "Discussion is over. Voting is now open.", "sys")
+        chat_add(room, "town", "", "Your team proceeded. Voting is now open." if room.get("mode") == "solo" else "Discussion is over. Voting is now open.", "sys")
 
 
 def timers(room):
+    if room.get("mode") == "solo":
+        return 0, 0
     now = time.time()
     if room["phase"] == "night":
         return math.ceil(max(0, room["step_until"] - now)), STEP
@@ -274,7 +282,9 @@ def resolve_night(room):
     say(room, f"Night {room['day']}: {room['dawn']}")
     if not check_win(room):
         room["phase"] = "day"
-        room["discuss_until"] = time.time() + DISCUSS
+        room['discussion_started'] = time.time()
+        room['solo_voting'] = False
+        room["discuss_until"] = room['discussion_started'] + DISCUSS
 
 
 def tally(room):
@@ -305,7 +315,7 @@ def cast_vote(room, pid, t):
     if room["phase"] != "day" or not P[pid]["alive"]:
         raise Bad("You can't vote right now.")
     if discussing(room):
-        raise Bad("Voting opens when the discussion timer ends.")
+        raise Bad("Proceed to voting first." if room.get("mode") == "solo" else "Voting opens when the discussion timer ends.")
     if protected_player(room, t):
         raise Bad("The Detective team cannot be voted out in a solo story.")
     if t != "skip" and (t not in P or not P[t]["alive"] or t == pid):
@@ -359,6 +369,8 @@ def proceed_to_vote(room, pid):
     chat_add(room, "town", "", f"{room['players'][pid]['name']} voted to proceed to voting ({len(ready)}/{len(alive(room))} ready).", "sys")
     if all(i in ready for i in alive(room)):
         room["discuss_until"] = 0
+        if room.get("mode") == "solo":
+            room["solo_voting"] = True
 
 
 # The legacy skip route now casts the same individual readiness vote.
@@ -448,6 +460,8 @@ def run_bots(room):
         advance(room)
         if room["phase"] == "night":
             n, step = room["night"], room["night_step"]
+            if room.get('mode') != 'solo' and time.time() < room.get('step_started', 0) + BOT_TURN_DELAY:
+                break
             for i in alive(room):
                 p, r = P[i], P[i]["role"]
                 if not p["bot"] or r != step:
@@ -467,6 +481,8 @@ def run_bots(room):
                     moved = True
         elif room["phase"] == "day":
             moved = bot_discussion(room) or moved
+            if room.get('mode') != 'solo' and time.time() < room.get('discussion_started', 0) + BOT_TURN_DELAY:
+                break
             for i in alive(room):
                 if discussing(room) and P[i]["bot"] and i not in room.get("discussion_ready", set()):
                     proceed_to_vote(room, i)
@@ -572,6 +588,12 @@ def create():
     name = clean(d.get("name"))
     if not name:
         raise Bad("Enter your name first.")
+    selected_case = None
+    if request.path == '/api/solo':
+        try:
+            selected_case = solo_story.choose(d.get('previous_scenario'), d.get('scenario_id'))
+        except ValueError as error:
+            raise Bad(str(error))
     with lock:
         for c in [c for c, r in rooms.items() if time.time() - r["t"] > 6 * 3600]:
             del rooms[c]
@@ -585,7 +607,7 @@ def create():
         if request.path == '/api/solo':
             room['mode'] = 'solo'
             room.update(lead_pid=pid, friends={}, team_chat=[], invite_token=secrets.token_urlsafe(24))
-            room['scenario'] = solo_story.choose(d.get('previous_scenario'))
+            room['scenario'] = selected_case
             room['settings'] = dict(special_roles=True, mafia_count=1)
             for character in room['scenario']['cast']:
                 if character['name'].casefold() == name.casefold():
@@ -657,6 +679,90 @@ def detective_team_chat():
             raise Bad('Slow down a little.')
         author['team_last'] = time.time()
         team_message(room, author['name'], text)
+        return jsonify(ok=True)
+
+
+@app.get('/api/stories')
+def story_catalog():
+    return jsonify(stories=solo_story.catalog())
+
+
+def solo_context(d):
+    room, pid = ctx(d, allow_friends=True)
+    if room.get('mode') != 'solo':
+        raise Bad('This control is only for solo stories.')
+    if pid != room['lead_pid']:
+        raise Bad('Only the Detective team can use this control.', 403)
+    if not room['players'][pid]['alive']:
+        raise Bad('The Detective team cannot act after elimination.')
+    return room, pid
+
+
+def story_publisher(room):
+    return lambda name, text, kind='msg': chat_add(room, 'town', name, text, kind)
+
+
+@app.post('/api/solo-question')
+def solo_question():
+    d = request.get_json(force=True)
+    with lock:
+        room, pid = solo_context(d)
+        try:
+            solo_story.ask_question(room, d.get('target'), d.get('question'), story_publisher(room))
+        except (ValueError, TypeError) as error:
+            raise Bad(str(error))
+        run_bots(room)
+        return jsonify(ok=True)
+
+
+@app.post('/api/solo-influence')
+def solo_influence():
+    d = request.get_json(force=True)
+    with lock:
+        room, pid = solo_context(d)
+        try:
+            solo_story.influence(room, pid, d.get('target'), d.get('stance'), story_publisher(room))
+        except (ValueError, TypeError) as error:
+            raise Bad(str(error))
+        run_bots(room)
+        return jsonify(ok=True)
+
+
+@app.post('/api/solo-evidence')
+def solo_evidence():
+    d = request.get_json(force=True)
+    with lock:
+        room, pid = solo_context(d)
+        try:
+            feedback = solo_story.evidence(room, d.get('action'), story_publisher(room))
+        except (ValueError, TypeError) as error:
+            raise Bad(str(error))
+        run_bots(room)
+        return jsonify(ok=True, feedback=feedback or '')
+
+
+@app.post('/api/solo-proceed')
+def solo_proceed():
+    with lock:
+        room, pid = solo_context(request.get_json(force=True))
+        if room['phase'] == 'day':
+            proceed_to_vote(room, pid)
+        elif room['phase'] == 'night':
+            run_bots(room)
+            step = room['night_step']
+            if step == 'mafia':
+                nominees = sorted(set(room['night']['mafia'].values()))
+                room['night']['victim'] = random.choice(nominees) if nominees else None
+            steps = tuple(role for role in STEPS if role == 'mafia' or any(p['role'] == role for p in room['players'].values()))
+            index = steps.index(step)
+            if index + 1 < len(steps):
+                room['night_step'] = steps[index + 1]
+                room['step_started'] = time.time()
+            else:
+                resolve_night(room)
+        else:
+            raise Bad('Start the case before proceeding, or choose another story after it ends.')
+        run_bots(room)
         return jsonify(ok=True)
 
 
@@ -852,6 +958,8 @@ def chat():
         d = request.get_json(force=True)
         room, pid = ctx(d)
         p = room["players"][pid]
+        if room.get('mode') == 'solo':
+            raise Bad('Solo questions use the three selected question buttons. Use private Detective team chat to type to friends.')
         advance(room)
         text = " ".join(str(d.get("text", "")).split())[:200]
         if not text:

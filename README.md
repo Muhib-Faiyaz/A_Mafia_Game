@@ -15,7 +15,7 @@ configured in `railway.json`). Rooms live in memory and are cleared by a server
 restart. Optional variables: `NIGHT_STEP_SECONDS` (default 30),
 `DISCUSS_SECONDS` (default 120), and `PORT` (development default 5000).
 
-## Lobby and night rules
+## Online lobby and night rules
 
 - Choose **1, 2, or 3 Mafia**. The default, including automatic selection, is 1.
 - A game needs at least 3 players and more non-Mafia players than Mafia: at
@@ -45,57 +45,77 @@ is guidance, not an automatic chat filter.
 ## Online play and solo mysteries
 
 Online play can conduct Mafia with friends around the table or online, handling
-roles, night turns, timers, and voting. **Solo run** chooses one of seven original
-thriller cases and introduces six witnesses before starting any timer. The latest
-case is excluded when choosing another story in the same browser.
+roles, turns, timers, and voting. **Solo run** offers a story selector with seven
+thriller cases and a **Random story** option. Random avoids your most recent
+case; choosing a title explicitly can replay it. The picker lists each story's
+writing sources. See [the catalog](docs/story-catalog.md) for the full list.
 
-Each case has **exactly one Mafia**, one Doctor, four Villagers, and your Detective
-seat. Its culprit, accounts, and timeline are fixed so the clues stay consistent.
-Replay preserves that solution; choosing another case gives you a different mystery.
+Solo has **one Mafia**, one Doctor, four Villagers, and your Detective seat.
+Its culprit, accounts, and timeline are fixed so the clues remain consistent.
+There are **no countdowns**: use **Proceed** through the Mafia, Doctor, and
+Detective turns. Confirming an investigation records a private result; Proceed
+to dawn when ready. You can also proceed without investigating. During the
+gathering, proceed to voting when you have finished reading and deciding.
 
-Use the **case journal** to ask for accounts, ask what witnesses noticed, question
-what they are hiding, inspect the scene, and compare collected evidence. You can
-also type in town chat, using names from your cast:
+Each living witness gives **one account per round**. Your whole Detective team
+can ask **one question to one living witness per round**, selected from:
 
-- `@Mara, what is your account?`
-- `@Mara, what did you notice?`
-- `@Mara, what are you hiding?`
-- `I trust Mara` or `I suspect Elias`
-- `Inspect the scene` or `Compare the accounts`
+- What detail did you leave out?
+- Why did you hold that back?
+- What would you correct in your account?
 
-Solo dialogue uses a separate authored story engine. Witnesses remember what
-they said, and repeated questions do not repeat speeches. Trust or renewed
-pressure can unlock an admission. Independent accounts and exhibits can expose
-a contradiction; an innocent person's shame can also explain misleading behavior.
-Comparisons change bot votes, and a publicly useful witness can become the
-killer's next target. Your journal preserves evidence after it leaves the chat
-buffer. Inactive witnesses contribute only their recorded notes, never new speech.
+The authored answer revises that witness's current statement. A second question
+to the same witness or anyone else is blocked until the next round. An answer
+already recorded cannot be requested again. Solo public chat is read-only;
+questions use the buttons. Private team chat remains editable.
 
-The seven cases are **The Ninth Bell**, **A Room Kept Warm**, **The Witness in
-Carriage Six**, **What the River Returned**, **The Last Dress Rehearsal**,
-**The Winter Seed**, and **The House Below the Tide**. Each has its own setting,
-crime, chronology, witnesses, and endings. A completed game explains the solution
-and records the witnesses and evidence your choices preserved.
+The bottom tabs explain their jobs:
+
+- **Case journal:** current turn, investigations, one selected question, evidence,
+  statement changes, persuasion, and the final ballot.
+- **Dossier:** opening, cast, story source, context, and the final reconstruction.
+- **Chat:** public accounts and changes, plus private Detective team chat.
+
+**Inspect the scene** adds exhibits and can recover an inactive witness's sealed
+observations. **Compare accounts** connects already published sources. Neither
+uses the question allowance. Choose **Suspect**, **Defend**, or **Withdraw stance**
+to influence how witnesses weigh the case. One supported comparison plus the
+team's suspicion can persuade the group; an unsupported accusation alone cannot.
+Repeated support does not stack. These controls are not the final ballot: proceed
+to voting, choose a suspect in the roster, and confirm the team's one vote.
+
+At the end, including a host-ended case, the Dossier explains how the killing
+happened, who acted, their motives, the chronology, and the innocent secrets.
+The original `novel-writing` skill remains installed. The downloaded
+[Story Skills genre-craft](.agents/skills/story-skills/genre-craft/SKILL.md) and
+[scene-craft](.agents/skills/story-skills/scene-craft/SKILL.md) packages were added
+alongside it. **The Quiet Sentence** is new work using those methods; **The Ninth
+Photograph** combines **The Ninth Bell** and **The House Below the Tide**. The
+five other original cases retain their recorded provenance.
 
 The Detective stays protected from vote-outs and ordinary night attacks. On a
-**final-chance night**—two town members and the one Mafia remain—you can be killed
-if your team has not identified the Mafia. A correct investigation before dawn
+**final-chance night**—two town members and one Mafia remain—you can be killed if
+your team has not identified the Mafia. A correct investigation before dawn
 restores protection; the Doctor can also save you. Mafia still win at parity.
 
 Open **Detective team · Invite friends** to invite up to **two friends**. They share
-one investigation, readiness vote, ballot, score, and private case file. Team chat
-is separate from town chat and never reaches bots. Only the lead speaks in town
-chat or starts, restarts, and ends the case. A friend leaving frees a seat; the
-lead closing the case ends it for everyone. Treat the invitation link as private.
+one question per round, investigation, readiness vote, ballot, score, and private
+case file. Team chat never reaches bots. Lead controls start, restart, and close;
+friends can participate in the shared decisions. A friend leaving frees a seat.
+The lead closing the case ends it for everyone. Treat the invite link as private.
 
-These are authored interactive mysteries with bounded language handling. No
-external AI service or credentials are needed. Browser reloads resume progress;
-a server restart ends in-memory runs. The downloaded and verified
-[novel-writing skill](.agents/skills/novel-writing/SKILL.md) guided the rewrite.
-See [story design and sources](docs/solo-story-design.md) for the knowledge model,
-craft rules, and validation.
+No external AI service or credentials are required. Browser reloads resume state;
+a server restart ends in-memory runs. See [solo design](docs/solo-story-design.md)
+for the narrative model and validation.
 
 ## Talking with bots in online rooms
+
+Online Mafia, Doctor, and Detective bot actions wait at least **five seconds**
+from the start of their own turn. Every newly entered turn gets its own delay;
+human actions still work immediately and the existing timer fallback remains.
+A short dawn hold keeps the outcome visible before an all-bot day can finish.
+Tentative bot hunches do not become independent evidence through repetition,
+and unsupported bot claims are capped so a gossip loop cannot create a mob.
 
 Online bots use a small local dialogue and voting model rather than random chat
 and random daytime votes. They can accuse, defend themselves, disagree, ask for

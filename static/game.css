@@ -917,3 +917,30 @@ section.case-scene { padding: 22px; border: 1px solid var(--line); border-radius
 .journal-entry h3 { font-size: 1rem; }
 #case-journal .stack { gap: 16px; }
 #case-solution li { margin-block: 10px; }
+
+/* Solo is a deliberate, turn-based case with three focused panels. */
+.bottom-nav a[aria-selected="true"] { background: #39252e; border-radius: 10px; color: #fff1d2; }
+.bottom-nav a[aria-selected="true"] span { color: #fff1d2; font-weight: 700; }
+.solo-tab-panel { min-width: 0; }
+.solo-tab-help, #solo-voting-help, #story-list { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #20191dcc; }
+.solo-tab-help summary, #solo-voting-help summary, #story-list summary, #recorded-evidence summary { cursor: pointer; font-weight: 600; padding-block: 6px; }
+.solo-tab-help dl { display: grid; gap: 5px; margin-top: 12px; }
+.solo-tab-help dt { color: var(--gold); font-weight: 700; }
+.solo-tab-help dd { margin: 0 0 10px; color: var(--muted); }
+.story-picker { border-top: 1px solid var(--line); padding-top: 18px; }
+.story-preview { padding: 14px; border-left: 3px solid #9e6c54; background: #281e26; border-radius: 7px; }
+.story-preview h2 { font-size: 1.25rem; margin-bottom: 8px; }
+.story-origin { color: var(--gold); font-size: .85rem; margin-top: 10px; }
+.story-catalog { padding-left: 22px; margin-top: 14px; }
+.story-catalog li { margin-bottom: 18px; }
+.story-catalog p { margin-top: 5px; }
+.selected-questions { display: grid; gap: 10px; }
+.selected-questions button { text-align: left; }
+.interrogation { padding-block: 8px 16px; border-bottom: 1px solid var(--line); }
+#question-count { padding: 11px 13px; border: 1px solid #6d4d43; border-radius: 8px; color: var(--gold); }
+#solo-voting-help ol { padding-left: 22px; margin-top: 14px; }
+#solo-voting-help li { margin-bottom: 12px; }
+#recorded-evidence .stack { margin-top: 14px; }
+#case-reconstruction p, #case-solution p { margin-top: 14px; }
+.solo-game .phase-card > button { width: 100%; margin-top: 16px; }
+@media (max-width: 380px) { .bottom-nav a { min-width: 68px; } .bottom-nav span { font-size: 10px; } }

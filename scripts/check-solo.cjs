@@ -2,74 +2,104 @@ const {chromium} = require('playwright');
 const assert = require('node:assert/strict');
 const base = process.argv[2] || 'http://127.0.0.1:5050';
 async function post(route, body) {
-  const r = await fetch(base + '/api/' + route, {method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)});
-  const data = await r.json(); assert.equal(r.status, 200, JSON.stringify(data)); return data;
+  const response = await fetch(base + '/api/' + route, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const data = await response.json();
+  assert.equal(response.status,200,data.error || 'Unexpected response');
+  return data;
 }
-(async () => {
- const browser = await chromium.launch({executablePath:'/usr/bin/chromium', headless:true, args:['--no-sandbox']});
+async function click(page, selector) {
+  await page.waitForFunction(() => !busy);
+  await page.locator(selector).click();
+  await page.waitForFunction(() => !busy);
+}
+async function dismiss(page) {
+  for (let i=0;i<12;i++) {
+    if (await page.locator('#investigation-dialog').evaluate(el=>el.open)) await page.locator('#dismiss-investigation').click();
+    else if (await page.locator('#death-notice').evaluate(el=>el.open)) await page.locator('#dismiss-death').click();
+    else break;
+  }
+}
+(async()=>{
+ const browser = await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
  let identity;
  try {
-  const page = await browser.newPage({viewport:{width:390,height:844}}), errors=[];
-  page.on('pageerror', e => errors.push(e.message));
+  const page=await browser.newPage({viewport:{width:390,height:844}}), errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
   await page.goto(base);
-  await page.getByRole('button',{name:'Online play',exact:false}).waitFor();
-  await page.getByRole('button',{name:'Solo run',exact:false}).waitFor();
-  await page.screenshot({path:'/tmp/mafia-modes.png'});
+  await page.locator('#online-play').waitFor();
   await page.locator('#solo-run').click();
+  await page.waitForFunction(()=>storyCatalog.length===7);
+  assert.equal(await page.locator('#story-choice option').count(),8);
+  await page.locator('#story-list > summary').click();
+  assert.equal(await page.locator('.story-catalog li').count(),7);
+  assert.match(await page.locator('#story-list').textContent(),/story[- ]skills/i);
+  const chosen=await page.evaluate(()=>storyCatalog[0]);
+  await page.locator('#story-choice').selectOption(chosen.id);
   await page.locator('#name').fill('Case Reader');
-  await page.locator('#entry button[type=submit]').click();
-  await page.waitForFunction(() => state?.mode === 'solo' && state.phase === 'lobby');
-  identity = await page.evaluate(() => session);
-  const firstCase = await page.evaluate(() => state.scenario.id);
+  await click(page,'#entry button[type=submit]');
+  identity=await page.evaluate(()=>session);
+  assert.equal(await page.evaluate(()=>state.scenario.id),chosen.id);
+  assert.equal(await page.evaluate(()=>state.settings.mafia_count),1);
   assert.equal(await page.locator('.case-person').count(),6);
-  assert.equal(await page.evaluate(() => state.settings.mafia_count),1);
-  assert.equal(await page.locator('#clock').count(),0);
-  for (const width of [390,1440]) {
-   await page.setViewportSize({width,height:900});
-   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  assert.match(await page.locator('.story-origin').first().textContent(),/Writing source:/);
+  await page.reload();
+  await page.waitForFunction(id=>state?.scenario.id===id,chosen.id);
+  await click(page,'#start');
+  assert.equal(await page.evaluate(()=>state.night_step),'mafia');
+  assert.equal(await page.evaluate(()=>state.timer_total),0);
+  assert.equal(await page.locator('#clock, #progress').count(),0);
+  await click(page,'#solo-proceed');
+  assert.equal(await page.evaluate(()=>state.night_step),'doctor');
+  await click(page,'#solo-proceed');
+  assert.equal(await page.evaluate(()=>state.night_step),'detective');
+  const target=await page.evaluate(()=>state.players.find(p=>!p.you && p.alive).id);
+  await page.locator(`[data-player="${target}"]`).click();
+  await click(page,'#confirm-action');
+  await page.locator('#investigation-dialog[open]').waitFor();
+  assert.equal(await page.evaluate(()=>state.night_step),'detective');
+  await dismiss(page);
+  await click(page,'#solo-proceed');
+  await dismiss(page);
+  assert.equal(await page.evaluate(()=>state.phase),'day');
+  assert.equal(await page.locator('#input-town').count(),0);
+  assert.deepEqual(await page.locator('#nav [data-solo-tab]').evaluateAll(els=>els.map(el=>el.textContent.trim().replace(/^[^A-Za-z]+/,''))),['Case journal','Dossier','Chat']);
+  for (const tab of ['dossier','chat','journal']) {
+    await page.locator(`#nav [data-solo-tab="${tab}"]`).click();
+    assert.equal(await page.locator(`#solo-tab-${tab}`).isVisible(),true);
+  }
+  await page.locator('.solo-tab-help > summary').click();
+  assert.match(await page.locator('.solo-tab-help').textContent(),/Type privately/);
+  await page.locator('#solo-voting-help > summary').click();
+  assert.match(await page.locator('#solo-voting-help').textContent(),/unsupported accusation alone is not enough/);
+  for(const width of [320,390,1440]) {
+    await page.setViewportSize({width,height:900});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }
   await page.setViewportSize({width:390,height:844});
-  await page.screenshot({path:'/tmp/mafia-solo-briefing.png',fullPage:true});
-  await page.reload();
-  await page.waitForFunction(() => state?.phase === 'lobby');
-  assert.equal(await page.evaluate(() => state.scenario.id),firstCase);
-  await page.locator('#start').click();
-  await page.waitForFunction(() => state?.night_step === 'detective');
-  assert.equal(await page.evaluate(() => state.me.role),'detective');
-  const target = await page.evaluate(() => state.players.find(p => !p.you && p.alive).id);
-  await page.locator(`[data-player="${target}"]`).click();
-  await page.locator('#confirm-action').click();
-  await page.locator('#investigation-dialog[open]').waitFor();
-  await page.locator('#dismiss-investigation').click();
-  if (await page.locator('#death-notice').evaluate(e => e.open)) await page.locator('#dismiss-death').click();
-  await page.waitForFunction(() => state?.phase === 'day' && state.me.alive);
-  const npc = await page.evaluate(() => state.scenario.cast.find(c => state.players.find(p => p.id === c.id).alive));
-  await page.locator('#input-town').fill(`@${npc.name}, where were you before the first alarm?`);
-  await page.locator('.composer[data-channel=town] button').click();
-  await page.waitForFunction(name => state.scenario.journal.some(e => e.source === name && e.kind === 'account'),npc.name);
-  await page.waitForFunction(() => !busy);
-  await page.waitForTimeout(900); // Respect the public-chat rate limit between questions.
-  await page.locator('#case-journal > summary').click();
-  await page.getByRole('button',{name:'Inspect the scene',exact:true}).click();
-  await page.waitForFunction(() => state.scenario.journal.some(e=>e.kind==='document'));
-  assert.equal(await page.locator('#case-solution').count(),0);
-  await page.locator('#case-dossier').click();
-  assert.equal(await page.locator('#case-dossier').evaluate(e => e.open),true);
-  await page.screenshot({path:'/tmp/mafia-solo-play.png',fullPage:true});
+  await page.screenshot({path:'/tmp/mafia-selected-story.png'});
   await post('end',identity);
-  await page.waitForFunction(() => state?.phase === 'over');
-  await page.getByRole('heading',{name:'The final account'}).waitFor();
-  await page.locator('#new-case').click();
-  await page.locator('#entry button[type=submit]').click();
-  await page.waitForFunction(() => state?.mode === 'solo' && state.phase === 'lobby');
-  assert.notEqual(await page.evaluate(() => state.scenario.id),firstCase);
-  await page.locator('#leave').click();
+  await page.waitForFunction(()=>state?.phase==='over');
+  await dismiss(page);
+  assert.equal(await page.locator('#solo-tab-dossier').isVisible(),true);
+  assert.ok((await page.locator('#case-reconstruction p').count())>0);
+  assert.ok((await page.locator('#case-solution li').count())>0);
+  await click(page,'#new-case');
+  await page.waitForFunction(()=>storyCatalog.length===7);
+  await page.locator('#story-choice').selectOption('random');
+  await click(page,'#entry button[type=submit]');
+  identity=await page.evaluate(()=>session);
+  assert.notEqual(await page.evaluate(()=>state.scenario.id),chosen.id);
+  await click(page,'#leave'); identity=null;
   await page.locator('#online-play').click();
-  await page.locator('#entry button[type=submit]').click();
-  await page.waitForFunction(() => state?.mode === 'online' && state.phase === 'lobby');
-  assert.equal(await page.evaluate(() => state.scenario),null);
-  await page.locator('#leave').click();
+  await click(page,'#entry button[type=submit]');
+  identity=await page.evaluate(()=>session);
+  assert.equal(await page.evaluate(()=>state.mode),'online');
+  assert.equal(await page.evaluate(()=>state.scenario),null);
+  await click(page,'#leave'); identity=null;
   assert.deepEqual(errors,[]);
-  console.log('Solo browser checks passed: mode choice, paused case, cast, reload, mobile/desktop, Detective turn, contextual interview, ending, new case and online play.');
- } finally { await browser.close(); }
-})().catch(e=>{console.error(e);process.exitCode=1});
+  console.log('Solo browser checks passed: story picker/random/provenance, paused briefing, manual night turns, investigation, solo tabs/help, mobile layouts, full ending and online play.');
+ } finally {
+  if(identity) await post('leave',identity).catch(()=>{});
+  await browser.close();
+ }
+})().catch(error=>{console.error(error);process.exitCode=1;});

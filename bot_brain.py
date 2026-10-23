@@ -4,6 +4,7 @@ This is deliberately bounded, rule-based dialogue rather than an LLM. Human
 claims carry more weight than bot chatter, duplicate claims replace each other,
 and a bot's own investigation can override hearsay without being announced.
 """
+import hashlib
 import re
 
 MAX_POSTS = 6
@@ -12,7 +13,7 @@ REPLY_DELAY = 4
 
 def new_brain():
     return dict(claims={}, checks={}, cursor=0, pending=[], day=0, posts=0,
-                focus=None, opened=False, vote_version=None)
+                focus=None, opened=False, vote_version=None, claim_basis={})
 
 
 def mentions(text, players):
@@ -70,12 +71,15 @@ def hear(brain, message, context):
     # players may intentionally suspect more than one person.
     positive = {target for target, stance in interpretation['stances'].items() if stance > 0}
     speaker_is_bot = any(p['id'] == speaker and p['bot'] for p in context['players'])
+    provisional = speaker_is_bot and bool(re.search(
+        r'\b(?:lean(?:ing)? (?:towards|toward)|hunch|my own read)\b', message['t'], re.I))
     if speaker_is_bot and positive:
         brain['claims'] = {key: value for key, value in brain['claims'].items()
                            if key[0] != speaker or value < 0 or key[1] in positive}
     for target, stance in interpretation['stances'].items():
         # Each speaker has at most one current claim per target, across days.
         brain['claims'][(speaker, target)] = stance
+        brain.setdefault('claim_basis', {})[(speaker, target)] = 'hunch' if provisional else 'assertion'
     relevant = interpretation['addressed'] == context['self'] or context['self'] in interpretation['stances']
     if relevant or interpretation['stances'] or interpretation['question']:
         brain['pending'].append(dict(message=message, intent=interpretation, priority=3 if relevant else 1))
@@ -90,12 +94,22 @@ def scores(brain, context):
     for (author, target), value in brain['claims'].items():
         if target in brain['checks']:
             verified.setdefault(author, []).append((value > 0) == brain['checks'][target])
+    bot_claims = {}
     for (speaker, target), stance in brain['claims'].items():
         if speaker not in players or target not in totals:
             continue
         trust = (1.4 if all(verified[speaker]) else 0.25) if speaker in verified else 1.0
-        weight = 0.3 if players[speaker]['bot'] else 1.0
-        totals[target] += stance * weight * trust
+        if players[speaker]['bot']:
+            # A repeated bot hunch is conversation, not independent evidence.
+            if stance > 0 and brain.get('claim_basis', {}).get((speaker, target)) == 'hunch':
+                continue
+            bot_claims.setdefault(target, []).append(stance * 0.3 * trust)
+        else:
+            totals[target] += stance * trust
+    for target, claims in bot_claims.items():
+        # A chorus of identical unverified assertions is no stronger than its
+        # strongest member. Direct human arguments and private checks still matter.
+        totals[target] += max([0.0] + claims) + min([0.0] + claims)
     # Public human ballots are a small signal, not knowledge of a role.
     for speaker, target in context['votes'].items():
         if speaker in players and not players[speaker]['bot'] and target in totals:
@@ -122,7 +136,11 @@ def choose_target(brain, context):
     if top < -1:
         return 'skip'
     tied = [pid for pid in candidates if totals.get(pid, 0) == top]
-    return brain['focus'] if brain['focus'] in tied else sorted(tied)[0]
+    if brain['focus'] in tied:
+        return brain['focus']
+    # If an earlier focus died, keep bots from all choosing the first UUID.
+    return min(tied, key=lambda pid: hashlib.sha256(
+        (context['self'] + ':' + pid).encode()).digest())
 
 
 def reply(brain, context, pending=None):
@@ -148,7 +166,8 @@ def reply(brain, context, pending=None):
                 f"{speaker}, I disagree about me. Which choice of mine worries you? I lean towards {suspect}, but I'll answer your questions.")
         if intent['question']:
             supporters = [author for (author, accused), stance in brain['claims'].items()
-                          if accused == target and stance > 0 and author in players]
+                          if accused == target and stance > 0 and author in players
+                          and brain.get('claim_basis', {}).get((author, accused)) != 'hunch']
             public_ballots = any(vote == target and not players[voter]['bot']
                                  for voter, vote in context['votes'].items() if voter in players)
             reason = ("the concerns raised in this chat" if supporters else

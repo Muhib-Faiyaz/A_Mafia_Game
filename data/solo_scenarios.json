@@ -1,14 +1,14 @@
 [
   {
-    "id": "ninth-bell",
-    "title": "The Ninth Bell",
-    "setting": "An island radio station, cut off by a rising sea",
-    "anchor": "the original distress recording",
-    "pressure": "The relief boat cannot cross until the sea falls. Someone is removing the people who can authenticate a distress call.",
+    "id": "ninth-photograph",
+    "title": "The Ninth Photograph",
+    "setting": "An island radio station holding an old rescue review",
+    "anchor": "the original distress reel and an uncropped rescue photograph",
+    "pressure": "A recorded voice and an uncropped photograph could overturn the account of a lost trawler. Someone has killed to keep them apart.",
     "opening": [
-      "At 21:17 a dead man speaks over the station loudspeaker. His voice asks for a tow, gives the name of a trawler lost thirteen years ago, and stops in the middle of a breath. Below the window, the island bell rings nine times. In the transmitter room you find Abel Rook, the retired operator who invited you here, beside a stopped tape deck. He has been dead long enough for the tea under his hand to go cold.",
-      "Rook promised evidence that the trawler had been deliberately sent away from a rescue vessel. Six people answered his invitation: former crew, station staff, and the daughter of a man who drowned. Someone among them works for the organization that profited from that wreck. The road to the jetty is already underwater. The police boat has acknowledged your call, but it cannot reach the island tonight.",
-      "You gather everyone in the chart room. Before the first watch, each writes a signed account for your sealed file; what they leave out may matter as much as what they record. The tape stays on the table. Nobody agrees to leave it in another person’s keeping. Outside, the next wave strikes the stair that was dry when you arrived."
+      "At 21:17 Abel Rook speaks over the station loudspeaker, asking for a tow for a trawler lost thirteen years ago. In the transmitter room you find Rook dead beside a tape deck. On his desk is a rescue photograph you know from the newspapers, but this print is wider: at its edge a small patched launch lies below the island slip. You came to witness his account of the wreck. Now the voice and the photograph must speak without him.",
+      "The relief boat cannot cross the rising sea. Six people remain at the station: its relief keeper and engineer, a rescue mechanic, a photographer, a nurse, and a drowned deckhand’s daughter. The organization behind the trawler’s final voyage has survived thirteen years of inquiries. One person here still works for it. Rook had invited the others to compare the distress reel with the uncropped rescue sequence, something the original inquiry never did.",
+      "Before the first watch, you collect signed accounts and place the reel and photograph on the chart-room table. Each witness has repeated an old version of that night often enough to mistake familiarity for certainty. Below the closed window, the island bell has already finished its nine strikes. You ask everyone to remember whether they heard it once, or twice."
     ],
     "culprit": "elias",
     "doctor": "ada",
@@ -28,32 +28,34 @@
           "strikes",
           "clock",
           "log"
-        ]
+        ],
+        "correction": "I recorded the bell when I finished winding, not when I first entered the tower. My nine-strike note anchors that sound; it does not account for every minute I spent on the stairs."
       },
       {
         "key": "elias",
         "name": "Elias",
         "occupation": "Radio engineer",
         "description": "Elias has brought a small repair case and a larger overnight bag. He offers to restore the transmitter before anyone asks.",
-        "relationship": "He serviced Rook’s machines and signed their annual inspection reports.",
-        "account": "At 21:00 I was on the roof, changing the antenna coupling. I came down when the loudspeaker came on at 21:17. The message was already playing. I never touched that tape.",
+        "relationship": "He maintains the station and helped collect the company’s witness statements after the old wreck.",
+        "account": "At 21:00 I was on the roof, changing the antenna coupling. I came down when the loudspeaker came on at 21:17. I never touched that tape. On the night of the wreck I stayed at the station; I never used the little launch.",
         "observation": "These decks pick up all kinds of background noise. Wind can sound remarkably like a bell when you listen for it. I would be careful about promising a bereaved family an answer from a bad recording.",
-        "secret": "Rook threatened to expose repairs I had billed but never completed. I came to settle that debt privately. I did not want the others hearing about it.",
+        "secret": "The shipping company kept paying me as a maintenance consultant after the wreck. I should have declared that before this review. I also owe Rook money for repairs he says I billed but did not complete.",
         "defense": "A maintenance signature gives me responsibility for a machine. It does not put me beside it every minute of the night.",
         "topics": [
           "tape",
           "recording",
           "antenna",
           "roof"
-        ]
+        ],
+        "correction": "I did come below for a fuse. Saying I stayed on the roof was too absolute. I still say that a repair journey does not establish that I handled Rook’s reel."
       },
       {
         "key": "ivo",
         "name": "Ivo",
         "occupation": "Ferry mechanic",
         "description": "Ivo keeps a wet cap folded between his hands. He served on the rescue vessel but has not spoken about that night in years.",
-        "relationship": "Mara hired him to inspect the station battery; Rook asked him to stay afterward.",
-        "account": "I isolated the roof feed from 20:56 until 21:12. There was a damaged coupling and I would not let anyone work on it live. I stayed in the battery room with the isolation key.",
+        "relationship": "He repaired the white canvas patch on the company launch before the wreck and later served on the rescue vessel.",
+        "account": "I isolated the roof feed from 20:56 until 21:12. Elias had borrowed my long-handled coupling wrench at 20:50, saying he needed it upstairs. I stayed in the battery room with the isolation key.",
         "observation": "When I called upstairs at 21:04, Elias answered through the workshop speaking tube. I could hear the little whistle the tube makes before it opens. The roof has a telephone, not a tube.",
         "secret": "I drank on the rescue watch thirteen years ago. I remember the order to turn away, but not who repeated it. Rook wanted a certainty I could not give him.",
         "defense": "I can show you the isolated circuit. What I cannot do is make thirteen years of missing memory return because you need it tonight.",
@@ -62,58 +64,62 @@
           "feed",
           "coupling",
           "tube"
-        ]
+        ],
+        "correction": "I recognized the workshop tube before I recognized the voice. I am confident about where the answer came from; I cannot see through a tube and identify who else was in the room."
       },
       {
         "key": "nell",
         "name": "Nell",
-        "occupation": "Marine reporter",
-        "description": "Nell’s recorder is wrapped in a dry sock. She has spent three years trying to make an editor care about the lost trawler.",
-        "relationship": "She arranged this meeting with Rook and promised Sera access to the results.",
-        "account": "I interviewed Rook at 20:40. He said the old tape began with two harbor whistles. He played that opening for me, then switched it off. There were no bells in those few seconds.",
-        "observation": "The message at 21:17 began before the voice did. I counted a set of nine bell strikes on my recorder. You can hear them underneath the first words, although the island bell had finished ringing seventeen minutes earlier.",
-        "secret": "I had offered Rook money for an exclusive. Sera thinks I came only to help her. I was going to tell her after I knew whether there was a story.",
+        "occupation": "Marine photographer",
+        "description": "Nell lays out contact sheets instead of the photograph everyone recognizes. She keeps her finger off the small boat at the edge.",
+        "relationship": "She took the rescue photograph, then worked with Rook to compare its uncropped sequence with the distress reel.",
+        "account": "I showed Rook the uncropped sequence at 20:40. The frame before the famous photograph shows Elias beside the patched launch. Rook played the first few seconds of his old reel for me: two harbor whistles, with no bell underneath.",
+        "observation": "The message at 21:17 began with nine bell strikes under Rook’s voice. I recorded it from the chart room. The island bell itself had finished seventeen minutes earlier; I remember because we stopped talking to count it.",
+        "secret": "I accepted an award for the cropped rescue photograph without mentioning that the editor had removed the launch. By then I knew people were using my picture as proof that only one boat had reached the slip.",
         "defense": "My recording has its own clock, and that clock may be wrong. Compare the sounds themselves before you use my timestamp.",
         "topics": [
-          "whistle",
+          "photograph",
           "recording",
-          "message",
-          "timestamp"
-        ]
+          "crop",
+          "strikes"
+        ],
+        "correction": "The station clock dates the sequence only approximately. I should distinguish that from the order of frames, which the negative preserves. The bell in my recording is a separate check."
       },
       {
         "key": "ada",
         "name": "Ada",
         "occupation": "Island nurse",
         "description": "Ada has opened her first-aid bag but left the blanket folded. She knew Rook well enough to know which chair he would refuse.",
-        "relationship": "She treated Rook’s heart condition and checked on him during the winter watches.",
-        "account": "I saw Rook alive at 20:48. He was angry, quite coherent, and waiting for someone. I stayed with Sera in the kitchen afterward; we both heard the station message.",
-        "observation": "Rook had written “original: two whistles” on the card beside his medicine. I cannot date that note precisely. The ink was dry when I found it, and he kept yesterday’s reminders beside today’s.",
-        "secret": "I told Rook’s family he could manage another month alone. I had not told them how often I was visiting. I was afraid they would take him away from the only place he wanted to be.",
+        "relationship": "She treated survivors of the wreck and kept both her original notes and the corrected inquiry copy.",
+        "account": "I saw Rook alive at 20:48. He was waiting for someone to look at the deck. Afterward Sera and I were in the kitchen. We both heard the loudspeaker message; neither of us was with Rook when it began.",
+        "observation": "I kept my original rescue notes after correcting one arrival time for the inquiry. They put the patched launch at the slip before the first ambulance. I cannot identify its driver from that note alone.",
+        "secret": "I moved one patient’s recorded arrival time because I feared being blamed for a delay. I kept the earlier page. When Sera asked for it years later, I told her I had lost it.",
         "defense": "I will give you the times I actually saw him. I will not dress a guess about his death in medical language.",
         "topics": [
           "medicine",
           "rook",
           "time",
           "note"
-        ]
+        ],
+        "correction": "My original rescue note records the launch before the ambulance. It does not record its arrival or its driver. I should not let a true early sighting become a complete journey."
       },
       {
         "key": "sera",
         "name": "Sera",
         "occupation": "Daughter of a missing deckhand",
         "description": "Sera has brought a photograph in a supermarket envelope. She does not put it down beside the tape.",
-        "relationship": "Her father died on the trawler; she distrusts Ivo’s missing memories and Nell’s promises.",
-        "account": "Ada and I were in the kitchen from just before nine. I went to the workshop for a dry cloth when the bell rang. I saw Elias coming away from the transmitter corridor, carrying a small reel.",
-        "observation": "The reel had a white patch on its edge. I noticed it because Rook’s old tape had a blue tin; he had shown it to me that afternoon. I did not see what was recorded on either one.",
-        "secret": "I threatened Rook in a letter. He had kept us waiting for thirteen years. I wanted him frightened enough to talk, and now there is no decent way to say that.",
+        "relationship": "Her father died on the trawler; Elias helped write her old statement, while Ada treated her on the slip.",
+        "account": "Ada and I were in the kitchen from just before nine. When the bell rang, I went for a dry cloth and saw Elias leaving the transmitter corridor with a small reel. I noticed the white patch on its edge.",
+        "observation": "The rescue statement I signed says only the lifeboat was present. Elias suggested that wording when he helped with the company forms. I had never seen the whole slip; I was repeating an answer he made sound settled.",
+        "secret": "I threatened Rook in a letter because he had kept the original reel for thirteen years. I also let that sentence about the lifeboat stand after I began doubting it. I was ashamed to reopen a statement with my own name on it.",
         "defense": "I saw a reel and a man. Do not make me say I watched a murder when I did not.",
         "topics": [
           "reel",
           "corridor",
           "letter",
           "cloth"
-        ]
+        ],
+        "correction": "I saw Elias leaving the corridor, not stepping through the transmitter-room door. The white reel is the detail I actually saw. The rest of that route must be checked against somebody else’s account."
       }
     ],
     "clues": [
@@ -164,7 +170,7 @@
         "source": "elias",
         "kind": "account",
         "title": "Elias · Account",
-        "text": "At 21:00 I was on the roof, changing the antenna coupling. I came down when the loudspeaker came on at 21:17. The message was already playing. I never touched that tape.",
+        "text": "At 21:00 I was on the roof, changing the antenna coupling. I came down when the loudspeaker came on at 21:17. I never touched that tape. On the night of the wreck I stayed at the station; I never used the little launch.",
         "topics": [
           "tape",
           "recording",
@@ -192,7 +198,7 @@
         "source": "elias",
         "kind": "admission",
         "title": "Elias · Private admission",
-        "text": "Rook threatened to expose repairs I had billed but never completed. I came to settle that debt privately. I did not want the others hearing about it.",
+        "text": "The shipping company kept paying me as a maintenance consultant after the wreck. I should have declared that before this review. I also owe Rook money for repairs he says I billed but did not complete.",
         "topics": [
           "tape",
           "recording",
@@ -206,7 +212,7 @@
         "source": "ivo",
         "kind": "account",
         "title": "Ivo · Account",
-        "text": "I isolated the roof feed from 20:56 until 21:12. There was a damaged coupling and I would not let anyone work on it live. I stayed in the battery room with the isolation key.",
+        "text": "I isolated the roof feed from 20:56 until 21:12. Elias had borrowed my long-handled coupling wrench at 20:50, saying he needed it upstairs. I stayed in the battery room with the isolation key.",
         "topics": [
           "battery",
           "feed",
@@ -248,7 +254,7 @@
         "source": "nell",
         "kind": "account",
         "title": "Nell · Account",
-        "text": "I interviewed Rook at 20:40. He said the old tape began with two harbor whistles. He played that opening for me, then switched it off. There were no bells in those few seconds.",
+        "text": "I showed Rook the uncropped sequence at 20:40. The frame before the famous photograph shows Elias beside the patched launch. Rook played the first few seconds of his old reel for me: two harbor whistles, with no bell underneath.",
         "topics": [
           "whistle",
           "recording",
@@ -262,7 +268,7 @@
         "source": "nell",
         "kind": "observation",
         "title": "Nell · Observation",
-        "text": "The message at 21:17 began before the voice did. I counted a set of nine bell strikes on my recorder. You can hear them underneath the first words, although the island bell had finished ringing seventeen minutes earlier.",
+        "text": "The message at 21:17 began with nine bell strikes under Rook’s voice. I recorded it from the chart room. The island bell itself had finished seventeen minutes earlier; I remember because we stopped talking to count it.",
         "topics": [
           "whistle",
           "recording",
@@ -276,7 +282,7 @@
         "source": "nell",
         "kind": "admission",
         "title": "Nell · Private admission",
-        "text": "I had offered Rook money for an exclusive. Sera thinks I came only to help her. I was going to tell her after I knew whether there was a story.",
+        "text": "I accepted an award for the cropped rescue photograph without mentioning that the editor had removed the launch. By then I knew people were using my picture as proof that only one boat had reached the slip.",
         "topics": [
           "whistle",
           "recording",
@@ -290,7 +296,7 @@
         "source": "ada",
         "kind": "account",
         "title": "Ada · Account",
-        "text": "I saw Rook alive at 20:48. He was angry, quite coherent, and waiting for someone. I stayed with Sera in the kitchen afterward; we both heard the station message.",
+        "text": "I saw Rook alive at 20:48. He was waiting for someone to look at the deck. Afterward Sera and I were in the kitchen. We both heard the loudspeaker message; neither of us was with Rook when it began.",
         "topics": [
           "medicine",
           "rook",
@@ -304,7 +310,7 @@
         "source": "ada",
         "kind": "observation",
         "title": "Ada · Observation",
-        "text": "Rook had written “original: two whistles” on the card beside his medicine. I cannot date that note precisely. The ink was dry when I found it, and he kept yesterday’s reminders beside today’s.",
+        "text": "I kept my original rescue notes after correcting one arrival time for the inquiry. They put the patched launch at the slip before the first ambulance. I cannot identify its driver from that note alone.",
         "topics": [
           "medicine",
           "rook",
@@ -318,7 +324,7 @@
         "source": "ada",
         "kind": "admission",
         "title": "Ada · Private admission",
-        "text": "I told Rook’s family he could manage another month alone. I had not told them how often I was visiting. I was afraid they would take him away from the only place he wanted to be.",
+        "text": "I moved one patient’s recorded arrival time because I feared being blamed for a delay. I kept the earlier page. When Sera asked for it years later, I told her I had lost it.",
         "topics": [
           "medicine",
           "rook",
@@ -332,7 +338,7 @@
         "source": "sera",
         "kind": "account",
         "title": "Sera · Account",
-        "text": "Ada and I were in the kitchen from just before nine. I went to the workshop for a dry cloth when the bell rang. I saw Elias coming away from the transmitter corridor, carrying a small reel.",
+        "text": "Ada and I were in the kitchen from just before nine. When the bell rang, I went for a dry cloth and saw Elias leaving the transmitter corridor with a small reel. I noticed the white patch on its edge.",
         "topics": [
           "reel",
           "corridor",
@@ -346,7 +352,7 @@
         "source": "sera",
         "kind": "observation",
         "title": "Sera · Observation",
-        "text": "The reel had a white patch on its edge. I noticed it because Rook’s old tape had a blue tin; he had shown it to me that afternoon. I did not see what was recorded on either one.",
+        "text": "The rescue statement I signed says only the lifeboat was present. Elias suggested that wording when he helped with the company forms. I had never seen the whole slip; I was repeating an answer he made sound settled.",
         "topics": [
           "reel",
           "corridor",
@@ -360,7 +366,7 @@
         "source": "sera",
         "kind": "admission",
         "title": "Sera · Private admission",
-        "text": "I threatened Rook in a letter. He had kept us waiting for thirteen years. I wanted him frightened enough to talk, and now there is no decent way to say that.",
+        "text": "I threatened Rook in a letter because he had kept the original reel for thirteen years. I also let that sentence about the lifeboat stand after I began doubting it. I was ashamed to reopen a statement with my own name on it.",
         "topics": [
           "reel",
           "corridor",
@@ -388,12 +394,13 @@
         "source": null,
         "day": 1,
         "id": "service",
-        "title": "Roof isolation sheet",
-        "text": "The battery-room sheet records isolation at 20:56 and restoration at 21:12. Ivo signed both entries. A second signature acknowledges receipt of the roof key: Elias. A signature establishes access, not that the work was done.",
+        "title": "The uncropped contact sequence",
+        "text": "The contact strip shows Elias beside the white-patched launch in the frame before the published rescue photograph. A visible station clock places the sequence before the first ambulance appears. The frame establishes his presence, not the purpose of the boat.",
         "topics": [
-          "isolation",
-          "roof",
-          "sheet"
+          "photograph",
+          "contact",
+          "launch",
+          "frame"
         ]
       }
     ],
@@ -402,12 +409,13 @@
         "id": "location",
         "requires": [
           "elias-account",
-          "ivo-observation"
+          "ivo-observation",
+          "mara-account"
         ],
         "speaker": "mara",
         "subject": "elias",
-        "text": "Elias, the roof telephone cannot answer the workshop tube. Ivo could have mistaken a voice, but your account needs a trip downstairs that you left out.",
-        "reply": "I went below for a fuse. I should have said so. A repair takes more than one journey.",
+        "text": "Ivo heard you answer the workshop tube while your account puts you on the roof, Elias. The bell gives us a shared interval. You may have had a reason to come down, but that journey belongs in your statement.",
+        "reply": "I came below for a fuse. I should have said so. Coming down for a repair is not the same as entering the transmitter room.",
         "effect": 2.2
       },
       {
@@ -415,52 +423,70 @@
         "requires": [
           "nell-observation",
           "splice",
-          "sera-observation"
+          "sera-account",
+          "service"
         ],
         "speaker": "nell",
         "subject": "elias",
-        "text": "The nine strikes belong to tonight, and that leader belongs to a fresh reel. Sera’s sighting gives us a route between them. The question is who needed an old distress call to sound as though it had just been transmitted.",
-        "reply": "Or somebody used a new leader to repair an old reel. You are joining three possibilities and calling them one event.",
+        "text": "The new leader and tonight’s bell belong to a replacement recording. Sera places you on its route. The photograph explains why making the original sound unreliable would matter to you: it puts you beside a boat you said you never used.",
+        "reply": "A photograph can show me beside a launch without showing what I did with it. You are using one disputed interval to decide another thirteen years earlier.",
         "effect": 2.2
       },
       {
         "id": "keeper-log",
         "requires": [
           "mara-admission",
-          "ada-observation"
+          "ada-account"
         ],
         "speaker": "ada",
         "subject": "mara",
-        "text": "Mara’s false shift entries explain why those pages look as though Rook wrote on nights he could not work. They do not explain tonight’s new tape. We should keep those questions separate.",
-        "reply": "I should have corrected the record while he was alive. I will give you the pages I signed.",
+        "text": "Mara’s false entries protected a man who was losing his memory. They require correction, but they do not supply the new reel or explain Elias’s omitted journey. We should not let the first admitted lie close the inquiry.",
+        "reply": "I will identify every shift I signed for him. Let the corrected pages stay beside the originals.",
         "effect": -1.8
       }
     ],
     "timeline": [
-      "20:40 Rook plays the original opening, containing two harbor whistles, for Nell.",
-      "20:48 Ada sees Rook alive.",
-      "20:56 Ivo isolates the roof feed; Elias has the key.",
-      "21:00 the island bell rings nine times; Elias makes a new recording downstairs.",
-      "21:04 Elias answers Ivo from the workshop tube.",
-      "21:17 the replacement message plays; Rook has already been killed."
+      "Thirteen years earlier, Elias used the company launch while the rescue account was being managed; Nell’s uncropped photographs and Ada’s original notes recorded its presence.",
+      "20:40 Rook and Nell compare the uncropped sequence with the old reel, whose opening contains two whistles.",
+      "20:48 Ada sees Rook alive; at 20:50 Elias borrows Ivo’s coupling wrench.",
+      "20:56 the roof feed is isolated. Elias goes to the transmitter room, strikes Rook with the wrench, and prepares a replacement reel.",
+      "21:00 the island bell rings nine times; Elias records it underneath the old voice. Sera sees him on the corridor route with the new reel.",
+      "21:04 Elias answers Ivo through the workshop tube, contradicting his uninterrupted roof alibi.",
+      "21:17 the replacement reel plays, creating the false appearance of a fresh message from Rook."
     ],
-    "solution": "Elias killed Rook and substituted a new recording to make the old rescue order appear unreliable. The fresh leader alone proves little; the nine strikes date the sound to tonight, while the speaking tube and Sera’s sighting break his roof alibi. His repair debts were real, but the deeper obligation was to the shipping organization whose order Rook had kept.",
+    "solution": "Elias killed Rook with the borrowed coupling wrench and substituted a recording containing tonight’s bell beneath the old distress message. He needed the original to look like a recent reconstruction: paired with Nell’s wider photograph, it challenged the rescue account he had helped the shipping organization manage. The tube fixes his omitted journey; the fresh leader, Sera’s sighting, and the repeated bell connect him to the substitution. The photograph exposes the older lie without alone proving tonight’s murder.",
     "chapters": [
       [
-        "The recorded voice",
-        "The tide has covered the lower jetty. You lay the signed accounts beside the tape; times written by different hands look less certain next to each other."
+        "A voice with no witness",
+        "The wider photograph lies beside the reel. You begin with what each object can establish, before allowing either one to explain the other."
       ],
       [
-        "The missing interval",
-        "Salt water reaches the battery-room step. There is time to compare what was heard with what could actually be heard from each room."
+        "The second version",
+        "The lower jetty is underwater. An old statement can be repeated perfectly and still contain a sentence nobody witnessed."
       ],
       [
-        "The original",
-        "The sea begins to fall, but the boat still cannot land. Whoever leaves with the tape will decide whether thirteen years of silence end here."
+        "The edge of the picture",
+        "The harbor light becomes visible beyond the spray. The review must leave the island with its originals and its corrections together."
       ]
     ],
-    "ending_win": "When the relief boat reaches the jetty, the original reel travels in a dry biscuit tin. Sera does not thank the engineer who carries the new transmitter ashore. She asks for the two whistles to be played once, without anyone speaking over them.",
-    "ending_loss": "The replacement tape goes ashore as the station’s only authenticated recording. The wreck becomes a dispute about clocks, maintenance, and memory. Sera keeps the photograph; the organization keeps the account of how her father died."
+    "ending_win": "The relief boat takes the reel and the full contact strip ashore in separate sealed cases. Sera asks for the two whistles to be played without commentary. Nell names the people at the edge of her photograph before anyone offers to crop it again.",
+    "ending_loss": "The replacement reel is accepted as the station’s only authenticated recording. The photograph becomes an argument about clocks and perspective. Elias’s old version survives because the surviving objects are no longer allowed to explain each other.",
+    "origin": {
+      "label": "Novel-writing · combined case",
+      "skills": [
+        "novel-writing"
+      ],
+      "combined_from": [
+        "The Ninth Bell",
+        "The House Below the Tide"
+      ]
+    },
+    "reconstruction": [
+      "Elias was the organization’s agent. Thirteen years earlier he had helped manage the account of the trawler’s failed rescue, using the small company launch while the public story excluded any second boat. Nell’s uncropped sequence and Ada’s original note preserved details that the published picture and corrected inquiry pages had hidden. Rook planned to make the old distress reel answer those independent records.",
+      "On the review night Elias borrowed Ivo’s coupling wrench and used the supposed roof repair to approach the transmitter room. After Ada’s last sighting of Rook, Elias struck him with the wrench. He prepared a replacement reel by recording the old voice together with the island’s nine o’clock bell. Playing it at 21:17 would make Rook appear to have just spoken and would let the company dismiss the old recording as a recent reconstruction.",
+      "Ivo’s speaking-tube observation breaks the uninterrupted roof alibi. Sera’s sighting places Elias on the route with the white-backed reel. The fresh leader and repeated bell explain the substitution. The photograph does not, by itself, prove tonight’s killing; it explains why discrediting the reel and controlling the rescue account mattered to Elias.",
+      "The others had helped silence the past in different ways. Nell accepted credit for a cropped picture, Ada edited an arrival time and withheld the original, and Sera repeated a statement Elias had supplied. Ivo concealed his drinking and the limits of his memory. Mara signed Rook’s shifts to keep him employed. Those failings made suspicion plausible, but none explains the newly made reel and Elias’s omitted journey."
+    ]
   },
   {
     "id": "room-kept-warm",
@@ -491,7 +517,8 @@
           "radiator",
           "passage",
           "evacuation"
-        ]
+        ],
+        "correction": "I saw the trustee in the office at 18:20. My later time comes from Jules’s kitchen clock. I can stand by the order of those visits more firmly than the exact ten-minute interval."
       },
       {
         "key": "leonie",
@@ -508,7 +535,8 @@
           "contract",
           "door",
           "stairs"
-        ]
+        ],
+        "correction": "I did leave the dining room briefly to fetch my charger. My folder stayed on the table. I should have said the visit was brief instead of saying I never left."
       },
       {
         "key": "jules",
@@ -525,7 +553,8 @@
           "pantry",
           "wheels",
           "food"
-        ]
+        ],
+        "correction": "The chair was empty when I set down the tray. I did not watch it continuously afterward. What I heard behind the pantry wall should remain separate from that one sighting."
       },
       {
         "key": "omar",
@@ -542,7 +571,8 @@
           "latch",
           "lock",
           "meter"
-        ]
+        ],
+        "correction": "Locking the connecting door did not keep it locked for the whole evening. I lent Leonie the key. My first answer described the job I finished, not every later use of the door."
       },
       {
         "key": "beth",
@@ -559,7 +589,8 @@
           "coat",
           "case",
           "old wing"
-        ]
+        ],
+        "correction": "I recognized Leonie’s slim case, but I did not look at its wheels. The sighting and the tracks are two pieces of information. I should not make them identify one object by themselves."
       },
       {
         "key": "ruth",
@@ -576,7 +607,8 @@
           "company",
           "land",
           "porch"
-        ]
+        ],
+        "correction": "I was with Beth from 18:22 onward. I did not witness her earlier argument. I can account for the later interval without making a claim about everything she had felt before it."
       }
     ],
     "clues": [
@@ -923,7 +955,20 @@
       ]
     ],
     "ending_win": "The transfer is halted before its signature window. When the patient is told what her amendment cost, she asks whether the staff will still have jobs. The land stays in trust. Nobody finds that an adequate answer to the empty chair.",
-    "ending_loss": "The transfer completes while the road is still closed. The hospice is described as an unsafe property with defective stairs. The patient’s amendment becomes an unverified intention; the company acquires something more useful than land, which is the authority to empty it."
+    "ending_loss": "The transfer completes while the road is still closed. The hospice is described as an unsafe property with defective stairs. The patient’s amendment becomes an unverified intention; the company acquires something more useful than land, which is the authority to empty it.",
+    "origin": {
+      "label": "Novel-writing · original case",
+      "skills": [
+        "novel-writing"
+      ],
+      "combined_from": []
+    },
+    "reconstruction": [
+      "Leonie was the company’s agent. The transfer contained an altered property schedule that would let a criminal holding company acquire the hospice and the service-road land. The trustee had noticed the alteration; the patient’s amendment would preserve the trust instead. Leonie’s commission depended on completion, but the organization’s loss of the property was the larger motive.",
+      "Leonie borrowed Omar’s key at 18:10. After Hana left the trustee alive, she used the service passage, confronted him about the amendment, and pushed him down the office stairs when he would not surrender it. She removed the amendment from his open briefcase. Room Four provided an exit from the passage without crossing the dining room; its turned-up heat made the otherwise empty room look like a place in ordinary use. She returned the key at 18:40.",
+      "Jules’s empty-chair sighting makes the dining-room alibi incomplete. Omar’s key loan and the return envelope show the passage remained available. Beth saw the case near the old wing, while the narrow wheel tracks give an independent detail to compare with that sighting. None is a complete account alone; together they explain the journey Leonie said a locked door made impossible.",
+      "Beth had argued about the inheritance, but Ruth was with her during the later interval. Jules hid food taken for his father, Omar hid a false repair invoice, and Ruth delayed reporting the company because of her pension settlement. Hana refused an unauthorized copy of the amendment and blamed her own caution afterward. Their motives explain evasions; they do not explain Leonie’s missing journey or the changed land schedule."
+    ]
   },
   {
     "id": "carriage-six",
@@ -954,7 +999,8 @@
           "whistle",
           "receipt",
           "packet"
-        ]
+        ],
+        "correction": "I used “second whistle” as a familiar expression for departure. I should not have claimed an exact signal. My receipt dates a delivery; it does not prove every minute of my journey."
       },
       {
         "key": "esme",
@@ -971,7 +1017,8 @@
           "coat",
           "service door",
           "tea"
-        ]
+        ],
+        "correction": "The grey coat was a movement through the service doorway, not an identification. Lending the spare key is the part I can attach to a named person, and I should have disclosed it first."
       },
       {
         "key": "dorian",
@@ -988,7 +1035,8 @@
           "lamp",
           "whistle",
           "guard"
-        ]
+        ],
+        "correction": "I know the whistle did not work because I stood beside the guard. I do not know whether Pavel heard another sound and remembered it wrongly. The signal checks his words, not his intentions."
       },
       {
         "key": "mina",
@@ -997,7 +1045,7 @@
         "description": "Mina’s dinner remains untouched in its paper tray. She introduced herself only after she was asked to examine the witness.",
         "relationship": "She treated the witness earlier for travel sickness, with Esme present.",
         "account": "I gave him an ordinary travel-sickness tablet before we boarded. Esme saw the packet. When we found him, I asked everyone to leave the cup and bedding where they were.",
-        "observation": "There is tea spilled on the inside of his cuff and a broken button near the door. I cannot tell you the cause of death here. Those details do not fit a man simply falling asleep undisturbed.",
+        "observation": "There is tea spilled on the inside of his cuff and a broken button near the door. I cannot tell you the cause of death here. Those details do not fit a man simply falling asleep undisturbed. The loose pillowcase was bundled under the bed, although Esme says she left it on the pillow.",
         "secret": "My registration inquiry is still open after a complaint. I did not want to identify myself as a doctor. If I sound guarded, that is why.",
         "defense": "A label on my bag is not a laboratory. We need to preserve what happened in that compartment, not announce a poison because it makes a tidy explanation.",
         "topics": [
@@ -1005,7 +1053,8 @@
           "tablet",
           "button",
           "medical"
-        ]
+        ],
+        "correction": "I treated travel sickness before boarding. That does not tell me the cause of his death. The disturbed bedding and broken button are things to preserve, not a diagnosis I can certify here."
       },
       {
         "key": "luca",
@@ -1022,7 +1071,8 @@
           "clerk",
           "parcel",
           "sound"
-        ]
+        ],
+        "correction": "I saw the clerk give the receipt to the porter. I did not see who finally received it aboard. It breaks a claimed location, but it does not reconstruct the whole corridor journey."
       },
       {
         "key": "faye",
@@ -1039,7 +1089,8 @@
           "three",
           "grit",
           "bridge"
-        ]
+        ],
+        "correction": "Pavel’s seat was empty while I was in Three, but I was not guarding the doorway. I can identify an interval he did not spend beside me, not every place he could have gone."
       }
     ],
     "clues": [
@@ -1188,7 +1239,7 @@
         "source": "mina",
         "kind": "observation",
         "title": "Mina · Observation",
-        "text": "There is tea spilled on the inside of his cuff and a broken button near the door. I cannot tell you the cause of death here. Those details do not fit a man simply falling asleep undisturbed.",
+        "text": "There is tea spilled on the inside of his cuff and a broken button near the door. I cannot tell you the cause of death here. Those details do not fit a man simply falling asleep undisturbed. The loose pillowcase was bundled under the bed, although Esme says she left it on the pillow.",
         "topics": [
           "cup",
           "tablet",
@@ -1386,7 +1437,20 @@
       ]
     ],
     "ending_win": "Police walk along the track carrying their equipment above the water. The deposition leaves in an evidence sleeve instead of a courier’s case. Luca begins his difficult passage again; this time, he lets the keys make a sound.",
-    "ending_loss": "By the time the train is reached, the original deposition has vanished. The carbon copy supports some charges and none of the names that mattered most. Pavel’s delivery receipt is filed as an ordinary piece of business."
+    "ending_loss": "By the time the train is reached, the original deposition has vanished. The carbon copy supports some charges and none of the names that mattered most. Pavel’s delivery receipt is filed as an ordinary piece of business.",
+    "origin": {
+      "label": "Novel-writing · original case",
+      "skills": [
+        "novel-writing"
+      ],
+      "combined_from": []
+    },
+    "reconstruction": [
+      "Pavel was the freight syndicate’s agent. He had already sold photographs of the witness’s supplemental papers to a broker. The original deposition would identify the people behind that business, so taking the packet was no longer enough: the witness also had to be prevented from reaching the hearing.",
+      "Pavel borrowed Esme’s spare key under the pretext of a parcel locked in an empty compartment. After she served the witness alive at 22:06, he entered Six through the service route, took the deposition, and smothered the witness during the struggle. The spilled tea, broken button, and displaced pillowcase belong to that disturbance. He returned to Three only after the emergency stop.",
+      "The receipt was stamped while Pavel was already walking toward the train, then delivered by the porter. It dates paperwork rather than its owner. Dorian’s failed-whistle account exposes the rehearsed departure detail. Faye’s empty-seat interval and Esme’s admitted key loan turn those doubts into a route. The coat sighting supports that route without identifying a face by itself.",
+      "Esme concealed a key loan, Mina concealed the inquiry into her registration, and Dorian concealed misuse of his travel pass. Luca had sold an instrument while telling the orchestra it remained in storage. Faye falsified a warning date after her real warning was ignored. Each had a reason to dislike scrutiny. Pavel alone needed the original deposition removed and had supplied a false journey for the interval in which it disappeared."
+    ]
   },
   {
     "id": "river-returned",
@@ -1409,7 +1473,7 @@
         "description": "Jo wears rubber bands around her sleeves to keep them out of the water. The dead archivist had hired her without asking for references.",
         "relationship": "She helped catalogue the recovered box and knows which records were missing before the flood.",
         "account": "The archivist opened Box K at 16:10. She sent me upstairs for a drying frame. When I returned, she was arguing quietly with Silas beside the map table.",
-        "observation": "I had counted twelve folded sheets in Box K. After the alarm there were eleven. I did not read them all, but the missing fold had left a clean rectangle in the mud at the bottom.",
+        "observation": "I had counted twelve folded sheets in Box K. After the alarm there were eleven. I did not read them all, but the missing fold had left a clean rectangle in the mud at the bottom. The square map weight had been moved from that end of the table to the drying rack.",
         "secret": "I removed a dismissal letter from my own personnel file last month. The archivist found out and let me replace it without reporting me. I would have done almost anything not to disappoint her again.",
         "defense": "Count the folds with me. My mistake in another file does not create the missing sheet in this one.",
         "topics": [
@@ -1417,7 +1481,8 @@
           "fold",
           "sheet",
           "map"
-        ]
+        ],
+        "correction": "I counted twelve folds before leaving for the frame. I did not catalogue twelve contents. The missing rectangle shows a sheet was removed; the backing impression is needed to say which boundary it concerned."
       },
       {
         "key": "tess",
@@ -1434,7 +1499,8 @@
           "stairs",
           "rescue",
           "hand"
-        ]
+        ],
+        "correction": "The discarded dressing establishes that the archivist took it off, not when. My last direct sighting of her alive is the earlier visit. I should keep those two observations apart."
       },
       {
         "key": "arlan",
@@ -1451,7 +1517,8 @@
           "eighteen",
           "warehouse",
           "east"
-        ]
+        ],
+        "correction": "The brass number is familiar, but a loose number alone would be poor proof of a building. The west-side loading bay and Ren’s independent drain plan are the checks I can offer."
       },
       {
         "key": "mae",
@@ -1468,7 +1535,8 @@
           "scan",
           "corner",
           "field book"
-        ]
+        ],
+        "correction": "I recognized the repeated creased corner after the alarm. Before that I had noticed only the address discrepancy. I should not let a later explanation sound like a warning I acted on earlier."
       },
       {
         "key": "silas",
@@ -1485,7 +1553,8 @@
           "boundary",
           "tube",
           "markers"
-        ]
+        ],
+        "correction": "I consulted older plans as well as the site. Saying the report came only from a visit was too simple. I still dispute the suggestion that a changed drawing proves a deliberate theft of land."
       },
       {
         "key": "ren",
@@ -1502,7 +1571,8 @@
           "pipe",
           "tube",
           "pump"
-        ]
+        ],
+        "correction": "I saw the open tube and damp sleeve. I did not inspect the tube’s contents. The independent drain record is stronger evidence of the original building than my guess about what Silas carried."
       }
     ],
     "clues": [
@@ -1525,7 +1595,7 @@
         "source": "jo",
         "kind": "observation",
         "title": "Jo · Observation",
-        "text": "I had counted twelve folded sheets in Box K. After the alarm there were eleven. I did not read them all, but the missing fold had left a clean rectangle in the mud at the bottom.",
+        "text": "I had counted twelve folded sheets in Box K. After the alarm there were eleven. I did not read them all, but the missing fold had left a clean rectangle in the mud at the bottom. The square map weight had been moved from that end of the table to the drying rack.",
         "topics": [
           "box",
           "fold",
@@ -1850,7 +1920,20 @@
       ]
     ],
     "ending_win": "The original boundary is entered into the evidence record before the company can claim the box. Arlan asks for the brass number from the floating door. It is not restitution, but he wants to take something home that does not need a lawyer to explain it.",
-    "ending_loss": "The missing sheet is recorded as flood damage. The clearance remains lawful on paper, which is the only version the company accepts. Downstairs, the numbered door finally comes loose and goes back into the river."
+    "ending_loss": "The missing sheet is recorded as flood damage. The clearance remains lawful on paper, which is the only version the company accepts. Downstairs, the numbered door finally comes loose and goes back into the river.",
+    "origin": {
+      "label": "Novel-writing · original case",
+      "skills": [
+        "novel-writing"
+      ],
+      "combined_from": []
+    },
+    "reconstruction": [
+      "Silas was the redevelopment company’s agent. His report described the yard across the lane as though it were Number 18, moving a boundary so homes could be cleared as company property. Ren’s earlier drain survey and Arlan’s knowledge of the west-side bay supplied independent checks. The flood returned the original field book that the fraud had depended on losing.",
+      "At 16:10 the archivist opened Box K with twelve folded sheets. Silas argued with her about the boundary page while Jo fetched a frame. He struck the archivist with the square map weight, moved the weight toward the drying racks, and removed the original page in his document tube. Ren saw him leave with the tube open at 16:15. Jo later counted eleven folds; the backing impression survived the theft.",
+      "The missing fold is not itself proof of its contents, and a damp sleeve is not proof of murder. The backing impression identifies the boundary the missing page carried. Jo’s argument, Ren’s departure sighting, and Silas’s denial of discussing the box establish the opportunity he tried to omit. His wrong-side loading bay identifies the false survey beneath the killing.",
+      "Mae sent notices after noticing a discrepancy. Ren approved an inadequate pump. Arlan broke into the redevelopment office, Jo removed a letter from her own file, and Tess altered an evacuation allocation for her brother. Their admissions explain genuine wrongdoing around the disaster. None redraws the original boundary or accounts for the page taken from the archivist."
+    ]
   },
   {
     "id": "last-rehearsal",
@@ -1881,7 +1964,8 @@
           "lamp",
           "blackout",
           "running order"
-        ]
+        ],
+        "correction": "I called the blackout and then held the bridge. I did not see who touched the curtain control. My running order can establish the intended sequence, not every action that interrupted it."
       },
       {
         "key": "ben",
@@ -1898,7 +1982,8 @@
           "pin",
           "gallery",
           "rope"
-        ]
+        ],
+        "correction": "I tested the pin before leaving the gallery. I did not watch it afterward. The hand action needed to remove it matters more than my assumption that nobody would touch it."
       },
       {
         "key": "vera",
@@ -1915,7 +2000,8 @@
           "foyer",
           "accounts",
           "call"
-        ]
+        ],
+        "correction": "I may have heard the curtain motor and taken it for a movement cue. I should not have quoted Clio’s instruction as though I remembered its words. That was an inference I stated as a memory."
       },
       {
         "key": "rafi",
@@ -1932,7 +2018,8 @@
           "foyer",
           "monitor",
           "fire door"
-        ]
+        ],
+        "correction": "The closed fire door muffled the prompt corner; it did not make the whole building silent. I can explain why the words were hard to hear, not decide what another person thought they heard."
       },
       {
         "key": "una",
@@ -1949,7 +2036,8 @@
           "stair",
           "costume",
           "invoice"
-        ]
+        ],
+        "correction": "I saw Vera at the gallery stair before the blackout. I did not follow her up it. The torn ribbon gives a detail to compare, but it does not turn me into a witness to the release."
       },
       {
         "key": "milo",
@@ -1966,7 +2054,8 @@
           "recording",
           "hold",
           "lights"
-        ]
+        ],
+        "correction": "The audio preserves Clio’s words; my console file preserves lighting changes. Neither records a hand removing a mechanical pin. We need both records without treating either as a camera."
       }
     ],
     "clues": [
@@ -2313,7 +2402,20 @@
       ]
     ],
     "ending_win": "The benefit is cancelled, and the theatre’s last recorded instruction is to hold the bridge. The company submits the accounts together. Nobody agrees on whether the building could have been saved, but the death is no longer filed among its maintenance defects.",
-    "ending_loss": "The death is attributed to an improvised brake and a misunderstood cue. The donor companies recover their contributions before the accounts are seized. When the theatre is emptied, the prompt desk goes first."
+    "ending_loss": "The death is attributed to an improvised brake and a misunderstood cue. The donor companies recover their contributions before the accounts are seized. When the theatre is emptied, the prompt desk goes first.",
+    "origin": {
+      "label": "Novel-writing · original case",
+      "skills": [
+        "novel-writing"
+      ],
+      "combined_from": []
+    },
+    "reconstruction": [
+      "Vera was the organization’s agent. The benefit’s donations were passing through companies with a shared return address. The stage manager had preserved a second account of those transfers and had asked for an independent review. Vera’s attempts to keep the company paid also gave her an explanation for moving money that she hoped nobody would examine too closely.",
+      "Vera went to the gallery while claiming she remained in the foyer. During the blackout she lifted the bridge’s locking pin by hand and released the suspended scenery while the stage manager was beneath it. Reaching for the gallery work light afterward, she operated the curtain control and exposed the scene sooner than she intended. She then treated the death as a misunderstood cue and defective maintenance.",
+      "Clio called for the bridge to be held, not released. Milo preserved that instruction on the rehearsal audio. Rafi had helped disconnect the foyer monitor, so Vera’s account of hearing the invented cue from there did not establish the location she claimed. Ben and Una place her on the gallery route; the missing pin distinguishes an action from a mistaken instruction.",
+      "Ben had fitted an undocumented replacement part. Una inflated an invoice to pay an assistant, Clio copied a contact list while applying elsewhere, and Milo deleted an earlier failed cue. Rafi withdrew a safety complaint when another season was offered. These compromises explain why the company hesitated to speak. They do not explain the manually removed pin, Vera’s false location, or the benefit transfers she authorized."
+    ]
   },
   {
     "id": "winter-seed",
@@ -2344,7 +2446,8 @@
           "seam",
           "sample",
           "seal"
-        ]
+        ],
+        "correction": "I identified our narrow envelope when we sealed it. The blue seam shows a packaging change later, not a species identification. The contents still need an independent test."
       },
       {
         "key": "leila",
@@ -2353,7 +2456,7 @@
         "description": "Leila has taped handwritten instructions to the generator-room first-aid cabinet. She dislikes being asked to certify more than she has seen.",
         "relationship": "She was accompanying a visiting relief delegation and treated the auditor for exhaustion.",
         "account": "I saw the auditor alive at 14:25. She asked whether the road crew could carry a small sealed packet down on foot. I went to the radio room to ask.",
-        "observation": "The preparation-room latch can be held open with a flat card. A blue plastic dispatch card was on the floor when we found her. I left it where it was.",
+        "observation": "The preparation-room latch can be held open with a flat card. A blue plastic dispatch card was on the floor when we found her. I left it where it was. A transport-satchel strap lay beside her chair with one end pulled from its buckle. I left that there as well.",
         "secret": "I told the relief delegation their seed was probably safe before the testing was complete. They needed something hopeful to report. I had no result that justified my confidence.",
         "defense": "I will not give you another reassuring answer before the evidence exists. That includes an answer about who killed her.",
         "topics": [
@@ -2361,7 +2464,8 @@
           "latch",
           "radio",
           "auditor"
-        ]
+        ],
+        "correction": "The dispatch card could hold the latch open. I did not see it being used that way. I should give you the object’s position and leave the missing action as a question."
       },
       {
         "key": "cass",
@@ -2378,7 +2482,8 @@
           "fuel",
           "sheet",
           "arrival"
-        ]
+        ],
+        "correction": "I can give the order of my fuel checks more confidently than the exact minute Soren left. He was gone before I completed the first one; my signature does not make us continuous witnesses for each other."
       },
       {
         "key": "dara",
@@ -2395,7 +2500,8 @@
           "blue",
           "delivery",
           "village"
-        ]
+        ],
+        "correction": "I recognized the blue-seamed delivery stock, not a unique packet. My sighting puts a kind of envelope in Soren’s hands. The duplicate label and dispatch record must do the identifying."
       },
       {
         "key": "niko",
@@ -2412,7 +2518,8 @@
           "duplicate",
           "printer",
           "batch"
-        ]
+        ],
+        "correction": "The spare label was intended to preserve a number, not authorize a replacement packet. I should have said that distinction when Soren collected it. Printing a duplicate did not give him the auditor’s approval."
       },
       {
         "key": "soren",
@@ -2429,7 +2536,8 @@
           "inspection",
           "contract",
           "transport"
-        ]
+        ],
+        "correction": "I stepped out to arrange transport. Using Cass’s inspection interval for my whole stay was inaccurate. I still say that handling a reference packet is not proof of changing its contents."
       }
     ],
     "clues": [
@@ -2494,7 +2602,7 @@
         "source": "leila",
         "kind": "observation",
         "title": "Leila · Observation",
-        "text": "The preparation-room latch can be held open with a flat card. A blue plastic dispatch card was on the floor when we found her. I left it where it was.",
+        "text": "The preparation-room latch can be held open with a flat card. A blue plastic dispatch card was on the floor when we found her. I left it where it was. A transport-satchel strap lay beside her chair with one end pulled from its buckle. I left that there as well.",
         "topics": [
           "card",
           "latch",
@@ -2777,470 +2885,506 @@
       ]
     ],
     "ending_win": "The reference reaches an independent laboratory in its original envelope. Dara corrects the family count before submitting the complaint again. The result will take time; for the first time, the people waiting for it know which packet is being tested.",
-    "ending_loss": "A clean label reaches the laboratory on the wrong packet. The supplier cites the result for months. In the village, people save the seeds that did not grow because nobody can tell them what other evidence would count."
+    "ending_loss": "A clean label reaches the laboratory on the wrong packet. The supplier cites the result for months. In the village, people save the seeds that did not grow because nobody can tell them what other evidence would count.",
+    "origin": {
+      "label": "Novel-writing · original case",
+      "skills": [
+        "novel-writing"
+      ],
+      "combined_from": []
+    },
+    "reconstruction": [
+      "Soren was the supplier network’s agent. The relief shipment had been substituted, and the auditor’s sealed reference would let an independent laboratory compare what had been promised with what the villages received. His undeclared supplier-paid travel was one visible part of a deeper obligation to keep that comparison from happening.",
+      "Soren took the spare label from Niko’s desk, signed into Cass’s generator room, and left before the fuel check was complete. After Leila’s last sighting of the auditor, he entered the preparation room and tried to replace the reference packet. When she challenged the handover, he used the transport-satchel strap to strangle her. He applied the duplicate number to a blue-seamed dispatch packet and authorized an unrecorded replacement at 14:31. Dara saw him leave with that packet at 14:32.",
+      "The arrival signature did not account for the whole interval. Anika’s original envelope, Dara’s packet sighting, Niko’s backing paper, and Soren’s own dispatch authorization trace a replacement the auditor never recorded. Packaging alone cannot identify a seed species. It can establish that the object sent onward is not the uninterrupted sealed object its label claims it is. Soren kept the original among his papers.",
+      "Cass stole reserve fuel, Niko entered estimated results as completed tests, and Dara inflated the family count after her first complaint was ignored. Anika hid an unauthorized duplicate collection; Leila offered reassurance before test results existed. Those choices mattered to the crisis. They do not explain the substituted reference or Soren’s false use of Cass’s inspection interval."
+    ]
   },
   {
-    "id": "below-the-tide",
-    "title": "The House Below the Tide",
-    "setting": "A coastal hotel hosting the survivors of an old ferry disaster",
-    "anchor": "an uncropped rescue photograph",
-    "pressure": "An insurance examiner has reopened a disaster claim. His death leaves six survivors arguing over a photograph that contradicts their shared memory.",
+    "id": "quiet-sentence",
+    "title": "The Quiet Sentence",
+    "setting": "A witness-preparation house before a trafficking hearing",
+    "anchor": "a corrected witness statement",
+    "pressure": "A court liaison has been killed after a witness changed one sentence. The person managing her protection may be managing her silence.",
     "opening": [
-      "The hotel was built above the old ferry slip. At high tide, the lowest window looks into green water. You arrive for a private review of a disaster claim and find the examiner dead in the photograph room. On his desk is a familiar rescue photograph, except that this print is wider than the one printed in every newspaper. At its edge, a second boat is tied to the slip.",
-      "Six people connected with the disaster have gathered for the review. Their compensation, reputations, and oldest friendships depend on an account they have repeated for eleven years. The coastal road is flooded; the hotel’s boat cannot cross the bar until the wind drops. One guest is working for the organization that insured and overloaded the ferry. The examiner had found a discrepancy too expensive to leave in a family album.",
-      "You collect signed accounts before assigning the first watch and place the photograph under the dining-room glass. Someone asks whether the edge could have been added later. Someone else says they remember the second boat perfectly. Neither person said anything about it before tonight."
+      "You arrive to countersign a correction, not to conduct an inquiry. Amal, a protected witness, has rejected one sentence in the statement prepared for her hearing. Before you can speak to the court liaison, his alarm sounds from the interview room. Calder is dead beside his desk. A brass doorstop lies on the carpet beside the door it normally holds open. His grey portfolio is missing.",
+      "The protection team has placed the house under a security hold after a threat against the hearing. Six people remain in the inner rooms with you: the witness, her interpreter, an advocate, a technician, a nurse, and the house steward. Someone here is an agent for the trafficking network whose drivers the witness can identify. The external team must clear the threatened approach before anyone can leave; you must decide whom the witness can trust inside.",
+      "You collect signed accounts before the first watch. The rejected draft lies on the front-room table. Calder’s freshly printed correction stays sealed in the interview room until you inspect it. The disputed sentence concerns whether a driver returned voluntarily or was ordered back. The changed words do not name a killer. They do explain why a person might have wanted the witness to go on saying the first version."
     ],
-    "culprit": "gideon",
-    "doctor": "iris",
+    "culprit": "everett",
+    "doctor": "maeve",
     "cast": [
       {
-        "key": "iris",
-        "name": "Iris",
-        "occupation": "Rescue nurse",
-        "description": "Iris has kept her old rescue coat, though its reflective strips have gone dull. She came because the examiner asked for her original notes.",
-        "relationship": "She treated survivors on the slip and has refused to take part in anniversary interviews.",
-        "account": "On the disaster night I reached the slip before the first ambulance. A small launch was already tied below the hotel. Tonight I was with Sal in the kitchen from 20:10 until the alarm.",
-        "observation": "The launch in the wider photograph has a white canvas repair on its bow. I remember resting a medical bag on that patch. I cannot name the owner from the photograph alone.",
-        "secret": "I changed one patient’s arrival time because I feared being blamed for a delay. I kept the original note. The examiner asked me to bring both versions, and I did.",
-        "defense": "I mistrust my edited notes more than my memory. That is why I brought the page I had tried to replace.",
+        "key": "inez",
+        "name": "Inez",
+        "occupation": "Court interpreter",
+        "description": "Inez puts both versions of every page side by side. When someone calls the change a nuance, she stops aligning them.",
+        "relationship": "She interpreted Amal’s original interview and was called back to check the correction.",
+        "account": "I interpreted the interview until 17:18. Amal then asked to speak privately with Calder, without the front-room listening link. I muted the link and left the room. Maeve joined me at the front-room table.",
+        "observation": "The original sentence described the driver as returning voluntarily. Amal said that was wrong before I left. I did not hear the final corrected wording; Calder wrote it down during their private discussion.",
+        "secret": "At the first interview I softened a threat into an instruction because I feared upsetting Amal. I told myself the context made it clear. She has had to fight my wording ever since.",
+        "defense": "I will answer for the translation I made. Do not assume that admitting one error means I heard words spoken after I left.",
         "topics": [
-          "launch",
-          "patch",
-          "notes",
-          "ambulance"
-        ]
+          "translation",
+          "wording",
+          "link",
+          "private"
+        ],
+        "correction": "I heard Amal reject the old sentence, but I left before the final words were settled. My interpretation of her objection must not be mistaken for a report of the private correction."
       },
       {
-        "key": "sal",
-        "name": "Sal",
-        "occupation": "Hotel cook",
-        "description": "Sal has kept the dinner warm long past the point of usefulness. He measures every delay by what it is doing to the food.",
-        "relationship": "His sister died on the ferry; the hotel hired him after the compensation settlement.",
-        "account": "Iris joined me at 20:10. I watched her read her old notes while I prepared dinner. At 20:18 Gideon came through the kitchen toward the photograph room with the examiner’s portfolio.",
-        "observation": "The examiner had asked me to keep the service corridor clear. He was expecting someone to compare a document privately. He did not tell me whose document.",
-        "secret": "The hotel gave me this job after I agreed not to contest the settlement. I said it was kindness. It was also a bargain, and I have been ashamed of it ever since.",
-        "defense": "I cannot tell you what happened beyond the kitchen. I can tell you who carried a portfolio through it.",
+        "key": "amal",
+        "name": "Amal",
+        "occupation": "Protected witness",
+        "description": "Amal keeps her hand on the page she has corrected. She watches the interpreter only when other people speak for her.",
+        "relationship": "She is due to identify the network that ordered her driver back to a depot.",
+        "account": "Calder and I spoke alone after 17:18. He wrote the corrected sentence and asked me to wait in the washroom while he printed a clean page. When I came back, the room door was closed. I heard a heavy movement inside, then nothing.",
+        "observation": "Just after the alarm, before Calder’s corrected page was opened for the group, Everett told me that being ordered back was a detail the hearing could misunderstand. I had not given him my new wording. I wanted to know who had told him before I let him explain it away.",
+        "secret": "I once said the driver had chosen to return because I was afraid the network would hear I had named an order. I was protecting my brother, who still works at that depot. The lie did not protect him as much as I hoped.",
+        "defense": "Ask which sentence I knew to be true. Do not ask me to prove why I was frightened enough to sign the other one.",
         "topics": [
+          "sentence",
+          "driver",
+          "washroom",
+          "order"
+        ],
+        "correction": "I heard a heavy movement after I returned to the door. I could not tell whether it was furniture or a person. The sentence I corrected is certain; the sound’s cause is not."
+      },
+      {
+        "key": "joel",
+        "name": "Joel",
+        "occupation": "Security technician",
+        "description": "Joel has unplugged his own phone and put it beside the house handset, as if equal treatment might make the room less suspicious.",
+        "relationship": "He maintained the temporary listening link between the interview room and front room.",
+        "account": "Everett borrowed the service-door key at 17:12, saying he needed paper from the supply cupboard. The borrowing book is beside the handset. I stayed at the entry monitor after that.",
+        "observation": "I checked the link at 17:18 when Inez muted it. It stayed muted until the alarm. Calder’s small printer is inside the interview room; its pages are not mirrored on our front-room display.",
+        "secret": "I disabled a corridor camera so Amal could call her brother without recording the number. I did not tell the protection team. That gap belongs to my decision, not to a machine failure.",
+        "defense": "I can show you which channels were open. I cannot turn the missing camera interval into an image of what we want to have happened.",
+        "topics": [
+          "key",
+          "link",
+          "printer",
+          "camera"
+        ],
+        "correction": "Muting the link did not prevent a person from entering the room. It stopped that route for overhearing. The key book is the separate record of physical access."
+      },
+      {
+        "key": "everett",
+        "name": "Everett",
+        "occupation": "Witness advocate",
+        "description": "Everett straightens the hearing papers whenever Amal reaches for them. He calls it making the room less overwhelming.",
+        "relationship": "He arranged Amal’s protected travel and has advised her about what the hearing needs to hear.",
+        "account": "I stayed in the front room from 17:10 until the alarm. Calder had the paperwork he needed. I did not visit the interview room or see a corrected page.",
+        "observation": "Before Calder’s corrected page was opened for the group, I told Amal that the phrase “ordered to return” was open to interpretation. People say they were ordered when they mean they felt obliged. I understood her objection; we should not let a change of wording destroy the protection we have arranged.",
+        "secret": "Meridian Transit paid for my travel on an earlier assignment, before it was named in this inquiry. I did not declare that because I wanted to remain on Amal’s case. She needed somebody who knew the arrangements.",
+        "defense": "If you make her doubt every person who helped her, you will leave her with nobody to stand beside at the hearing. Explain how that makes her safer.",
+        "topics": [
+          "protection",
+          "ordered",
+          "wording",
+          "paperwork"
+        ],
+        "correction": "I went into the service corridor to collect papers. I meant that I had not joined the interview. Saying I stayed in the front room made an ordinary errand sound like an interval I could prove."
+      },
+      {
+        "key": "maeve",
+        "name": "Maeve",
+        "occupation": "Protection-team nurse",
+        "description": "Maeve sets her examination gloves aside rather than touching the doorstop. She asks who moved it, and waits through the first evasive answer.",
+        "relationship": "She has treated Amal during preparation and checked on Calder earlier in the afternoon.",
+        "account": "I sat with Inez in the front room from 17:18. We both stayed there until the alarm. Everett’s folder was on his chair; I cannot say he was beside it all that time.",
+        "observation": "Calder has an injury behind one ear. The loose brass doorstop is heavy enough to deserve examination, but I cannot identify a weapon by looking at an injury here. A strip of its felt base is caught in the grey portfolio found by the service cupboard.",
+        "secret": "I told the team Amal was ready to testify because another delay might end her protection funding. I had not asked her whether being ready and being able to endure another interview meant the same thing.",
+        "defense": "The interview has already taken decisions away from her. I will not take another one by guessing in a medical voice.",
+        "topics": [
+          "injury",
+          "doorstop",
           "portfolio",
-          "kitchen",
+          "felt"
+        ],
+        "correction": "The folder remained on Everett’s chair, but I was attending to Inez. I did not watch its owner continuously. An object left in a seat cannot account for the person who left it."
+      },
+      {
+        "key": "sorin",
+        "name": "Sorin",
+        "occupation": "House steward",
+        "description": "Sorin folds the clean cloths into exact squares. He leaves one empty place where a cloth should have been returned.",
+        "relationship": "He manages the service cupboard and has worked for the protection contractor for six years.",
+        "account": "At 17:22 I saw Everett leave the inner corridor with Calder’s grey portfolio. He took a clean canvas cloth from my trolley and put it around something heavy. He said a paperweight had marked the lining.",
+        "observation": "The brass doorstop normally holds the interview door open. It was back beside that door after the alarm, but it stood on bare metal instead of felt. I had checked the felt that morning because it scratches the floor.",
+        "secret": "I kept copies of supply invoices to support a wage claim. I have also kept visitors’ names without authority. When Calder noticed, I thought he would report me instead of helping with the wages.",
+        "defense": "I did not open the portfolio. I can tell you how it was carried and which cloth has not returned; I cannot tell you what was inside.",
+        "topics": [
+          "cloth",
           "corridor",
-          "settlement"
-        ]
-      },
-      {
-        "key": "nora",
-        "name": "Nora",
-        "occupation": "Disaster photographer",
-        "description": "Nora wears a camera strap without a camera. She brought contact sheets instead of the image everyone recognizes.",
-        "relationship": "She took the published rescue photograph and chose its crop for the first newspaper.",
-        "account": "The wider print comes from my negative. I showed it to the examiner at 19:50. The published crop removed the second boat because the editor wanted the rescue workers in the center.",
-        "observation": "The contact sheet shows Gideon beside the patched launch in the frame immediately before the familiar photograph. He may have helped with the rescue; being there does not tell us whose orders he followed.",
-        "secret": "I accepted an award for the cropped image without mentioning the editor’s change. I knew people were reading the picture as proof that only one rescue boat had come.",
-        "defense": "A photograph can contradict a story without explaining the whole event. Let us keep the frames in order.",
-        "topics": [
-          "photograph",
-          "crop",
-          "frame",
-          "negative"
-        ]
-      },
-      {
-        "key": "gideon",
-        "name": "Gideon",
-        "occupation": "Former claims inspector",
-        "description": "Gideon has brought the settlement in a binder with new dividers. He knows which page to open before a question has finished.",
-        "relationship": "He certified the ferry company’s account and now advises its insurer.",
-        "account": "I reached the slip only after the ambulances. I never used the small launch. Tonight I stayed in the lounge after eight; the examiner had everything he needed from me.",
-        "observation": "Eleven years can turn a detail into a certainty it never had. The settlement was reached from sworn statements, not a single photograph pulled out of context.",
-        "secret": "The insurer kept me as a consultant after I left public service. I should have declared that before agreeing to this review. The old settlement was still properly approved.",
-        "defense": "If the review reopens, compensation may be frozen while every statement is checked. Think carefully about who will suffer from a confident accusation.",
-        "topics": [
-          "claim",
-          "launch",
-          "lounge",
-          "binder"
-        ]
-      },
-      {
-        "key": "bea",
-        "name": "Bea",
-        "occupation": "Ferry survivor",
-        "description": "Bea has a habit of counting empty chairs when she enters a room. She recognizes most of the guests and trusts very few of them.",
-        "relationship": "She signed the statement that there was no second rescue boat, then withdrew from public life.",
-        "account": "I was in the lounge at 20:05. Gideon left with his binder shortly afterward. When he returned, he no longer had the grey portfolio the examiner had lent him.",
-        "observation": "I never saw whether a second boat arrived on the disaster night. Gideon suggested “only the lifeboat was present” when he helped write my statement. I signed because I wanted to go home.",
-        "secret": "I let that sentence stand after I began doubting it. Other survivors quoted my statement back to me. It became easier to remember their version than to admit what I had not seen.",
-        "defense": "I can withdraw a sentence I did not know to be true. I cannot replace it with a perfect memory just because you need one.",
-        "topics": [
-          "statement",
-          "lounge",
           "portfolio",
-          "memory"
-        ]
-      },
-      {
-        "key": "tobin",
-        "name": "Tobin",
-        "occupation": "Launch mechanic",
-        "description": "Tobin carries a rubbing of a boat number in a folded ticket wallet. He has never been invited to a reunion before.",
-        "relationship": "He repaired the small launch for a contractor used by the ferry company.",
-        "account": "The examiner asked me to identify the canvas patch. I reached the hotel at 19:40 and waited by the front desk. I did not enter the photograph room until the alarm.",
-        "observation": "I fitted that white patch three days before the disaster. Gideon collected the launch and signed the hire slip. I kept the carbon because the bill was paid late.",
-        "secret": "I was paid cash to leave the launch number off the first invoice. I kept the hire carbon for my own protection, not because I expected to help anyone else.",
-        "defense": "My unsigned invoice is poor evidence. The carbon with the collection signature is better. You should distrust the part I made easy to alter.",
-        "topics": [
-          "hire",
-          "canvas",
-          "invoice",
-          "boat"
-        ]
+          "doorstop"
+        ],
+        "correction": "I saw the portfolio and the cloth, not the object inside. I called it heavy because of how Everett supported it. That is a limited observation, and I want the limit kept in my statement."
       }
     ],
     "clues": [
       {
-        "id": "iris-account",
-        "source": "iris",
+        "id": "inez-account",
+        "source": "inez",
         "kind": "account",
-        "title": "Iris · Account",
-        "text": "On the disaster night I reached the slip before the first ambulance. A small launch was already tied below the hotel. Tonight I was with Sal in the kitchen from 20:10 until the alarm.",
+        "title": "Inez · Account",
+        "text": "I interpreted the interview until 17:18. Amal then asked to speak privately with Calder, without the front-room listening link. I muted the link and left the room. Maeve joined me at the front-room table.",
         "topics": [
-          "launch",
-          "patch",
-          "notes",
-          "ambulance"
+          "translation",
+          "wording",
+          "link",
+          "private"
         ],
         "day": 1
       },
       {
-        "id": "iris-observation",
-        "source": "iris",
+        "id": "inez-observation",
+        "source": "inez",
         "kind": "observation",
-        "title": "Iris · Observation",
-        "text": "The launch in the wider photograph has a white canvas repair on its bow. I remember resting a medical bag on that patch. I cannot name the owner from the photograph alone.",
+        "title": "Inez · Observation",
+        "text": "The original sentence described the driver as returning voluntarily. Amal said that was wrong before I left. I did not hear the final corrected wording; Calder wrote it down during their private discussion.",
         "topics": [
-          "launch",
-          "patch",
-          "notes",
-          "ambulance"
+          "translation",
+          "wording",
+          "link",
+          "private"
         ],
         "day": 1
       },
       {
-        "id": "iris-admission",
-        "source": "iris",
+        "id": "inez-admission",
+        "source": "inez",
         "kind": "admission",
-        "title": "Iris · Private admission",
-        "text": "I changed one patient’s arrival time because I feared being blamed for a delay. I kept the original note. The examiner asked me to bring both versions, and I did.",
+        "title": "Inez · Private admission",
+        "text": "At the first interview I softened a threat into an instruction because I feared upsetting Amal. I told myself the context made it clear. She has had to fight my wording ever since.",
         "topics": [
-          "launch",
-          "patch",
-          "notes",
-          "ambulance"
+          "translation",
+          "wording",
+          "link",
+          "private"
         ],
         "day": 1
       },
       {
-        "id": "sal-account",
-        "source": "sal",
+        "id": "amal-account",
+        "source": "amal",
         "kind": "account",
-        "title": "Sal · Account",
-        "text": "Iris joined me at 20:10. I watched her read her old notes while I prepared dinner. At 20:18 Gideon came through the kitchen toward the photograph room with the examiner’s portfolio.",
+        "title": "Amal · Account",
+        "text": "Calder and I spoke alone after 17:18. He wrote the corrected sentence and asked me to wait in the washroom while he printed a clean page. When I came back, the room door was closed. I heard a heavy movement inside, then nothing.",
         "topics": [
+          "sentence",
+          "driver",
+          "washroom",
+          "order"
+        ],
+        "day": 1
+      },
+      {
+        "id": "amal-observation",
+        "source": "amal",
+        "kind": "observation",
+        "title": "Amal · Observation",
+        "text": "Just after the alarm, before Calder’s corrected page was opened for the group, Everett told me that being ordered back was a detail the hearing could misunderstand. I had not given him my new wording. I wanted to know who had told him before I let him explain it away.",
+        "topics": [
+          "sentence",
+          "driver",
+          "washroom",
+          "order"
+        ],
+        "day": 1
+      },
+      {
+        "id": "amal-admission",
+        "source": "amal",
+        "kind": "admission",
+        "title": "Amal · Private admission",
+        "text": "I once said the driver had chosen to return because I was afraid the network would hear I had named an order. I was protecting my brother, who still works at that depot. The lie did not protect him as much as I hoped.",
+        "topics": [
+          "sentence",
+          "driver",
+          "washroom",
+          "order"
+        ],
+        "day": 1
+      },
+      {
+        "id": "joel-account",
+        "source": "joel",
+        "kind": "account",
+        "title": "Joel · Account",
+        "text": "Everett borrowed the service-door key at 17:12, saying he needed paper from the supply cupboard. The borrowing book is beside the handset. I stayed at the entry monitor after that.",
+        "topics": [
+          "key",
+          "link",
+          "printer",
+          "camera"
+        ],
+        "day": 1
+      },
+      {
+        "id": "joel-observation",
+        "source": "joel",
+        "kind": "observation",
+        "title": "Joel · Observation",
+        "text": "I checked the link at 17:18 when Inez muted it. It stayed muted until the alarm. Calder’s small printer is inside the interview room; its pages are not mirrored on our front-room display.",
+        "topics": [
+          "key",
+          "link",
+          "printer",
+          "camera"
+        ],
+        "day": 1
+      },
+      {
+        "id": "joel-admission",
+        "source": "joel",
+        "kind": "admission",
+        "title": "Joel · Private admission",
+        "text": "I disabled a corridor camera so Amal could call her brother without recording the number. I did not tell the protection team. That gap belongs to my decision, not to a machine failure.",
+        "topics": [
+          "key",
+          "link",
+          "printer",
+          "camera"
+        ],
+        "day": 1
+      },
+      {
+        "id": "everett-account",
+        "source": "everett",
+        "kind": "account",
+        "title": "Everett · Account",
+        "text": "I stayed in the front room from 17:10 until the alarm. Calder had the paperwork he needed. I did not visit the interview room or see a corrected page.",
+        "topics": [
+          "protection",
+          "ordered",
+          "wording",
+          "paperwork"
+        ],
+        "day": 1
+      },
+      {
+        "id": "everett-observation",
+        "source": "everett",
+        "kind": "observation",
+        "title": "Everett · Observation",
+        "text": "Before Calder’s corrected page was opened for the group, I told Amal that the phrase “ordered to return” was open to interpretation. People say they were ordered when they mean they felt obliged. I understood her objection; we should not let a change of wording destroy the protection we have arranged.",
+        "topics": [
+          "protection",
+          "ordered",
+          "wording",
+          "paperwork"
+        ],
+        "day": 1
+      },
+      {
+        "id": "everett-admission",
+        "source": "everett",
+        "kind": "admission",
+        "title": "Everett · Private admission",
+        "text": "Meridian Transit paid for my travel on an earlier assignment, before it was named in this inquiry. I did not declare that because I wanted to remain on Amal’s case. She needed somebody who knew the arrangements.",
+        "topics": [
+          "protection",
+          "ordered",
+          "wording",
+          "paperwork"
+        ],
+        "day": 1
+      },
+      {
+        "id": "maeve-account",
+        "source": "maeve",
+        "kind": "account",
+        "title": "Maeve · Account",
+        "text": "I sat with Inez in the front room from 17:18. We both stayed there until the alarm. Everett’s folder was on his chair; I cannot say he was beside it all that time.",
+        "topics": [
+          "injury",
+          "doorstop",
           "portfolio",
-          "kitchen",
+          "felt"
+        ],
+        "day": 1
+      },
+      {
+        "id": "maeve-observation",
+        "source": "maeve",
+        "kind": "observation",
+        "title": "Maeve · Observation",
+        "text": "Calder has an injury behind one ear. The loose brass doorstop is heavy enough to deserve examination, but I cannot identify a weapon by looking at an injury here. A strip of its felt base is caught in the grey portfolio found by the service cupboard.",
+        "topics": [
+          "injury",
+          "doorstop",
+          "portfolio",
+          "felt"
+        ],
+        "day": 1
+      },
+      {
+        "id": "maeve-admission",
+        "source": "maeve",
+        "kind": "admission",
+        "title": "Maeve · Private admission",
+        "text": "I told the team Amal was ready to testify because another delay might end her protection funding. I had not asked her whether being ready and being able to endure another interview meant the same thing.",
+        "topics": [
+          "injury",
+          "doorstop",
+          "portfolio",
+          "felt"
+        ],
+        "day": 1
+      },
+      {
+        "id": "sorin-account",
+        "source": "sorin",
+        "kind": "account",
+        "title": "Sorin · Account",
+        "text": "At 17:22 I saw Everett leave the inner corridor with Calder’s grey portfolio. He took a clean canvas cloth from my trolley and put it around something heavy. He said a paperweight had marked the lining.",
+        "topics": [
+          "cloth",
           "corridor",
-          "settlement"
+          "portfolio",
+          "doorstop"
         ],
         "day": 1
       },
       {
-        "id": "sal-observation",
-        "source": "sal",
+        "id": "sorin-observation",
+        "source": "sorin",
         "kind": "observation",
-        "title": "Sal · Observation",
-        "text": "The examiner had asked me to keep the service corridor clear. He was expecting someone to compare a document privately. He did not tell me whose document.",
+        "title": "Sorin · Observation",
+        "text": "The brass doorstop normally holds the interview door open. It was back beside that door after the alarm, but it stood on bare metal instead of felt. I had checked the felt that morning because it scratches the floor.",
         "topics": [
-          "portfolio",
-          "kitchen",
+          "cloth",
           "corridor",
-          "settlement"
+          "portfolio",
+          "doorstop"
         ],
         "day": 1
       },
       {
-        "id": "sal-admission",
-        "source": "sal",
+        "id": "sorin-admission",
+        "source": "sorin",
         "kind": "admission",
-        "title": "Sal · Private admission",
-        "text": "The hotel gave me this job after I agreed not to contest the settlement. I said it was kindness. It was also a bargain, and I have been ashamed of it ever since.",
+        "title": "Sorin · Private admission",
+        "text": "I kept copies of supply invoices to support a wage claim. I have also kept visitors’ names without authority. When Calder noticed, I thought he would report me instead of helping with the wages.",
         "topics": [
-          "portfolio",
-          "kitchen",
+          "cloth",
           "corridor",
-          "settlement"
-        ],
-        "day": 1
-      },
-      {
-        "id": "nora-account",
-        "source": "nora",
-        "kind": "account",
-        "title": "Nora · Account",
-        "text": "The wider print comes from my negative. I showed it to the examiner at 19:50. The published crop removed the second boat because the editor wanted the rescue workers in the center.",
-        "topics": [
-          "photograph",
-          "crop",
-          "frame",
-          "negative"
-        ],
-        "day": 1
-      },
-      {
-        "id": "nora-observation",
-        "source": "nora",
-        "kind": "observation",
-        "title": "Nora · Observation",
-        "text": "The contact sheet shows Gideon beside the patched launch in the frame immediately before the familiar photograph. He may have helped with the rescue; being there does not tell us whose orders he followed.",
-        "topics": [
-          "photograph",
-          "crop",
-          "frame",
-          "negative"
-        ],
-        "day": 1
-      },
-      {
-        "id": "nora-admission",
-        "source": "nora",
-        "kind": "admission",
-        "title": "Nora · Private admission",
-        "text": "I accepted an award for the cropped image without mentioning the editor’s change. I knew people were reading the picture as proof that only one rescue boat had come.",
-        "topics": [
-          "photograph",
-          "crop",
-          "frame",
-          "negative"
-        ],
-        "day": 1
-      },
-      {
-        "id": "gideon-account",
-        "source": "gideon",
-        "kind": "account",
-        "title": "Gideon · Account",
-        "text": "I reached the slip only after the ambulances. I never used the small launch. Tonight I stayed in the lounge after eight; the examiner had everything he needed from me.",
-        "topics": [
-          "claim",
-          "launch",
-          "lounge",
-          "binder"
-        ],
-        "day": 1
-      },
-      {
-        "id": "gideon-observation",
-        "source": "gideon",
-        "kind": "observation",
-        "title": "Gideon · Observation",
-        "text": "Eleven years can turn a detail into a certainty it never had. The settlement was reached from sworn statements, not a single photograph pulled out of context.",
-        "topics": [
-          "claim",
-          "launch",
-          "lounge",
-          "binder"
-        ],
-        "day": 1
-      },
-      {
-        "id": "gideon-admission",
-        "source": "gideon",
-        "kind": "admission",
-        "title": "Gideon · Private admission",
-        "text": "The insurer kept me as a consultant after I left public service. I should have declared that before agreeing to this review. The old settlement was still properly approved.",
-        "topics": [
-          "claim",
-          "launch",
-          "lounge",
-          "binder"
-        ],
-        "day": 1
-      },
-      {
-        "id": "bea-account",
-        "source": "bea",
-        "kind": "account",
-        "title": "Bea · Account",
-        "text": "I was in the lounge at 20:05. Gideon left with his binder shortly afterward. When he returned, he no longer had the grey portfolio the examiner had lent him.",
-        "topics": [
-          "statement",
-          "lounge",
           "portfolio",
-          "memory"
+          "doorstop"
         ],
         "day": 1
       },
       {
-        "id": "bea-observation",
-        "source": "bea",
-        "kind": "observation",
-        "title": "Bea · Observation",
-        "text": "I never saw whether a second boat arrived on the disaster night. Gideon suggested “only the lifeboat was present” when he helped write my statement. I signed because I wanted to go home.",
-        "topics": [
-          "statement",
-          "lounge",
-          "portfolio",
-          "memory"
-        ],
-        "day": 1
-      },
-      {
-        "id": "bea-admission",
-        "source": "bea",
-        "kind": "admission",
-        "title": "Bea · Private admission",
-        "text": "I let that sentence stand after I began doubting it. Other survivors quoted my statement back to me. It became easier to remember their version than to admit what I had not seen.",
-        "topics": [
-          "statement",
-          "lounge",
-          "portfolio",
-          "memory"
-        ],
-        "day": 1
-      },
-      {
-        "id": "tobin-account",
-        "source": "tobin",
-        "kind": "account",
-        "title": "Tobin · Account",
-        "text": "The examiner asked me to identify the canvas patch. I reached the hotel at 19:40 and waited by the front desk. I did not enter the photograph room until the alarm.",
-        "topics": [
-          "hire",
-          "canvas",
-          "invoice",
-          "boat"
-        ],
-        "day": 1
-      },
-      {
-        "id": "tobin-observation",
-        "source": "tobin",
-        "kind": "observation",
-        "title": "Tobin · Observation",
-        "text": "I fitted that white patch three days before the disaster. Gideon collected the launch and signed the hire slip. I kept the carbon because the bill was paid late.",
-        "topics": [
-          "hire",
-          "canvas",
-          "invoice",
-          "boat"
-        ],
-        "day": 1
-      },
-      {
-        "id": "tobin-admission",
-        "source": "tobin",
-        "kind": "admission",
-        "title": "Tobin · Private admission",
-        "text": "I was paid cash to leave the launch number off the first invoice. I kept the hire carbon for my own protection, not because I expected to help anyone else.",
-        "topics": [
-          "hire",
-          "canvas",
-          "invoice",
-          "boat"
-        ],
-        "day": 1
-      },
-      {
-        "kind": "document",
+        "id": "key-book",
         "source": null,
-        "day": 1,
-        "id": "hire-carbon",
-        "title": "The retained hire carbon",
-        "text": "Tobin’s hire carbon records Gideon collecting the patched launch three days before the disaster. The return field is blank. It establishes custody before the wreck, not what the boat did during it.",
+        "kind": "document",
+        "title": "The service-key book",
+        "text": "The house book records Everett borrowing the service key at 17:12. It opens the inner corridor as well as the supply cupboard. The return line is blank. A loan establishes access, not the room he entered.",
         "topics": [
-          "hire",
-          "carbon",
-          "signature"
-        ]
+          "key",
+          "book",
+          "service"
+        ],
+        "day": 1
       },
       {
-        "kind": "document",
+        "id": "corrected-page",
         "source": null,
-        "day": 1,
-        "id": "portfolio-pocket",
-        "title": "The empty portfolio pocket",
-        "text": "The examiner’s grey portfolio is in the service corridor. Its inner pocket is labelled “uncropped sequence / hire.” Both items are missing; Nora’s contact sheet and Tobin’s retained carbon survive separately.",
+        "kind": "document",
+        "title": "The two statement pages",
+        "text": "The earlier page says the driver returned voluntarily. Calder’s corrected page says he was ordered to return, with Amal’s confirmation beside it. The new print is logged after the listening link was muted; its wording was not sent to the front-room display.",
         "topics": [
-          "portfolio",
-          "pocket",
-          "sequence"
-        ]
+          "page",
+          "sentence",
+          "wording",
+          "print"
+        ],
+        "day": 1
       }
     ],
     "connections": [
       {
-        "id": "old-arrival",
+        "id": "omitted-visit",
         "requires": [
-          "gideon-account",
-          "nora-observation",
-          "hire-carbon"
+          "everett-account",
+          "sorin-account",
+          "key-book"
         ],
-        "speaker": "iris",
-        "subject": "gideon",
-        "text": "You said you arrived after the ambulances and never used the launch. The adjacent frame and your collection signature give us two reasons to revisit that account. Which part do you want to correct?",
-        "reply": "I may have inspected the launch before the disaster. That does not mean I was using it when the ferry went down.",
+        "speaker": "joel",
+        "subject": "everett",
+        "text": "You borrowed the inner key, and Sorin saw you coming back with Calder’s portfolio. Your account says you never left this room. Whatever the errand was, it is missing from the statement you signed.",
+        "reply": "I collected papers from the service side. I meant I had not joined the interview. You are turning a distinction into an alibi I never intended to make.",
         "effect": 2.2
       },
       {
-        "id": "new-journey",
+        "id": "quiet-wording",
         "requires": [
-          "gideon-account",
-          "sal-account",
-          "bea-account",
-          "portfolio-pocket"
+          "everett-observation",
+          "inez-account",
+          "corrected-page",
+          "amal-observation"
         ],
-        "speaker": "sal",
-        "subject": "gideon",
-        "text": "Bea saw you leave the lounge, and I saw you carry that portfolio toward the examiner. Now it is empty in the service corridor. Your account leaves out the same journey twice.",
-        "reply": "I delivered papers. I did not think an errand required a formal alibi. Anyone could have handled the portfolio afterward.",
+        "speaker": "inez",
+        "subject": "everett",
+        "text": "“Ordered to return” was settled after I muted the link. Amal says you used those words before the corrected page was opened, Everett, and your account denies seeing that page. Who gave you those words in the interval you left out?",
+        "reply": "Amal had already disputed the old wording. I understood the direction of the correction. Knowing her concern does not put my hands on that page.",
         "effect": 2.2
       },
       {
-        "id": "borrowed-memory",
+        "id": "translation-error",
         "requires": [
-          "bea-admission",
-          "iris-admission"
+          "inez-admission",
+          "maeve-account"
         ],
-        "speaker": "nora",
-        "subject": "bea",
-        "text": "Bea’s statement hardened into a memory other people borrowed. Iris kept an earlier version of her notes. We should compare the originals instead of choosing whichever witness sounds most certain.",
-        "reply": "Read my original wording beside the correction. I do not want another comfortable sentence replacing it.",
+        "speaker": "amal",
+        "subject": "inez",
+        "text": "Inez’s first translation cost me something. She has admitted the change, and Maeve places her here during the private interview. I want her error corrected, but I will not use it to invent another journey.",
+        "reply": "Put my correction beside the first translation. Neither version should be allowed to disappear because the other is easier to explain.",
         "effect": -1.8
       }
     ],
     "timeline": [
-      "Three days before the disaster, Gideon collects the patched launch.",
-      "On the disaster night Nora photographs Gideon at the launch before the familiar cropped frame.",
-      "Gideon helps Bea write a statement excluding a second boat.",
-      "19:50 tonight Nora shows the wider print to the examiner.",
-      "After 20:05 Gideon leaves the lounge; at 20:18 Sal sees him carry the portfolio toward the examiner.",
-      "Gideon kills the examiner and removes the corroborating material, but independent copies survive."
+      "Before the meeting, Everett has accepted support from Meridian Transit, whose network Amal’s testimony threatens.",
+      "17:10 Everett gives the front-room interval he later presents as an uninterrupted alibi.",
+      "17:12 Joel lends Everett the key to the service corridor.",
+      "17:18 Inez mutes the listening link and leaves Amal and Calder alone; Maeve remains with Inez in the front room.",
+      "After Amal goes to the washroom, Calder prints the corrected sentence. Everett reaches him through the inner corridor and demands that the old wording stand.",
+      "Everett strikes Calder with the brass doorstop, conceals it in the grey portfolio, and leaves the interview room.",
+      "17:22 Sorin sees Everett carrying the portfolio and wrapping its heavy contents in a clean cloth; the doorstop is subsequently put back without its felt.",
+      "After the alarm, before the corrected page is opened for the group, Everett refers to its private wording despite denying both a visit and sight of the page."
     ],
-    "solution": "Gideon had certified an account of the disaster that concealed the company’s second boat. The hire carbon and adjacent photograph contradict his claimed arrival; neither proves the original crime alone. Tonight, Bea’s and Sal’s accounts trace his omitted journey to the examiner, and the emptied portfolio explains its purpose. He killed to preserve the settlement and the organization it protected. The other witnesses’ shame made their memories easier for him to manage.",
+    "solution": "Everett killed Calder with the brass doorstop after the liaison accepted Amal’s correction. Meridian Transit’s network had paid Everett to keep her testimony within safe limits. He entered through the borrowed-key route, hid the doorstop in Calder’s portfolio, and tried to restore it as an ordinary furnishing. Sorin’s sighting and the felt in the portfolio explain the object’s journey. His unbroken front-room alibi was false, and his use of the corrected words exposed access to a discussion he said he had neither attended nor read.",
     "chapters": [
       [
-        "The wider picture",
-        "The second boat remains visible beneath the dining-room glass. Nobody can crop it out by turning the page."
+        "The word on the page",
+        "You place the old sentence beside the new one. A correction can change responsibility without changing a single name."
       ],
       [
-        "A sentence everyone remembers",
-        "The tide reaches the lowest window. You lay original notes beside corrected statements and ask when each certainty first appeared."
+        "Protection and control",
+        "The outer team has not cleared the approach. Inside, the people deciding what will keep Amal safe do not agree on who is entitled to speak for her."
       ],
       [
-        "Before the water falls",
-        "A harbor light becomes visible beyond the bar. The review will have to leave this house in a form that cannot be rewritten by the person carrying it."
+        "A statement in her own words",
+        "You ask that no page be removed from the file. The hearing must receive the first statement, its correction, and an account of the pressure between them."
       ]
     ],
-    "ending_win": "The reopened review includes every version of the statements. Iris keeps the old page beside her correction. Bea asks that neither be quoted without its date. The wider photograph is published with the people at its edge finally named.",
-    "ending_loss": "The review closes for lack of consistent testimony. The cropped photograph is used again in the anniversary coverage. Everyone recognizes it, which is precisely why it is believed."
+    "ending_win": "Amal reaches the hearing with both pages. When asked whether the corrected statement has been prepared for her, she answers that it has been corrected by her. Inez reads the first translation aloud before she reads the new one. The record includes the difference and the reason it was allowed to matter.",
+    "ending_loss": "The hearing receives the earlier statement as the only version Calder completed. Everett’s description of Amal as confused and exhausted follows it into the record. The network does not need her silence if it can decide which of her sentences counts as speech.",
+    "origin": {
+      "label": "Story Skills · new original case",
+      "skills": [
+        "story-skills/genre-craft",
+        "story-skills/scene-craft"
+      ],
+      "combined_from": []
+    },
+    "reconstruction": [
+      "Everett was the network’s agent. Meridian Transit had supported his travel and access to witnesses. His usefulness depended on presenting control as protection: he could keep Amal accompanied while steering her statement away from the orders that would identify the network. Calder’s acceptance of her correction threatened that arrangement.",
+      "Everett borrowed the service key at 17:12. After Inez muted the listening link and Amal left Calder briefly to use the washroom, he entered through the inner corridor and demanded that the old wording stand. Calder refused. Everett struck him with the brass doorstop, hid it in the grey portfolio, and used a clean canvas cloth to handle it on the return route. The felt caught in the portfolio and the bare base left behind show why the household object needed explanation.",
+      "Sorin saw the portfolio leave by the route Everett omitted. Joel’s key book gives access, while Inez’s muted-link account and the corrected page establish which wording was private. Everett’s reference to “ordered to return” contradicts his claim that he had neither visited nor seen a corrected page. It is significant beside the route evidence, not because knowing a phrase alone makes someone a murderer.",
+      "Inez had softened a threat in an earlier translation; Amal signed a safer account to protect her brother. Joel hid a camera gap to permit a private call, Maeve overstated readiness to preserve funding, and Sorin kept unauthorized copies for a wage claim. These choices compromised the protection process. Everett exploited those weaknesses to make an independently chosen correction sound like confusion."
+    ]
   }
 ]

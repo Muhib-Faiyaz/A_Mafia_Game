@@ -37,7 +37,13 @@ let draft = { town: "", mafia: "", team: "" },
   journalOpen = false,
   entryMode = "",
   entryName = "",
-  teamOpen = false;
+  teamOpen = false,
+  soloTab = "journal",
+  questionTarget = "",
+  influenceTarget = "",
+  storyChoice = "random",
+  storyCatalog = [],
+  catalogLoading = null;
 const invitationParams = new URLSearchParams(location.search);
 let pendingInvite = invitationParams.get("case") && invitationParams.get("invite")
   ? { code: invitationParams.get("case"), invite: invitationParams.get("invite") } : null;
@@ -86,6 +92,8 @@ async function run(route, body = {}) {
       draft = { town: "", mafia: "", team: "" };
       selected = null;
       revealed = false;
+      soloTab = "journal";
+      questionTarget = influenceTarget = "";
       session = { code: data.code, pid: data.pid };
       localStorage.setItem("mafia", JSON.stringify(session));
     }
@@ -93,6 +101,8 @@ async function run(route, body = {}) {
       revealed = false;
       selected = null;
       draft = { town: "", mafia: "", team: "" };
+      soloTab = "journal";
+      questionTarget = influenceTarget = "";
     }
     updateEpoch++;
     if (data.feedback) toast(data.feedback);
@@ -115,6 +125,8 @@ function leaveLocal() {
   caseOpen = false;
   journalOpen = false;
   teamOpen = false;
+  soloTab = "journal";
+  questionTarget = influenceTarget = "";
   clearInvitation();
   selected = null;
   revealed = false;
@@ -125,7 +137,7 @@ function leaveLocal() {
   render();
 }
 function applyState(next) {
-  deadline = next.timer_left ? Date.now() + next.timer_left * 1000 : 0;
+  deadline = next.mode !== "solo" && next.timer_left ? Date.now() + next.timer_left * 1000 : 0;
   const key = [
     next.round_id,
     next.phase,
@@ -143,6 +155,7 @@ function applyState(next) {
     phaseKey = key;
   }
   if (next.team && ((next.me.friend && !state?.team) || next.team.count > (state?.team?.count || 0))) teamOpen = true;
+  if (next.mode === "solo" && next.phase === "over" && state?.phase !== "over") soloTab = "dossier";
   state = next;
   const sig = JSON.stringify({ ...next, timer_left: 0 });
   if (sig !== signature) {
@@ -227,27 +240,59 @@ function detectiveTeam() {
   const team = state.team;
   if (!team) return "";
   const invite = team.invite_path ? new URL(team.invite_path, location.origin).href : "";
-  return `<details id="team-panel" class="card" ${teamOpen ? "open" : ""}><summary>Detective team · ${team.count}/2 friends${invite ? " · Invite friends" : ""}</summary><div class="stack" style="margin-top:16px"><p class="hint">One Detective seat, one shared investigation, one readiness vote, and one ballot. Any teammate can confirm a choice; talk here before acting. The lead speaks for the team in town chat and controls the case.</p><ul class="team-members">${team.members.map(member => `<li>${esc(member.name)}${member.lead ? " · Lead Detective" : " · Friend"}${member.you ? " · You" : ""}</li>`).join("")}</ul>${invite ? `<label class="field">Invite link<input id="solo-invite-link" value="${esc(invite)}" readonly aria-label="Solo invitation link"></label><button id="copy-solo-invite" ${team.count >= team.cap ? "disabled" : ""}>${team.count >= team.cap ? "Team full · two friends joined" : "Copy invite link"}</button><p class="hint">Anyone with this link can join while a friend seat is free. Maximum: two friends.</p>` : ""}${chat("team")}<button id="leave-team" class="ghost">${state.me.friend ? "Leave Detective team" : "Close this case for everyone"}</button></div></details>`;
+  return `<details id="team-panel" class="card" ${teamOpen ? "open" : ""}><summary>Detective team · ${team.count}/2 friends${invite ? " · Invite friends" : ""}</summary><div class="stack" style="margin-top:16px"><p class="hint">One Detective seat, one shared investigation, one readiness vote, and one ballot. Any teammate can confirm a choice; talk here before acting. The team shares one selected question each round and one final ballot. Plan in this private chat; the lead controls starting, replaying, and closing the case.</p><ul class="team-members">${team.members.map(member => `<li>${esc(member.name)}${member.lead ? " · Lead Detective" : " · Friend"}${member.you ? " · You" : ""}</li>`).join("")}</ul>${invite ? `<label class="field">Invite link<input id="solo-invite-link" value="${esc(invite)}" readonly aria-label="Solo invitation link"></label><button id="copy-solo-invite" ${team.count >= team.cap ? "disabled" : ""}>${team.count >= team.cap ? "Team full · two friends joined" : "Copy invite link"}</button><p class="hint">Anyone with this link can join while a friend seat is free. Maximum: two friends.</p>` : ""}${chat("team")}<button id="leave-team" class="ghost">${state.me.friend ? "Leave Detective team" : "Close this case for everyone"}</button></div></details>`;
+}
+async function loadStoryCatalog() {
+  if (storyCatalog.length) return;
+  if (catalogLoading) return catalogLoading;
+  catalogLoading = (async () => {
+    try {
+      const response = await fetch("/api/stories", { signal: AbortSignal.timeout(10000) });
+      if (!response.ok) throw Error("The story list could not be loaded. You can still choose a random story.");
+      const data = await response.json();
+      storyCatalog = data.stories || [];
+      if (!session && entryMode === "solo") render();
+    } catch (error) { toast(error.message); }
+    finally { catalogLoading = null; }
+  })();
+  return catalogLoading;
+}
+function storySelector() {
+  const chosen = storyCatalog.find(story => story.id === storyChoice);
+  return `<div class="stack story-picker"><label class="field">Choose your story<select id="story-choice"><option value="random" ${storyChoice === "random" ? "selected" : ""}>Random story</option>${storyCatalog.map(story => `<option value="${esc(story.id)}" ${storyChoice === story.id ? "selected" : ""}>${esc(story.title)}</option>`).join("")}</select></label>${chosen ? `<article class="story-preview"><h2>${esc(chosen.title)}</h2><p>${esc(chosen.setting)}</p><p class="hint">${esc(chosen.pressure)}</p><p class="story-origin">Writing source: ${esc(chosen.origin?.label || "novel-writing")}</p></article>` : '<p class="hint">Let the game choose a case, or select a title. Random avoids your most recent story.</p>'}<details id="story-list"><summary>Story list and writing sources${storyCatalog.length ? " · " + storyCatalog.length + " cases" : ""}</summary>${storyCatalog.length ? `<ol class="story-catalog">${storyCatalog.map(story => `<li><b>${esc(story.title)}</b><p>${esc(story.setting)}</p><p class="hint">${esc(story.origin?.label || "novel-writing")}${story.origin?.combined_from?.length ? " · Combined from: " + story.origin.combined_from.map(esc).join(" + ") : ""}</p></li>`).join("")}</ol>` : '<p class="hint">Loading the story list…</p>'}</details></div>`;
 }
 function entryScreen() {
   const solo = entryMode === "solo";
-  return `<section id="top" class="stack opening-scene"><div class="intro opening-intro"><p class="opening-title">Mafia<span>After dark</span></p><h1>${solo ? "Enter the story." : "Gather your friends."}</h1><p class="opening-description">${solo ? "Seven thriller mysteries. Six witnesses. One Mafia. Compare their stories, uncover hidden motives, and follow the evidence—alone or with up to two friends." : "Play Mafia with friends online, or use this as your conductor around the table. It handles roles, night turns, timers, and votes. Create a private room, or enter the code your host shared."}</p></div><form id="entry" class="card stack"><label class="field">Your alias<input id="name" maxlength="16" autocomplete="nickname" value="${esc(entryName)}" placeholder="What should we call you?" required></label><button class="primary" type="submit">${solo ? "Enter a story" : "Create a room"}</button>${solo ? '<small>Read the opening before the first timer starts. No signup or AI service required.</small>' : '<label class="field">Have an invitation?<input id="code" maxlength="4" autocapitalize="characters" placeholder="4-letter room code"></label><button type="button" id="join">Join the town</button><small>3–20 players · Optional bots</small>'}</form><button id="choose-mode" class="ghost">Back to play options</button></section>`;
+  return `<section id="top" class="stack opening-scene"><div class="intro opening-intro"><p class="opening-title">Mafia<span>After dark</span></p><h1>${solo ? "Choose your mystery." : "Gather your friends."}</h1><p class="opening-description">${solo ? "Seven thriller mysteries. Six witnesses. One Mafia. Choose a story or play a random one. Follow the evidence at your own pace, alone or with up to two friends." : "Play Mafia with friends online, or use this as your conductor around the table. It handles roles, night turns, timers, and votes. Create a private room, or enter the code your host shared."}</p></div><form id="entry" class="card stack"><label class="field">Your alias<input id="name" maxlength="16" autocomplete="nickname" value="${esc(entryName)}" placeholder="What should we call you?" required></label>${solo ? storySelector() : ""}<button class="primary" type="submit">${solo ? "Enter this story" : "Create a room"}</button>${solo ? '<small>No countdowns. Read, choose one question each round, and proceed when ready.</small>' : '<label class="field">Have an invitation?<input id="code" maxlength="4" autocapitalize="characters" placeholder="4-letter room code"></label><button type="button" id="join">Join the town</button><small>3–20 players · Optional bots</small>'}</form><button id="choose-mode" class="ghost">Back to play options</button></section>`;
 }
 function caseContent() {
   const story = state.scenario;
   return `<div class="case-prose">${story.opening.map(p => `<p>${esc(p)}</p>`).join("")}</div><section class="stack case-cast"><h2>The people in the room</h2><p class="hint">One of these six people is the Mafia. Their accounts belong to a fixed case timeline. A private shame, a mistaken memory, or an argument is not proof of murder; compare independent details.</p>${story.cast.map(p => `<article class="case-person"><h3>${esc(p.name)} <small>${esc(p.occupation)}</small></h3><p>${esc(p.description)}</p><p class="hint">${esc(p.relationship)}</p></article>`).join("")}</section>`;
 }
 function soloBriefing() {
-  return `<section id="top" class="stack case-scene"><div><p class="eyebrow">Solo run · One of 7 cases</p><h1>${esc(state.scenario.title)}</h1><p class="muted">${esc(state.scenario.setting)}</p></div>${detectiveTeam()}${caseContent()}<div class="card stack"><h2>Your part in this story</h2><p>You are ${esc(state.me.name)}, the Detective. Exactly one member of this group is the Mafia; one other person has the Doctor's protective ability. Investigate at night and persuade the others in town chat. A vote removes a suspect from the group. The town wins when the Mafia is caught. Use the case journal to question witnesses, inspect the scene, and compare accounts. Your questions unlock testimony and change how the witnesses vote. Each case has a fixed solution; replaying it preserves the truth.</p><p class="hint">Nothing is timed yet. Begin when you are ready. You are protected from vote-outs. Night attacks cannot kill you until a final-chance night: one more town death would let Mafia win, and you have not identified a surviving Mafia member. Finding a surviving Mafia member, even that night, keeps you protected. The Doctor can still save you. The case can still end in a Mafia victory. The normal night and discussion timers apply once you begin.</p>${state.me.host ? '<button id="start" class="primary">Begin the first night</button>' : '<p class="hint">The lead Detective will begin the first night.</p>'}<button id="leave" class="ghost">Back to play options</button></div></section>`;
+  return `<section id="top" class="stack case-scene"><div><p class="eyebrow">Solo run · One of 7 cases</p><h1>${esc(state.scenario.title)}</h1><p class="muted">${esc(state.scenario.setting)}</p><p class="story-origin">Writing source: ${esc(state.scenario.origin?.label || "novel-writing")}</p></div>${detectiveTeam()}${caseContent()}<div class="card stack"><h2>Your part in this story</h2><p>You are ${esc(state.me.name)}, the Detective. Exactly one witness is the Mafia; one other person can protect someone as the Doctor. At night, select a suspect to investigate. During the gathering, choose one witness and ask one of their three selected questions. That is your team's only question for the round. Their answer can change their statement and the case against them.</p><p>Inspect the scene and compare the accounts in your Case journal. Use Suspect or Defend to influence the group, then proceed to the shared final vote when ready. Catch the Mafia to win. Replaying this case preserves its culprit and timeline.</p><p class="hint">Solo has no countdowns. Use Proceed to move through each night turn and open voting when you are ready. You are protected from vote-outs and ordinary night attacks. On a final-chance night, one more town death would let Mafia win; if you have not identified the living Mafia, you can be killed. A correct investigation or the Doctor can still protect you.</p>${soloTabHelp()}${state.me.host ? '<button id="start" class="primary">Begin the first night</button>' : '<p class="hint">The lead Detective will begin the first night.</p>'}<button id="leave" class="ghost">Back to play options</button></div></section>`;
+}
+function soloTabHelp() {
+  return `<details class="solo-tab-help"><summary>What does each tab do?</summary><dl><dt>Case journal</dt><dd>Advance the round, investigate at night, ask your one selected question, inspect evidence, influence the group, and cast the team's vote.</dd><dt>Dossier</dt><dd>Read the opening, cast, story source, and chapter context. After the game, read how the killing happened, who did what, and why.</dd><dt>Chat</dt><dd>Read the public witness accounts and changes. Type privately with your invited Detective teammates.</dd></dl></details>`;
+}
+function votingHelp() {
+  return `<details id="solo-voting-help" class="card"><summary>How to influence the voting</summary><ol><li><b>Build a case.</b> Inspect the scene and compare independent accounts. A comparison gives witnesses a reason to question someone; a hidden shame alone is not proof.</li><li><b>Use your one question carefully.</b> Choose one living witness, then one of the three questions. The answer changes their statement. Your whole team shares one question for this round.</li><li><b>Suspect or Defend.</b> Select a witness below. Suspect adds the team's support to the case against them; Defend reduces that pressure. One supported comparison plus your suspicion can persuade the group. An unsupported accusation alone is not enough. Withdraw removes your stance.</li><li><b>Cast the final ballot.</b> Proceed to voting, select a witness in the roster, and confirm. Suspect and Defend are persuasion, not a ballot. You and your friends still have just one shared vote.</li></ol></details>`;
 }
 function caseJournal() {
-  const story = state.scenario, open = state.chat_mode === "town" && state.phase === "day";
-  const ask = (text, label) => `<button class="ghost" data-story-question="${esc(text)}" ${open ? "" : "disabled"}>${label}</button>`;
-  return `<details id="case-journal" class="card case-scene" ${journalOpen ? "open" : ""}><summary>Case journal · ${story.journal.length} entries · ${story.connections.length} comparisons</summary><div class="stack" style="margin-top:16px"><p class="hint">Accounts and observations are claims with named sources. Compare them with exhibits before choosing whom to believe. Witnesses remember what they have said; repeating a question does not produce a new story.</p><div class="story-actions">${ask("Search the scene for evidence.", "Inspect the scene")}${ask("Compare the accounts we have collected.", "Compare accounts")}</div>${!open ? '<p class="hint">The lead Detective can question witnesses in town chat during the day. Everyone on the team can read this journal.</p>' : ""}<div class="case-interviews">${story.cast.map(p => `<details class="case-interview"><summary>${esc(p.name)}${p.alive ? "" : " · Recorded notes"}</summary><p class="hint">Ask about ${p.topics.map(esc).join(", ")}.</p><div class="story-actions">${ask(`@${p.name}, what is your account?`, p.alive ? "Ask for account" : "Read account")}${ask(`@${p.name}, what did you notice?`, p.alive ? "Ask what they noticed" : "Read observations")}${p.alive ? ask(`@${p.name}, what are you hiding?`, "Ask what they are hiding") : ""}</div></details>`).join("")}</div><section class="stack"><h2>Recorded evidence</h2>${story.journal.length ? story.journal.map(e => `<article class="journal-entry"><h3>${esc(e.title)}</h3><p class="hint">Day ${e.day} · ${esc(e.kind)}${e.archived ? " · Sealed pre-watch notes" : ""}</p><p>${esc(e.text)}</p></article>`).join("") : '<p class="muted">Your file is empty. Ask for accounts or inspect the scene during the day.</p>'}</section>${story.connections.length ? `<section class="stack"><h2>Accounts compared</h2>${story.connections.map(c => `<article class="journal-entry"><h3>${esc(c.title)}</h3><p>${esc(c.text)}</p><p class="hint">Read together: ${c.sources.map(id => esc(story.journal.find(e => e.id === id)?.title || id)).join("; ")}.</p></article>`).join("")}</section>` : ""}</div></details>`;
+  const story = state.scenario, interrogation = story.interrogation || { used:false, round:state.day, choices:[] },
+    living = story.cast.filter(person => person.alive),
+    canQuestion = state.phase === "day" && !state.voting && state.me.alive && !interrogation.used;
+  if (!living.some(person => person.id === questionTarget)) questionTarget = living[0]?.id || "";
+  if (!living.some(person => person.id === influenceTarget)) influenceTarget = living[0]?.id || "";
+  const witness = living.find(person => person.id === questionTarget),
+    choices = witness?.question_options || interrogation.choices || [],
+    questionStatus = interrogation.used ? `Question used this round${interrogation.target_name ? " · " + esc(interrogation.target_name) : ""}. Proceed to the next round for another.` : "One question available for the team this round.";
+  return `<section id="case-journal" class="card case-scene stack"><div><h2>Case journal</h2><p class="hint">${story.journal.length} recorded entries · ${story.connections.length} comparisons. Witnesses give their account once per round; changes are recorded here.</p></div><section class="stack interrogation"><h3>One witness. One question.</h3><p id="question-count" role="status" aria-live="polite">${questionStatus}</p><label class="field">Choose the witness<select id="question-target" ${canQuestion ? "" : "disabled"}>${living.map(person => `<option value="${esc(person.id)}" ${person.id === questionTarget ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select></label><div class="selected-questions">${choices.map(choice => `<button data-solo-question="${esc(choice.id)}" ${canQuestion && choice.available !== false ? "" : "disabled"}${choice.reason ? ` title="${esc(choice.reason)}"` : ""}>${esc(choice.label)}</button>`).join("")}</div>${!canQuestion && !interrogation.used ? '<p class="hint">Selected questions open during the gathering, before voting. You cannot type questions to witnesses.</p>' : ""}</section><div class="story-actions"><button id="inspect-scene" class="ghost" ${state.phase === "day" ? "" : "disabled"}>Inspect the scene</button><button id="compare-accounts" class="ghost" ${state.phase === "day" ? "" : "disabled"}>Compare accounts</button></div><p class="hint">Inspecting and comparing evidence do not use your one question.</p>${story.revisions?.length ? `<section class="stack"><h3>Statements changed by your questions</h3>${story.revisions.slice().reverse().map(revision => `<article class="journal-entry"><h4>${esc(revision.name)} · Round ${revision.round}</h4><details><summary>Original statement</summary><p>${esc(revision.before)}</p></details><p><b>Revised statement:</b> ${esc(revision.after)}</p></article>`).join("")}</section>` : ""}<details id="round-accounts"><summary>Witness accounts · Round ${state.day}</summary><div class="stack">${story.cast.filter(person=>person.statement).map(person=>`<article class="journal-entry"><h3>${esc(person.name)}${person.alive ? "" : " · Recorded account"}</h3><p>${esc(person.statement)}</p></article>`).join("") || '<p class="hint">The first accounts are recorded when the gathering begins.</p>'}</div></details>${votingHelp()}<section class="stack"><h3>Influence the group</h3><label class="field">Witness to discuss<select id="influence-target" ${state.phase === "day" ? "" : "disabled"}>${living.map(person => `<option value="${esc(person.id)}" ${person.id === influenceTarget ? "selected" : ""}>${esc(person.name)}</option>`).join("")}</select></label><div class="story-actions">${[["suspect","Suspect"],["defend","Defend"],["neutral","Withdraw stance"]].map(([stance,label]) => `<button data-solo-stance="${stance}" ${state.phase === "day" ? "" : "disabled"}>${label}</button>`).join("")}</div><p class="hint">These choices affect how witnesses weigh the evidence. They do not use your question or submit your final ballot.</p></section><details id="recorded-evidence" open><summary>Recorded evidence</summary><div class="stack">${story.journal.length ? story.journal.map(entry => `<article class="journal-entry"><h3>${esc(entry.title)}</h3><p class="hint">Round ${entry.day} · ${esc(entry.kind)}${entry.archived ? " · Sealed pre-watch notes" : ""}</p><p>${esc(entry.text)}</p></article>`).join("") : '<p class="muted">Your file is empty. Witness accounts appear at the gathering; inspect the scene to add exhibits.</p>'}</div></details>${story.connections.length ? `<section class="stack"><h2>Accounts compared</h2>${story.connections.map(comparison => `<article class="journal-entry"><h3>${esc(comparison.title)}</h3><p>${esc(comparison.text)}</p><p class="hint">Read together: ${comparison.sources.map(id => esc(story.journal.find(entry => entry.id === id)?.title || id)).join("; ")}.</p></article>`).join("")}</section>` : ""}</section>`;
 }
 function caseDossier() {
-  const story = state.scenario, chapter = story.chapters.at(-1);
-  return `<details id="case-dossier" class="card case-scene" ${caseOpen ? "open" : ""}><summary>Case dossier · ${esc(story.title)}</summary><p class="hint">${esc(story.setting)}</p>${caseContent()}</details>${caseJournal()}${chapter ? `<section class="card case-prose"><p class="eyebrow">Day ${chapter.day}</p><h2>${esc(chapter.title)}</h2><p>${esc(chapter.text)}</p></section>` : ""}${story.epilogue ? `<section class="card case-prose"><h2>The final account</h2><p>${esc(story.epilogue)}</p>${story.consequences ? `<p>${esc(story.consequences)}</p>` : ""}${story.solution ? `<details id="case-solution"><summary>What happened · Case solution</summary><p>${esc(story.solution)}</p><ol>${story.timeline.map(event => `<li>${esc(event)}</li>`).join("")}</ol></details>` : ""}</section>` : ""}`;
+  const story = state.scenario, chapter = story.chapters.at(-1),
+    reconstruction = Array.isArray(story.reconstruction) ? story.reconstruction : story.reconstruction ? [story.reconstruction] : [];
+  return `<section id="case-dossier" class="card case-scene stack"><div><h1>${esc(story.title)}</h1><p class="muted">${esc(story.setting)}</p><p class="story-origin">Writing source: ${esc(story.origin?.label || "novel-writing")}</p>${story.origin?.combined_from?.length ? `<p class="hint">Combined from: ${story.origin.combined_from.map(esc).join(" + ")}.</p>` : ""}</div>${caseContent()}${chapter ? `<section class="case-prose"><p class="eyebrow">Round ${chapter.day}</p><h2>${esc(chapter.title)}</h2><p>${esc(chapter.text)}</p></section>` : ""}${story.epilogue || reconstruction.length || story.solution ? `<section id="case-ending" class="case-prose stack"><h2>The final account</h2>${story.epilogue ? `<p>${esc(story.epilogue)}</p>` : ""}${story.consequences ? `<p>${esc(story.consequences)}</p>` : ""}${reconstruction.length ? `<div id="case-reconstruction"><h3>How the killing happened</h3>${reconstruction.map(paragraph => `<p>${esc(paragraph)}</p>`).join("")}</div>` : ""}${story.solution ? `<section id="case-solution"><h3>Who did what, and why</h3><p>${esc(story.solution)}</p>${story.timeline?.length ? `<ol>${story.timeline.map(event => `<li>${esc(event)}</li>`).join("")}</ol>` : ""}</section>` : ""}</section>` : ""}</section>`;
 }
 function lobby() {
   const n = state.players.length,
@@ -282,14 +327,14 @@ function actionLabel() {
 function chat(channel) {
   const mafia = channel === "mafia", team = channel === "team",
     messages = team ? state.team_chat : mafia ? state.mafia_chat : state.chat,
-    open = team ? !!state.team : mafia ? state.mafia_chat_open : state.chat_mode;
+    open = team ? !!state.team : mafia ? state.mafia_chat_open : state.mode !== "solo" && state.chat_mode;
   const kill =
     mafia &&
     state.phase === "night" &&
     state.night_step === "mafia" &&
     state.me.alive && !state.pick;
   return `<section class="card chat-card ${mafia ? "private" : ""}"><div class="row spread"><h2>${team ? "Detective team chat" : mafia ? "Mafia chat" : "Town chat"}</h2><span class="pill">${team || mafia ? "Private" : "Public"}</span></div><div class="messages" id="messages-${channel}" role="log" aria-label="${team ? "Detective team" : mafia ? "Mafia" : "Town"} messages">${messages.length ? messages.map((c) => `<div class="message ${c.k === "sys" ? "system" : ""}">${c.n ? `<b>${esc(c.n)}</b>` : ""}${esc(c.t)}</div>`).join("") : '<p class="hint">No whispers yet.</p>'}</div>
-${open ? `<form class="composer" data-channel="${channel}"><input id="input-${channel}" aria-label="${team ? "Detective team" : mafia ? "Mafia" : "Town"} message" maxlength="${team ? 500 : 200}" autocomplete="off" placeholder="${team ? "Plan with your friends…" : mafia ? "Whisper to your team…" : "Share your suspicions…"}" value="${esc(draft[channel])}"><button class="primary" aria-label="Send ${channel} message">↑</button></form><p class="hint" style="margin-top:10px">${team ? "Only the Detective team can read this. Bots do not hear these messages. This chat is open throughout the case." : mafia ? "Only Mafia can see this. Use /vote name during your turn." : state.mode === "solo" ? "Use the case journal or ask @Name about their account, what they noticed, or what they are hiding. Trust and accusations affect testimony and votes. Compare accounts and inspect the scene. Repeated questions do not repeat speeches." : "Bots listen to accusations and defenses. Try “I suspect Alex”, “I trust Alex”, or “@Bot 1, why Alex?” Use full player names. Use /vote name or /skip when voting opens."}</p>` : '<p class="hint">' + (state.phase === "night" ? "The town is asleep. Chat reopens at dawn." : "You can watch, but cannot send messages right now.") + "</p>"}
+${open ? `<form class="composer" data-channel="${channel}"><input id="input-${channel}" aria-label="${team ? "Detective team" : mafia ? "Mafia" : "Town"} message" maxlength="${team ? 500 : 200}" autocomplete="off" placeholder="${team ? "Plan with your friends…" : mafia ? "Whisper to your team…" : "Share your suspicions…"}" value="${esc(draft[channel])}"><button class="primary" aria-label="Send ${channel} message">↑</button></form><p class="hint" style="margin-top:10px">${team ? "Only the Detective team can read this. Bots do not hear these messages. This chat is open throughout the case." : mafia ? "Only Mafia can see this. Use /vote name during your turn." : state.mode === "solo" ? "Use the case journal or ask @Name about their account, what they noticed, or what they are hiding. Trust and accusations affect testimony and votes. Compare accounts and inspect the scene. Repeated questions do not repeat speeches." : "Bots listen to accusations and defenses. Try “I suspect Alex”, “I trust Alex”, or “@Bot 1, why Alex?” Use full player names. Use /vote name or /skip when voting opens."}</p>` : '<p class="hint">' + (state.mode === "solo" ? "Witness accounts are read-only. Choose one of the three questions in Case journal; only private team chat accepts typed messages." : state.phase === "night" ? "The town is asleep. Chat reopens at dawn." : "You can watch, but cannot send messages right now.") + "</p>"}
 ${
   kill
     ? `<div class="stack" style="margin-top:18px"><p class="eyebrow">Choose the victim</p><div class="targets">${state.players
@@ -306,6 +351,7 @@ ${
 ${mafia && state.mafia_picks.length ? `<p class="hint" style="margin-top:12px">${state.mafia_picks.map(esc).join("<br>")}</p>` : ""}</section>`;
 }
 function game() {
+  if (state.mode === "solo") return soloGame();
   const night = state.phase === "night",
     over = state.phase === "over",
     m = state.me,
@@ -353,6 +399,30 @@ ${label && m.alive ? `<div class="action">${state.voting ? '<button id="skip-vot
 ${state.voting && m.host ? '<button id="tally" class="ghost" style="width:100%;margin-top:12px">Close voting & count votes</button>' : ""}</section>
 <div id="chats" class="stack">${detectiveTeam()}${chat("town")}${m.role === "mafia" ? chat("mafia") : ""}</div>
 ${state.mode === "solo" && m.friend ? '<button id="leave-solo-friend" class="ghost">Leave Detective team</button>' : ""}${over && m.host ? state.mode === "solo" ? '<button id="play-again" class="primary">Replay this case</button><button id="new-case">Choose another story</button>' : '<button id="play-again" class="primary">Restart with fresh roles</button><button id="back-lobby">Back to lobby & settings</button>' : ""}</div>`;
+}
+function soloGame() {
+  const night = state.phase === "night", over = state.phase === "over", me = state.me,
+    pick = selected || state.pick, label = actionLabel(),
+    title = over ? state.ended ? "Case ended" : state.winner === "town" ? "The Mafia is caught." : "Mafia wins." :
+      (night ? "Night " : "Round ") + String(state.day).padStart(2,"0"),
+    selectedName = pick === "skip" ? "Skip" : state.players.find(person => person.id === pick)?.name;
+  const phase = `<section class="card phase-card ${night ? "" : "day"}"><p class="eyebrow">${over ? "The final chapter" : night ? roleName(state.night_step) + " turn" : state.voting ? "Voting open" : "Gathering"}</p><h1>${title}</h1><p class="muted">${over ? "Read the Dossier for the full reconstruction and motive." : night ? state.night_step === "detective" ? "Choose a suspect to investigate, then proceed to dawn. You may also proceed without investigating." : roleName(state.night_step) + " is taking their turn. Proceed when ready to move on." : state.voting ? "Select a witness below and confirm the team's one final ballot." : "Read the accounts, choose your one question, and weigh the evidence. Proceed to voting when ready."}</p>${me.at_risk ? '<p id="solo-danger" class="connection" role="status">Final-chance night: one more town death lets Mafia win. Your team has not identified the living Mafia, so you can be killed. A correct investigation can restore your protection.</p>' : ""}${night && me.alive ? `<button id="solo-proceed" class="primary">${state.night_step === "detective" ? state.pick ? "Proceed to dawn" : "Proceed without investigating" : "Proceed to " + (state.night_step === "mafia" ? "Doctor turn" : "Detective turn")}</button>` : ""}${!night && !over && !state.voting && me.alive ? '<button id="proceed-vote" class="primary">Proceed to vote</button>' : ""}<p class="hint">No timers. The case advances when your team chooses to proceed.</p></section>`;
+  const roster = `<section id="players"><div class="section-title"><h2>The witnesses</h2><span class="pill">${state.players.filter(person=>person.alive).length} alive</span></div><p class="hint">${night ? "During the Detective turn, select a living witness and confirm an investigation." : state.voting ? "Select a living witness and confirm your ballot, or choose Skip vote." : "Use the question and influence controls below. The roster becomes your ballot when voting opens."}</p><div class="players">${state.players.map(person => `<button class="player ${!person.alive ? "dead" : ""} ${pick === person.id ? "selected" : ""}" data-player="${person.id}" ${canAct(person) ? "" : "disabled"} aria-pressed="${pick===person.id}"><span class="avatar">${esc(person.name[0])}</span><b>${esc(person.name)}</b><span class="player-score">${person.score || 0} points${over && person.round_points ? " · +" + person.round_points + " this game" : ""}</span><small>${person.you ? "Detective team · " : ""}${person.role ? roleName(person.role) : person.alive ? "Identity unknown" : "Eliminated"}</small>${person.votes ? `<span class="votes">${person.votes} vote${person.votes===1 ? "" : "s"}</span>` : ""}</button>`).join("")}</div>${label && me.alive ? `<div class="action">${state.voting ? '<button id="skip-vote" class="ghost">Skip vote</button>' : ""}<button id="confirm-action" class="primary" ${pick ? "" : "disabled"}>${label}${selectedName ? ": " + esc(selectedName) : ""}</button><p class="hint">${night ? "Your investigation choice is final for this night. Proceed after reading the result." : "Your friends share this one ballot. A new choice replaces it while voting is still open."}</p></div>` : ""}</section>`;
+  return `<div id="top" class="stack solo-game"><div class="row spread"><p class="eyebrow">Solo run · ${esc(state.scenario.title)}</p><span class="pill">${over ? "Finished" : "At your pace"}</span></div>${soloTabHelp()}<section id="solo-tab-journal" class="stack solo-tab-panel" role="tabpanel" aria-label="Case journal" ${soloTab === "journal" ? "" : "hidden"}>${phase}<button id="role" class="role-button" aria-expanded="${revealed}"><span class="role-icon">${revealed ? "♠" : "?"}</span><span><b>${revealed ? roleName(me.role) : "Your secret identity"}</b><small>${revealed ? esc(roles[me.role]?.[1]) : "Tap to reveal. Keep it to yourself."}</small></span></button>${state.notes.length ? `<section class="card"><p class="eyebrow">Private Detective findings</p><p>${state.notes.map(esc).join("<br>")}</p></section>` : ""}${roster}${caseJournal()}</section><section id="solo-tab-dossier" class="stack solo-tab-panel" role="tabpanel" aria-label="Dossier" ${soloTab === "dossier" ? "" : "hidden"}>${caseDossier()}</section><section id="solo-tab-chat" class="stack solo-tab-panel" role="tabpanel" aria-label="Chat" ${soloTab === "chat" ? "" : "hidden"}><p class="hint">Public accounts and statement changes appear here. Use Case journal to select questions; type only in the private Detective team chat.</p>${detectiveTeam()}${chat("town")}</section>${state.mode === "solo" && me.friend ? '<button id="leave-solo-friend" class="ghost">Leave Detective team</button>' : ""}${over && me.host ? '<button id="play-again" class="primary">Replay this case</button><button id="new-case">Choose another story</button>' : ""}</div>`;
+}
+function renderNavigation() {
+  const nav = $("#nav");
+  nav.hidden = !state || state.phase === "lobby";
+  if (state?.mode === "solo") {
+    nav.setAttribute("aria-label","Solo case tabs");
+    nav.setAttribute("role","tablist");
+    nav.innerHTML = [["journal","▤","Case journal"],["dossier","◈","Dossier"],["chat","☏","Chat"]].map(([key,icon,label]) => `<a href="#solo-tab-${key}" data-solo-tab="${key}" role="tab" aria-controls="solo-tab-${key}" aria-selected="${soloTab === key}">${icon}<span>${label}</span></a>`).join("");
+    nav.querySelectorAll("[data-solo-tab]").forEach(link => { link.onclick = event => { event.preventDefault(); soloTab = link.dataset.soloTab; render(); window.scrollTo({top:0,behavior:"auto"}); }; });
+  } else {
+    nav.setAttribute("aria-label","Game navigation");
+    nav.removeAttribute("role");
+    nav.innerHTML = '<a href="#top">◈<span>Game</span></a><a href="#players">♟<span>Players</span></a><a href="#chats">☏<span>Chat</span></a>';
+  }
 }
 function atmosphere() {
   if (!state) return "home";
@@ -583,7 +653,7 @@ function render() {
   } else {
     document.body.style.removeProperty("--turn-background");
   }
-  $("#nav").hidden = !state || state.phase === "lobby";
+  renderNavigation();
   const markup = pendingInvite && (!session || session.code !== pendingInvite.code.toUpperCase()) ? invitationScreen() : !session
     ? entryMode ? entryScreen() : home()
     : !state
@@ -619,7 +689,7 @@ function render() {
   };
   on("#cancel-invite", () => { clearInvitation(); render(); });
   for (const [id, mode] of [["#online-play", "online"], ["#solo-run", "solo"]]) {
-    on(id, () => { entryMode = mode; render(); $("#name")?.focus(); });
+    on(id, () => { entryMode = mode; render(); if (mode === "solo") loadStoryCatalog(); $("#name")?.focus(); });
   }
   on("#choose-mode", () => { entryMode = ""; render(); });
   if (!session && entryMode && $("#entry")) {
@@ -628,8 +698,9 @@ function render() {
       e.preventDefault();
       let previous = null;
       try { previous = localStorage.getItem("mafia-last-case"); } catch (_) {}
-      run(entryMode === "solo" ? "solo" : "create", { name: $("#name").value, previous_scenario: previous });
+      run(entryMode === "solo" ? "solo" : "create", { name: $("#name").value, previous_scenario: previous, scenario_id: storyChoice });
     };
+    if ($("#story-choice")) $("#story-choice").onchange = event => { storyChoice = event.target.value; render(); };
     on("#join", () =>
       run("join", { name: $("#name").value, code: $("#code").value }),
     );
@@ -669,13 +740,19 @@ function render() {
     on("#leave", async () => { if (await run("leave")) leaveLocal(); });
     on("#new-case", async () => {
       entryName = state.me.name;
-      if (await run("leave")) { leaveLocal(); entryMode = "solo"; render(); }
+      if (await run("leave")) { leaveLocal(); entryMode = "solo"; render(); loadStoryCatalog(); }
     });
-    if ($("#case-journal")) $("#case-journal").ontoggle = () => { journalOpen = $("#case-journal").open; };
-    app.querySelectorAll("[data-story-question]").forEach(button => {
-      button.onclick = () => run("chat", { text: button.dataset.storyQuestion, channel: "town" });
+    on("#solo-proceed", () => run("solo-proceed"));
+    on("#inspect-scene", () => run("solo-evidence", {action:"inspect"}));
+    on("#compare-accounts", () => run("solo-evidence", {action:"compare"}));
+    if ($("#question-target")) $("#question-target").onchange = event => { questionTarget = event.target.value; render(); };
+    if ($("#influence-target")) $("#influence-target").onchange = event => { influenceTarget = event.target.value; };
+    app.querySelectorAll("[data-solo-question]").forEach(button => {
+      button.onclick = () => run("solo-question", {target:questionTarget,question:button.dataset.soloQuestion});
     });
-    if ($("#case-dossier")) $("#case-dossier").ontoggle = () => { caseOpen = $("#case-dossier").open; };
+    app.querySelectorAll("[data-solo-stance]").forEach(button => {
+      button.onclick = () => run("solo-influence", {target:influenceTarget,stance:button.dataset.soloStance});
+    });
   }
   on("#role", () => {
     revealed = !revealed;

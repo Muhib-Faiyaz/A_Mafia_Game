@@ -19,7 +19,8 @@ async function post(route, data) {
   await post('start', host);
   const roles = {};
   for (const identity of all) roles[identity.pid] = (await post('state', identity)).me.role;
-  for (let step = 0; step < 12; step++) {
+  const nightDeadline = Date.now() + 25000;
+  while (Date.now() < nightDeadline) {
     state = await post('state', host);
     if (state.phase !== 'night') break;
     const actors = humans.filter(h => roles[h.pid] === state.night_step && state.players.find(p => p.id === h.pid).alive);
@@ -30,6 +31,8 @@ async function post(route, data) {
         && (own.me.role !== 'mafia' || roles[p.id] !== 'mafia') && (!p.bot || own.me.role === 'detective'));
       await post('act', {...identity, target: target.id});
     }
+    // Bot-controlled roles intentionally wait five seconds before confirming.
+    await new Promise(resolve => setTimeout(resolve, 250));
   }
   state = await post('state', host);
   assert.equal(state.phase, 'day');
@@ -59,7 +62,12 @@ async function post(route, data) {
       const own = await post('state', identity);
       if (own.me.alive && !own.voting) await post('proceed', identity);
     }
-    state = await post('state', host);
+    const votingDeadline = Date.now() + 7000;
+    do {
+      state = await post('state', host);
+      if (state.voting) break;
+      await new Promise(resolve => setTimeout(resolve, 250));
+    } while (Date.now() < votingDeadline);
     assert.equal(state.voting, true);
     const ballot = state.players.find(p => p.id === suspect.id).votes;
     assert.ok(ballot > 0, 'The accusation changes at least one actual bot ballot');
