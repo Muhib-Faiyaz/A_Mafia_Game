@@ -1,0 +1,313 @@
+{
+  "version": 1,
+  "generated_on": "2026-10-23",
+  "tool": "OpenAI image_gen.imagegen",
+  "third_party_downloads": [],
+  "reference_assets": [
+    "static/images/turns/doctor.webp",
+    "static/images/opening/hall.webp"
+  ],
+  "notes": [
+    "Existing project art provided only as style/continuity references; no external images or character photographs were downloaded.",
+    "The representative ninth-photograph-01 was generated first and approved by the coordinator before bulk generation.",
+    "A first hospice sheet incorrectly inherited coastal scenery; it was rejected and replaced with snowy mountain scenery. Rejected PNG remains outside the repository in the workspace generation directory.",
+    "Exact tool prompts and original workspace PNG paths are recorded below where available; compact full-sheet WebP sources are included for reproducible exports."
+  ],
+  "sources": [
+    {
+      "case_id": "ninth-photograph",
+      "sheet": "01",
+      "compact_source": "ninth-photograph-01.webp",
+      "original_png": "/workspace/generated_images/exec-1efb8a95-a21c-4a37-b2a2-cd0b5aa7a996.png",
+      "prompt": "Representative two-panel radio transmitter / first-aid alcove. Detailed Gothic hand-inked painterly style from existing doctor.webp and hall.webp; sea storm, stone walls, teal arched windows, analog maritime equipment. No characters, bodies, weapons, readable text or culprit cues. Each panel supports a central landscape band and full vertical mobile crop.",
+      "references": [
+        "static/images/turns/doctor.webp",
+        "static/images/opening/hall.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 516096,
+      "sha256": "0f78602647c7a1f5eca68421ba35a6c232a7f33003b1f1ee9b3091e6c82b04b8"
+    },
+    {
+      "case_id": "ninth-photograph",
+      "sheet": "02",
+      "compact_source": "ninth-photograph-02.webp",
+      "original_png": "/workspace/generated_images/exec-aa150de9-0aa9-4a06-b23e-042076912465.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Ninth Photograph. The attached image establishes THIS CASE'S rooms and architecture; preserve its materials, windows and outside geography exactly while drawing two NEW distinct zones. LOCATION: old stone island radio station during a sea storm, late-20th-century analog maritime equipment, teal painted arched window frames, exposed black conduit, worn dark floorboards. TWO PANELS side by side, vertical seam EXACTLY at midpoint, no border, gutter or margin. Canvas 3:2 landscape, highest supported resolution. Each half is a tall vignette with important table-level props within central landscape band y=34%-76%, and a strong full-height portrait composition. LEFT HALF: chart-room inspection desk with plain closed photograph envelope, unmarked chart sheets, an unspooled empty metal reel tin, magnifying glass and angled lamp; never show a photograph's contents. RIGHT HALF: chart-room communal table, six empty mismatched chairs, softly lit wall map without readable markings, sea window. Rooms must clearly share the attached location, yet these are new working areas, not copies of the same first-aid room. Keep the middle subdued and readable under game UI. No people, silhouette, body, weapon, readable text, logos, labels or legible evidence contents. Documents are blank or face down, no arrows, circled answers or altered seals. ",
+      "references": [
+        "ninth-photograph-01.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 584660,
+      "sha256": "a502a2325220ab6e5c8c5232fc87e42693d0f885836ce76dc17b9922bf1b674e"
+    },
+    {
+      "case_id": "room-kept-warm",
+      "sheet": "01",
+      "compact_source": "room-kept-warm-01.webp",
+      "original_png": "/workspace/generated_images/exec-911f663d-a45b-4168-8f6c-7b56bde0a5ab.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. ONLY copy rendering technique from reference; DO NOT copy its architecture, furnishings or scenery. CASE: A Room Kept Warm. EXACT GEOGRAPHY AND MATERIALS: old hilltop hospice Saint Orla during a snowstorm, faded sage painted plaster, dark oak trim, tall narrow frosted windows, cast-iron radiators, amber bedside lights, abandoned but cared-for rooms. Strongly distinguish this case from a radio station or castle. No sea, lighthouse, islands, coastal scenery, ocean waves or radio equipment. SNOW FALLS OVER SNOW-COVERED MOUNTAIN SLOPES OUTSIDE EVERY WINDOW. White snowbanks and fir trees, absolutely no rain or water outside.  Draw TWO DISTINCT ROOM ZONE PANELS SIDE BY SIDE, one vertical seam EXACTLY at 50% canvas width; no border, gutter or margin. Total canvas landscape 3:2, highest supported resolution. Each half is a fully composed tall vignette with important props readable in its central landscape band (y=34% to 76%) as well as its full vertical mobile view. LEFT HALF: quiet service-stair landing with timber banister, closed linen cupboard and cold snow window; no fallen objects, missing slipper, weapon or body. RIGHT HALF: empty ward alcove with neatly made bed, cast-iron radiator below the snow window, enamel washstand and medicine trolley, no documents. Same architectural details and weather in both zones, different camera positions. No text anywhere.",
+      "references": [
+        "static/images/turns/doctor.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 448514,
+      "sha256": "6703801e083c7781cf599bb111e845fc4144e70280a48a2058e62dcdfad04c46"
+    },
+    {
+      "case_id": "room-kept-warm",
+      "sheet": "02",
+      "compact_source": "room-kept-warm-02.webp",
+      "original_png": "/workspace/generated_images/exec-73493706-f443-4dcc-b8a4-c465dc1ebb03.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: A Room Kept Warm. The attached image establishes THIS CASE'S rooms and architecture; preserve its materials, windows and outside geography exactly while drawing two NEW distinct zones. LOCATION: old hilltop hospice Saint Orla during a snowstorm, faded sage painted plaster, dark oak trim, tall narrow frosted windows, cast-iron radiators, amber bedside lights, abandoned but cared-for rooms. TWO PANELS side by side, vertical seam EXACTLY at midpoint, no border, gutter or margin. Canvas 3:2 landscape, highest supported resolution. Each half is a tall vignette with important table-level props within central landscape band y=34%-76%, and a strong full-height portrait composition. LEFT HALF: hospice office document table with a closed plain envelope, unmarked papers, reading lamp and a locked filing cabinet, no handwriting or signatures. RIGHT HALF: hospice dining-room table with six empty chairs, plain crockery and a softly lit radiator beneath the frosted window. Rooms must clearly share the attached location, yet these are new working areas, not copies of the same first-aid room. Keep the middle subdued and readable under game UI. No people, silhouette, body, weapon, readable text, logos, labels or legible evidence contents. Documents are blank or face down, no arrows, circled answers or altered seals. Snowy mountain slopes and fir trees outside, NO sea, lighthouse or ocean.",
+      "references": [
+        "room-kept-warm-01.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 480470,
+      "sha256": "12f3c288c9224337db75587c6da41f9ad227e3d39266734c19543978cefbdeab"
+    },
+    {
+      "case_id": "carriage-six",
+      "sheet": "01",
+      "compact_source": "carriage-six-01.webp",
+      "original_png": "/workspace/generated_images/exec-011e4c6c-5be7-4514-95e4-2a117c69dc38.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Witness in Carriage Six. LOCATION CONTINUITY: stationary older overnight passenger train in heavy rain, polished dark walnut carriage paneling, muted burgundy upholstery, brass fittings, narrow rain-lashed windows with a distant red signal, warm shaded reading lamps. Draw TWO DISTINCT ROOM ZONE PANELS SIDE BY SIDE, one vertical seam EXACTLY at 50% canvas width; no border, gutter or margin. Total canvas landscape 3:2, highest supported resolution. Each half is a fully composed tall vignette with important props readable in its central landscape band (y=34% to 76%) as well as its full vertical mobile view. LEFT HALF: empty sleeping-compartment desk with shaded reading lamp and an ordinary cup, closed cabin door and rain window; no poison, body or suspicious contents. RIGHT HALF: train's improvised first-aid berth with folded linen, closed plain medical case, washbasin and brass reading lamp. Same architectural details and weather in both rooms, different camera positions. Keep faces and evidence contents invisible. No text anywhere.",
+      "references": [
+        "/workspace/generated_images/exec-1efb8a95-a21c-4a37-b2a2-cd0b5aa7a996.png"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 524660,
+      "sha256": "0ee1b62e13a4df6fb0415fab300fe38e40181f430c44d77d805b3fc9070eaa1a"
+    },
+    {
+      "case_id": "carriage-six",
+      "sheet": "02",
+      "compact_source": "carriage-six-02.webp",
+      "original_png": "/workspace/generated_images/exec-914b07e2-8f33-442d-9efb-006fdbd7d476.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Witness in Carriage Six. The attached image establishes THIS CASE'S rooms and architecture; preserve its materials, windows and outside geography exactly while drawing two NEW distinct zones. LOCATION: stationary older overnight passenger train in heavy rain, polished dark walnut carriage paneling, muted burgundy upholstery, brass fittings, narrow rain-lashed windows with a distant red signal, warm shaded reading lamps. TWO PANELS side by side, vertical seam EXACTLY at midpoint, no border, gutter or margin. Canvas 3:2 landscape, highest supported resolution. Each half is a tall vignette with important table-level props within central landscape band y=34%-76%, and a strong full-height portrait composition. LEFT HALF: small train writing desk with closed plain deposition envelope, unmarked loose papers and magnifying glass, curtain drawn back to the rain. RIGHT HALF: train saloon with a communal table and six empty seats, muted burgundy upholstery and warm lamps reflected in wet windows. Rooms must clearly share the attached location, yet these are new working areas, not copies of the same first-aid room. Keep the middle subdued and readable under game UI. No people, silhouette, body, weapon, readable text, logos, labels or legible evidence contents. Documents are blank or face down, no arrows, circled answers or altered seals. ",
+      "references": [
+        "carriage-six-01.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 556308,
+      "sha256": "a7682d5b6421f36bf99da48ac6b476252f1116b4080f66a2110329bad33f594d"
+    },
+    {
+      "case_id": "river-returned",
+      "sheet": "01",
+      "compact_source": "river-returned-01.webp",
+      "original_png": "/workspace/generated_images/exec-f6907643-487d-40d5-bf28-022e6c0f4d2d.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: What the River Returned. LOCATION CONTINUITY: municipal archive above an evacuated floodplain, tall industrial arched steel-frame windows, stained ochre plaster, dark wood reading tables, rust-green steel shelving, amber task lamps, storm rain and floodwater visible below outside. Draw TWO DISTINCT ROOM ZONE PANELS SIDE BY SIDE, one vertical seam EXACTLY at 50% canvas width; no border, gutter or margin. Total canvas landscape 3:2, highest supported resolution. Each half is a fully composed tall vignette with important props readable in its central landscape band (y=34% to 76%) as well as its full vertical mobile view. LEFT HALF: archive drying-room aisle with damp pages hanging from drying racks and unmarked crates, rain window and clean empty central floor; no numbered door or hidden map details. RIGHT HALF: archive staff first-aid nook with simple cot, folded blanket, closed medical case, sink and a task lamp, same shelving beyond. Same architectural details and weather in both rooms, different camera positions. Keep faces and evidence contents invisible. No text anywhere.",
+      "references": [
+        "/workspace/generated_images/exec-1efb8a95-a21c-4a37-b2a2-cd0b5aa7a996.png"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 630844,
+      "sha256": "bc60d9e31ebf912e78e52049382aa735289b149de1bac4359d7266858064f63b"
+    },
+    {
+      "case_id": "river-returned",
+      "sheet": "02",
+      "compact_source": "river-returned-02.webp",
+      "original_png": "/workspace/generated_images/exec-db8e8cac-3c90-4fc4-afa4-bc661c21ed84.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: What the River Returned. The attached image establishes THIS CASE'S rooms and architecture; preserve its materials, windows and outside geography exactly while drawing two NEW distinct zones. LOCATION: municipal archive above an evacuated floodplain, tall industrial arched steel-frame windows, stained ochre plaster, dark wood reading tables, rust-green steel shelving, amber task lamps, storm rain and floodwater visible below outside. TWO PANELS side by side, vertical seam EXACTLY at midpoint, no border, gutter or margin. Canvas 3:2 landscape, highest supported resolution. Each half is a tall vignette with important table-level props within central landscape band y=34%-76%, and a strong full-height portrait composition. LEFT HALF: upper archive reading desk with closed record box, unmarked map rolls, magnifying glass and drying blotter, no readable map boundaries. RIGHT HALF: upper archive reading room, long communal timber table with six empty chairs, rows of closed record boxes and rain-lit windows. Rooms must clearly share the attached location, yet these are new working areas, not copies of the same first-aid room. Keep the middle subdued and readable under game UI. No people, silhouette, body, weapon, readable text, logos, labels or legible evidence contents. Documents are blank or face down, no arrows, circled answers or altered seals. ",
+      "references": [
+        "river-returned-01.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 628404,
+      "sha256": "db9b8f908d68754ebba4f1de1ad507139e238b54821b3f2f63aa81aaf75388dd"
+    },
+    {
+      "case_id": "last-rehearsal",
+      "sheet": "01",
+      "compact_source": "last-rehearsal-01.webp",
+      "original_png": "/workspace/generated_images/exec-b027ee16-655f-4d72-a682-de74f677b223.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. ONLY copy rendering technique from reference; DO NOT copy its architecture, furnishings or scenery. CASE: The Last Dress Rehearsal. EXACT GEOGRAPHY AND MATERIALS: condemned old theatre during a storm, faded burgundy velvet curtains, cracked ornate plaster, dark timber stage and rehearsal-wing floorboards, exposed practical work lights, brass fixtures, no active audience. Strongly distinguish this case from a radio station or castle. No sea, lighthouse, islands, coastal scenery, ocean waves or radio equipment.   Draw TWO DISTINCT ROOM ZONE PANELS SIDE BY SIDE, one vertical seam EXACTLY at 50% canvas width; no border, gutter or margin. Total canvas landscape 3:2, highest supported resolution. Each half is a fully composed tall vignette with important props readable in its central landscape band (y=34% to 76%) as well as its full vertical mobile view. LEFT HALF: empty backstage work-light corner with folded flat scenery, coiled ropes safely hung on the wall and a closed prompt desk; no fall, broken rigging or body. RIGHT HALF: theatre dressing-room first-aid nook with plain cot, folded towels, closed medical case, washbasin and dim mirror bulbs, no faces in mirror. Same architectural details and weather in both zones, different camera positions. No text anywhere.",
+      "references": [
+        "static/images/turns/doctor.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 515696,
+      "sha256": "eaae7130510db9b712f249d6e937e083fd93a00f8b1ef2609c747f10c1ae660e"
+    },
+    {
+      "case_id": "last-rehearsal",
+      "sheet": "02",
+      "compact_source": "last-rehearsal-02.webp",
+      "original_png": "/workspace/generated_images/exec-21f2cb24-907b-40a6-aa0c-bfc314605cef.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Last Dress Rehearsal. The attached image establishes THIS CASE'S rooms and architecture; preserve its materials, windows and outside geography exactly while drawing two NEW distinct zones. LOCATION: condemned old theatre during a storm, faded burgundy velvet curtains, cracked ornate plaster, dark timber stage and rehearsal-wing floorboards, exposed practical work lights, brass fixtures, no active audience. TWO PANELS side by side, vertical seam EXACTLY at midpoint, no border, gutter or margin. Canvas 3:2 landscape, highest supported resolution. Each half is a tall vignette with important table-level props within central landscape band y=34%-76%, and a strong full-height portrait composition. LEFT HALF: locked-looking prompt-desk corner with plain closed account book, unmarked papers and shaded work lamp, curtain edge behind it; no financial contents. RIGHT HALF: reinforced rehearsal room with a broad scuffed table and six empty chairs, burgundy rehearsal curtain and warm work lights. Rooms must clearly share the attached location, yet these are new working areas, not copies of the same first-aid room. Keep the middle subdued and readable under game UI. No people, silhouette, body, weapon, readable text, logos, labels or legible evidence contents. Documents are blank or face down, no arrows, circled answers or altered seals. ",
+      "references": [
+        "last-rehearsal-01.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 527594,
+      "sha256": "328bcce1609d116f1796201f0c92969cd93fe6fed944d3c132a59d5465cc0ddb"
+    },
+    {
+      "case_id": "winter-seed",
+      "sheet": "01",
+      "compact_source": "winter-seed-01.webp",
+      "original_png": "/workspace/generated_images/exec-93fc605f-f4ee-4f07-84bb-4701b0a855aa.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. ONLY copy rendering technique from reference; DO NOT copy its architecture, furnishings or scenery. CASE: The Winter Seed. EXACT GEOGRAPHY AND MATERIALS: remote mountain seed repository during a power failure, concrete and weathered pale green laboratory walls, dark steel storage cabinets, insulated cold-room doors, deep-blue snow windows, sparse amber emergency lamps, realistic practical equipment. Strongly distinguish this case from a radio station or castle. No sea, lighthouse, islands, coastal scenery, ocean waves or radio equipment.  This must clearly be a working concrete and steel LABORATORY, not a Victorian cottage. Rectangular modern insulated doors and rectangular windows. Snowy mountain slopes outside. Draw TWO DISTINCT ROOM ZONE PANELS SIDE BY SIDE, one vertical seam EXACTLY at 50% canvas width; no border, gutter or margin. Total canvas landscape 3:2, highest supported resolution. Each half is a fully composed tall vignette with important props readable in its central landscape band (y=34% to 76%) as well as its full vertical mobile view. LEFT HALF: empty preparation-room side bench with closed plain sample containers, seed tray seen from afar with indistinct contents and a cold-room door; no altered label, damage or body. RIGHT HALF: repository staff first-aid corner with bench cot, folded thermal blanket, closed medical case, utility sink and amber emergency lamp. Same architectural details and weather in both zones, different camera positions. No text anywhere.",
+      "references": [
+        "static/images/turns/doctor.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 442706,
+      "sha256": "c0f9f115aae01d4ca830d774872452d0bc773594145f095a54a0a250e2cd65a6"
+    },
+    {
+      "case_id": "winter-seed",
+      "sheet": "02",
+      "compact_source": "winter-seed-02.webp",
+      "original_png": "/workspace/generated_images/exec-aefd21fb-b7a8-4632-82c5-e76f4ffa0dc6.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Winter Seed. The attached image establishes THIS CASE'S rooms and architecture; preserve its materials, windows and outside geography exactly while drawing two NEW distinct zones. LOCATION: remote mountain seed repository during a power failure, concrete and weathered pale green laboratory walls, dark steel storage cabinets, insulated cold-room doors, deep-blue snow windows, sparse amber emergency lamps, realistic practical equipment. TWO PANELS side by side, vertical seam EXACTLY at midpoint, no border, gutter or margin. Canvas 3:2 landscape, highest supported resolution. Each half is a tall vignette with important table-level props within central landscape band y=34%-76%, and a strong full-height portrait composition. LEFT HALF: sample-inspection bench with microscope, one fully closed plain sample packet and orderly tools, no legible labels and no seeds visible under magnification. RIGHT HALF: repository break-room table with six empty practical chairs, thermos and closed sample case at side, snow window and emergency lamp. Rooms must clearly share the attached location, yet these are new working areas, not copies of the same first-aid room. Keep the middle subdued and readable under game UI. No people, silhouette, body, weapon, readable text, logos, labels or legible evidence contents. Documents are blank or face down, no arrows, circled answers or altered seals. Snowy mountain slopes and fir trees outside, NO sea, lighthouse or ocean.",
+      "references": [
+        "winter-seed-01.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 451224,
+      "sha256": "c9a88a0b21e226df4e33fd5402dbc6c56a01386abedb74b5e8ec72c3b794438a"
+    },
+    {
+      "case_id": "quiet-sentence",
+      "sheet": "01",
+      "compact_source": "quiet-sentence-01.webp",
+      "original_png": "/workspace/generated_images/exec-da820865-a355-4e8e-b632-7ff4350b8dd7.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. ONLY copy rendering technique from reference; DO NOT copy its architecture, furnishings or scenery. CASE: The Quiet Sentence. EXACT GEOGRAPHY AND MATERIALS: quiet old witness-preparation house under a security hold, dark oak trim, worn muted-blue plaster, tall rain-dark sash windows with burgundy curtains, amber shaded table lamps, ordinary late-20th-century furniture. Strongly distinguish this case from a radio station or castle. No sea, lighthouse, islands, coastal scenery, ocean waves or radio equipment.   Draw TWO DISTINCT ROOM ZONE PANELS SIDE BY SIDE, one vertical seam EXACTLY at 50% canvas width; no border, gutter or margin. Total canvas landscape 3:2, highest supported resolution. Each half is a fully composed tall vignette with important props readable in its central landscape band (y=34% to 76%) as well as its full vertical mobile view. LEFT HALF: empty interview-room desk viewed from a quiet corner, closed door and unmarked papers beneath lamp; no doorstop, grey portfolio, weapon or body. RIGHT HALF: small witness-house rest-room first-aid nook with neatly covered daybed, folded blanket, closed medical case and shaded lamp, rain-dark sash window. Same architectural details and weather in both zones, different camera positions. No text anywhere.",
+      "references": [
+        "static/images/turns/doctor.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 488676,
+      "sha256": "d5664988b78e6a083e718e5b2d29f8b2325adda791667d83d25a686b21691e2e"
+    },
+    {
+      "case_id": "quiet-sentence",
+      "sheet": "02",
+      "compact_source": "quiet-sentence-02.webp",
+      "original_png": "/workspace/generated_images/exec-6d8ce3fc-7a5c-4d85-9ac6-60a730b53adf.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Quiet Sentence. The attached image establishes THIS CASE'S rooms and architecture; preserve its materials, windows and outside geography exactly while drawing two NEW distinct zones. LOCATION: quiet old witness-preparation house under a security hold, dark oak trim, worn muted-blue plaster, tall rain-dark sash windows with burgundy curtains, amber shaded table lamps, ordinary late-20th-century furniture. TWO PANELS side by side, vertical seam EXACTLY at midpoint, no border, gutter or margin. Canvas 3:2 landscape, highest supported resolution. Each half is a tall vignette with important table-level props within central landscape band y=34%-76%, and a strong full-height portrait composition. LEFT HALF: statement-review desk with two plain face-down sheets and a closed plain folder beneath an angled lamp, no legible words or visible corrections. RIGHT HALF: front-room communal table with six empty chairs, muted burgundy curtains and amber lamp, closed plain folder to one side. Rooms must clearly share the attached location, yet these are new working areas, not copies of the same first-aid room. Keep the middle subdued and readable under game UI. No people, silhouette, body, weapon, readable text, logos, labels or legible evidence contents. Documents are blank or face down, no arrows, circled answers or altered seals. ",
+      "references": [
+        "quiet-sentence-01.webp"
+      ],
+      "width": 1536,
+      "height": 1024,
+      "bytes": 510398,
+      "sha256": "66ecd26a19a93d799dbbaa9d89d56f8fed90d06af3f332adbd8b40120e0582d6"
+    },
+    {
+      "case_id": "ninth-photograph",
+      "sheet": "03",
+      "compact_source": "ninth-photograph-03.webp",
+      "original_png": "/workspace/generated_images/exec-320e4e2e-0450-48de-8c54-bd85cd9ffd54.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Ninth Photograph. Create ONE CONTINUOUS FULL-CANVAS ROOM ILLUSTRATION, landscape 3:2, highest supported resolution. No contact sheet, split panel, seam, inset or border. The attached case reference shows two zones: the communal discussion room is the RIGHT HALF. Draw a distinctly different camera position at the FAR END of THAT SAME COMMUNAL ROOM for the voting phase, retaining its existing table, chair designs, finishes, windows, outside geography and practical lights. This is not another unrelated location. LOCATION: old stone island radio station during a sea storm, late-20th-century analog maritime equipment, teal painted arched window frames, exposed black conduit, worn dark floorboards. SCENE: the far end of the chart room, long table with closed plain folders, empty chairs and a brass shaded lamp near the rain-dark window. Design the full room for a 16:9 desktop crop, with a strong central full-height 9:16 portrait focal area around the far end of the table and window. Put some matching chairs at left/right edges and another ordinary part of the table in foreground. The mobile composition must still identify the room. The central interface area needs calm dark surfaces rather than dense tiny objects. All folders fully closed or face down, no papers with writing, no named ballot, no voting result or guilt clue. No people, faces, silhouettes, figures, portraits, weapons, bodies, text or logos. ",
+      "references": [
+        "ninth-photograph-02.webp"
+      ],
+      "width": 1672,
+      "height": 941,
+      "bytes": 500284,
+      "sha256": "325e9a136954fc7aba3eb60be6905d1a1c04daf196e2ad07a6bda394aadec1a0"
+    },
+    {
+      "case_id": "room-kept-warm",
+      "sheet": "03",
+      "compact_source": "room-kept-warm-03.webp",
+      "original_png": "/workspace/generated_images/exec-2a728b01-a505-4fbd-b0ae-a0f3491153e7.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: A Room Kept Warm. Create ONE CONTINUOUS FULL-CANVAS ROOM ILLUSTRATION, landscape 3:2, highest supported resolution. No contact sheet, split panel, seam, inset or border. The attached case reference shows two zones: the communal discussion room is the RIGHT HALF. Draw a distinctly different camera position at the FAR END of THAT SAME COMMUNAL ROOM for the voting phase, retaining its existing table, chair designs, finishes, windows, outside geography and practical lights. This is not another unrelated location. LOCATION: old hilltop hospice Saint Orla during a snowstorm, faded sage painted plaster, dark oak trim, tall narrow frosted windows, cast-iron radiators, amber bedside lights, abandoned but cared-for rooms. SCENE: far end of the dining room, communal oak table with closed folders and empty chairs, wall clock with no readable numerals, snow-dark window. Design the full room for a 16:9 desktop crop, with a strong central full-height 9:16 portrait focal area around the far end of the table and window. Put some matching chairs at left/right edges and another ordinary part of the table in foreground. The mobile composition must still identify the room. The central interface area needs calm dark surfaces rather than dense tiny objects. All folders fully closed or face down, no papers with writing, no named ballot, no voting result or guilt clue. No people, faces, silhouettes, figures, portraits, weapons, bodies, text or logos. Snowy mountain slopes and fir trees outside, NO sea, lighthouse or ocean.",
+      "references": [
+        "room-kept-warm-02.webp"
+      ],
+      "width": 1672,
+      "height": 941,
+      "bytes": 473746,
+      "sha256": "874c9e75aff2a5ca193c0593b4989175067c9d1f143d7ad2727d663e61a8b605"
+    },
+    {
+      "case_id": "carriage-six",
+      "sheet": "03",
+      "compact_source": "carriage-six-03.webp",
+      "original_png": "/workspace/generated_images/exec-688bbf55-9366-4004-a747-9beedea2b3f8.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Witness in Carriage Six. Create ONE CONTINUOUS FULL-CANVAS ROOM ILLUSTRATION, landscape 3:2, highest supported resolution. No contact sheet, split panel, seam, inset or border. The attached case reference shows two zones: the communal discussion room is the RIGHT HALF. Draw a distinctly different camera position at the FAR END of THAT SAME COMMUNAL ROOM for the voting phase, retaining its existing table, chair designs, finishes, windows, outside geography and practical lights. This is not another unrelated location. LOCATION: stationary older overnight passenger train in heavy rain, polished dark walnut carriage paneling, muted burgundy upholstery, brass fittings, narrow rain-lashed windows with a distant red signal, warm shaded reading lamps. SCENE: the opposite end of the same train saloon with empty booths around a broad polished table, closed plain folders and distant red signal beyond rain. Design the full room for a 16:9 desktop crop, with a strong central full-height 9:16 portrait focal area around the far end of the table and window. Put some matching chairs at left/right edges and another ordinary part of the table in foreground. The mobile composition must still identify the room. The central interface area needs calm dark surfaces rather than dense tiny objects. All folders fully closed or face down, no papers with writing, no named ballot, no voting result or guilt clue. No people, faces, silhouettes, figures, portraits, weapons, bodies, text or logos. ",
+      "references": [
+        "carriage-six-02.webp"
+      ],
+      "width": 1672,
+      "height": 940,
+      "bytes": 514980,
+      "sha256": "a068573a22a2177e13754180947c9bb609cdee80cddf19bf47b4875b818a7d55"
+    },
+    {
+      "case_id": "river-returned",
+      "sheet": "03",
+      "compact_source": "river-returned-03.webp",
+      "original_png": "/workspace/generated_images/exec-e2681b84-be10-4469-9b81-9492a762cd67.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: What the River Returned. Create ONE CONTINUOUS FULL-CANVAS ROOM ILLUSTRATION, landscape 3:2, highest supported resolution. No contact sheet, split panel, seam, inset or border. The attached case reference shows two zones: the communal discussion room is the RIGHT HALF. Draw a distinctly different camera position at the FAR END of THAT SAME COMMUNAL ROOM for the voting phase, retaining its existing table, chair designs, finishes, windows, outside geography and practical lights. This is not another unrelated location. LOCATION: municipal archive above an evacuated floodplain, tall industrial arched steel-frame windows, stained ochre plaster, dark wood reading tables, rust-green steel shelving, amber task lamps, storm rain and floodwater visible below outside. SCENE: far end of the upper reading room with an empty table, plain closed folders and six chairs, high shelves and an amber lamp overlooking the floodplain. Design the full room for a 16:9 desktop crop, with a strong central full-height 9:16 portrait focal area around the far end of the table and window. Put some matching chairs at left/right edges and another ordinary part of the table in foreground. The mobile composition must still identify the room. The central interface area needs calm dark surfaces rather than dense tiny objects. All folders fully closed or face down, no papers with writing, no named ballot, no voting result or guilt clue. No people, faces, silhouettes, figures, portraits, weapons, bodies, text or logos. ",
+      "references": [
+        "river-returned-02.webp"
+      ],
+      "width": 1672,
+      "height": 941,
+      "bytes": 532632,
+      "sha256": "3198939853ef0cf7e10c8cd52288e7f9f14042d8f36f309f3d3d2bad060d4b15"
+    },
+    {
+      "case_id": "last-rehearsal",
+      "sheet": "03",
+      "compact_source": "last-rehearsal-03.webp",
+      "original_png": "/workspace/generated_images/exec-2afc5f3d-ca73-4035-8724-d2e07a0ac052.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Last Dress Rehearsal. Create ONE CONTINUOUS FULL-CANVAS ROOM ILLUSTRATION, landscape 3:2, highest supported resolution. No contact sheet, split panel, seam, inset or border. The attached case reference shows two zones: the communal discussion room is the RIGHT HALF. Draw a distinctly different camera position at the FAR END of THAT SAME COMMUNAL ROOM for the voting phase, retaining its existing table, chair designs, finishes, windows, outside geography and practical lights. This is not another unrelated location. LOCATION: condemned old theatre during a storm, faded burgundy velvet curtains, cracked ornate plaster, dark timber stage and rehearsal-wing floorboards, exposed practical work lights, brass fixtures, no active audience. SCENE: opposite wall of the rehearsal room, empty chairs around table, a small ordinary brass interval bell far to one side, storm-dark high window. Design the full room for a 16:9 desktop crop, with a strong central full-height 9:16 portrait focal area around the far end of the table and window. Put some matching chairs at left/right edges and another ordinary part of the table in foreground. The mobile composition must still identify the room. The central interface area needs calm dark surfaces rather than dense tiny objects. All folders fully closed or face down, no papers with writing, no named ballot, no voting result or guilt clue. No people, faces, silhouettes, figures, portraits, weapons, bodies, text or logos. ",
+      "references": [
+        "last-rehearsal-02.webp"
+      ],
+      "width": 1672,
+      "height": 941,
+      "bytes": 466988,
+      "sha256": "dab179ac109face8eec9ba9d33a5b29d04e334e507dc001122aa9d7e10ec4436"
+    },
+    {
+      "case_id": "winter-seed",
+      "sheet": "03",
+      "compact_source": "winter-seed-03.webp",
+      "original_png": "/workspace/generated_images/exec-d7d87f06-78fe-4358-a2bc-65eb63e65237.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Winter Seed. Create ONE CONTINUOUS FULL-CANVAS ROOM ILLUSTRATION, landscape 3:2, highest supported resolution. No contact sheet, split panel, seam, inset or border. The attached case reference shows two zones: the communal discussion room is the RIGHT HALF. Draw a distinctly different camera position at the FAR END of THAT SAME COMMUNAL ROOM for the voting phase, retaining its existing table, chair designs, finishes, windows, outside geography and practical lights. This is not another unrelated location. LOCATION: remote mountain seed repository during a power failure, concrete and weathered pale green laboratory walls, dark steel storage cabinets, insulated cold-room doors, deep-blue snow windows, sparse amber emergency lamps, realistic practical equipment. SCENE: opposite end of the repository break room, empty chairs around practical table with closed folders, insulated door and snow-dark window. Design the full room for a 16:9 desktop crop, with a strong central full-height 9:16 portrait focal area around the far end of the table and window. Put some matching chairs at left/right edges and another ordinary part of the table in foreground. The mobile composition must still identify the room. The central interface area needs calm dark surfaces rather than dense tiny objects. All folders fully closed or face down, no papers with writing, no named ballot, no voting result or guilt clue. No people, faces, silhouettes, figures, portraits, weapons, bodies, text or logos. Snowy mountain slopes and fir trees outside, NO sea, lighthouse or ocean.",
+      "references": [
+        "winter-seed-02.webp"
+      ],
+      "width": 1672,
+      "height": 941,
+      "bytes": 353028,
+      "sha256": "180d792bc5727a6435e2eaf8b27e31aa6443328f904c3eaa569b3b6a460f0875"
+    },
+    {
+      "case_id": "quiet-sentence",
+      "sheet": "03",
+      "compact_source": "quiet-sentence-03.webp",
+      "original_png": "/workspace/generated_images/exec-c23ecb8c-3a32-4098-ac57-0f0c51855575.png",
+      "prompt": "Create finished production GAME ENVIRONMENT ILLUSTRATIONS for Mafia: After Dark. Match the attached existing project artwork as a STYLE reference: detailed irregular hand-inked Gothic graphic-novel lines, painterly worn surfaces, slate-blue and charcoal shadows, restrained amber practical lamps and muted burgundy accents. Not photorealism, not 3D, not flat vector. No people, silhouettes, faces, bodies, weapons, blood, injury, readable lettering, logos, labels or captions. Ordinary environmental props only, no guilt clues. Keep the central area calmer and darker for interface overlays; place focal props at the sides. This is atmospheric room illustration, not a UI mockup. CASE: The Quiet Sentence. Create ONE CONTINUOUS FULL-CANVAS ROOM ILLUSTRATION, landscape 3:2, highest supported resolution. No contact sheet, split panel, seam, inset or border. The attached case reference shows two zones: the communal discussion room is the RIGHT HALF. Draw a distinctly different camera position at the FAR END of THAT SAME COMMUNAL ROOM for the voting phase, retaining its existing table, chair designs, finishes, windows, outside geography and practical lights. This is not another unrelated location. LOCATION: quiet old witness-preparation house under a security hold, dark oak trim, worn muted-blue plaster, tall rain-dark sash windows with burgundy curtains, amber shaded table lamps, ordinary late-20th-century furniture. SCENE: the opposite end of the same front room, empty chairs and long oak table, closed plain folders and rain-dark sash window. Design the full room for a 16:9 desktop crop, with a strong central full-height 9:16 portrait focal area around the far end of the table and window. Put some matching chairs at left/right edges and another ordinary part of the table in foreground. The mobile composition must still identify the room. The central interface area needs calm dark surfaces rather than dense tiny objects. All folders fully closed or face down, no papers with writing, no named ballot, no voting result or guilt clue. No people, faces, silhouettes, figures, portraits, weapons, bodies, text or logos. ",
+      "references": [
+        "quiet-sentence-02.webp"
+      ],
+      "width": 1672,
+      "height": 941,
+      "bytes": 430806,
+      "sha256": "a045865973e77ff324af2fdceadec09bb89d5954d23b198b9f49a4c46dd2794b"
+    }
+  ]
+}

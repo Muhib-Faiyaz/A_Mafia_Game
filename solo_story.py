@@ -8,6 +8,7 @@ import json
 import random
 import re
 from pathlib import Path
+import case_details
 
 SCENARIOS = tuple(json.loads((Path(__file__).parent / 'data/solo_scenarios.json').read_text()))
 QUESTIONS = (
@@ -19,7 +20,8 @@ QUESTIONS = (
 
 def catalog():
     return [dict(id=case['id'], title=case['title'], setting=case['setting'],
-                 pressure=case['pressure'], origin=copy.deepcopy(case.get('origin', {}))) for case in SCENARIOS]
+                 pressure=case['pressure'], complexity=case_details.complexity(case),
+                 origin=copy.deepcopy(case.get('origin', {}))) for case in SCENARIOS]
 
 
 def choose(previous=None, selected=None):
@@ -91,6 +93,12 @@ def public_case(room):
     story = room.get('story', {})
     result = {key: case[key] for key in ('id', 'title', 'setting', 'anchor', 'pressure', 'opening')}
     result['origin'] = copy.deepcopy(case.get('origin', {}))
+    result['complexity'] = case_details.complexity(case)
+    result['influence_feedback'] = copy.deepcopy(story.get('last_influence'))
+    if room.get('tutorial'):
+        ids = cast_ids(room)
+        result['tutorial_guidance'] = dict(question_target=ids.get('mara'), question='detail',
+                                            suspect_target=ids.get('ellis'))
     result['interrogation'] = question_state(room)
     result['revisions'] = list(story.get('revisions', []))
     result['cast'] = [dict(id=pid, name=p['name'], occupation=p['character']['occupation'],
@@ -198,8 +206,8 @@ def ask_question(room, target, question, publish):
 
 
 def influence(room, lead, target, stance, publish):
-    if room['phase'] != 'day':
-        raise ValueError('Influence the witnesses during the day.')
+    if room['phase'] != 'day' or room.get('solo_voting', False):
+        raise ValueError('Influence the witnesses during discussion, before proceeding to vote.')
     if target not in room['players'] or not room['players'][target].get('character') or not room['players'][target]['alive']:
         raise ValueError('Choose a living witness.')
     if stance not in ('suspect', 'defend', 'neutral'):
@@ -207,17 +215,37 @@ def influence(room, lead, target, stance, publish):
     claims = room['story']['claims']
     previous = claims.get((lead, target))
     value = {'suspect': 2, 'defend': -2, 'neutral': None}[stance]
+    # Compare the same public-evidence decisions the witnesses use at the ballot.
+    # These are current preferences, never a promise about a later final vote.
+    def preferences():
+        return [dict(name=p['name'], target=vote_target(room, pid))
+                for pid, p in room['players'].items() if p.get('character') and p['alive']]
+
+    before = preferences()
+    name = room['players'][target]['name']
     if value == previous:
-        return
+        result = dict(status='unchanged', target=target, target_name=name, stance=stance,
+                      changed_witnesses=[], before=before, after=before,
+                      message='This position is already recorded. Repeating it does not add influence or change current voting preferences.')
+        room['story']['last_influence'] = result
+        return copy.deepcopy(result)
     if value is None:
         claims.pop((lead, target), None)
     else:
         claims[(lead, target)] = value
-    name = room['players'][target]['name']
     text = {'suspect': f'The Detective team asks the witnesses to consider a case against {name}.',
             'defend': f'The Detective team speaks in defense of {name}.',
             'neutral': f'The Detective team withdraws its position on {name}.'}[stance]
     publish('', text, 'sys')
+    after = preferences()
+    changed = [new['name'] for old, new in zip(before, after) if old['target'] != new['target']]
+    message = (f"Position recorded. {len(changed)} witness{'es' if len(changed) != 1 else ''} changed their current voting preference. "
+               'These are intentions; new evidence can change the final ballot.' if changed else
+               'Position recorded, but no witness changed their current voting preference. Compare supporting evidence in the journal; an unsupported accusation alone is not enough.')
+    result = dict(status='accepted', target=target, target_name=name, stance=stance,
+                  changed_witnesses=changed, before=before, after=after, message=message)
+    room['story']['last_influence'] = result
+    return copy.deepcopy(result)
 
 
 def evidence(room, action, publish):
@@ -334,7 +362,4 @@ def night_target(room, pid, choices):
 
 
 def death_story(room, name, cause):
-    anchor = room['scenario']['anchor']
-    if cause == 'vote':
-        return f"{name} is placed under guard and loses access to {anchor}. Their signed account stays in your file; their voice is missing from the next discussion."
-    return f"{name} does not return from the watch. When the body is found, you secure their sealed pre-watch notes beside {anchor}. What was never written down can no longer be asked."
+    return case_details.death_story(room, name, cause)

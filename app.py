@@ -1,6 +1,6 @@
 """Mafia — a Flask app where the server acts as the neutral Moderator.
 State lives in memory, so run a single worker (see Procfile)."""
-import math, os, random, re, secrets, string, threading, time, uuid
+import json, math, os, random, re, secrets, string, threading, time, uuid
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory, render_template_string, make_response, redirect
 from urllib.parse import urlsplit
@@ -8,6 +8,8 @@ from xml.sax.saxutils import escape as xml_escape
 from flask_compress import Compress
 from death_stories import DEATH_STORIES, RESCUE_STORIES
 import bot_brain
+import case_art
+import case_details
 import solo_story
 
 app = Flask(__name__, static_folder="static")
@@ -66,9 +68,9 @@ def night_protected_player(room, pid):
     return not (final_night and not found)
 
 
-def team_message(room, name, text, kind='msg'):
+def team_message(room, name, text, kind='msg', speaker=None):
     room['team_seq'] = room.get('team_seq', 0) + 1
-    room.setdefault('team_chat', []).append(dict(n=name, t=text, k=kind, seq=room['team_seq']))
+    room.setdefault('team_chat', []).append(dict(n=name, t=text, k=kind, seq=room['team_seq'], speaker=speaker))
     del room['team_chat'][:-100]
 
 
@@ -162,6 +164,11 @@ def settle_scores(room):
     """Publish points once, only when a game ends; keep totals for this room."""
     if room.get("scores_settled"):
         return
+    if room.get('tutorial'):
+        for player in room['players'].values():
+            player.update(pending_points=0, round_points=0)
+        room['scores_settled'] = True
+        return
     for player in room["players"].values():
         won = ((room.get("winner") == "mafia" and player["role"] == "mafia") or
                (room.get("winner") == "town" and player["role"] != "mafia" and player["alive"]))
@@ -253,7 +260,7 @@ def record_rescue(room, pid):
     index = available[random.randrange(len(available))]
     used.append(index)
     name = room["players"][pid]["name"]
-    story = (f"{name} returns alive to the gathering. Someone intervened before the attack could become another empty chair. The evidence stays under watch; the protector stays unnamed."
+    story = (case_details.rescue_story(room, name)
              if room.get("mode") == "solo" else RESCUE_STORIES[index].format(name=name))
     event = dict(id=uuid.uuid4().hex, kind="rescue", day=room["day"], name=name,
                  player_id=pid, tone="hopeful", story=story)
@@ -563,8 +570,10 @@ def view(room, pid):
         mode = "town"
     chat = [dict(c) for c in room["chat"] if c["ch"] == "town"][-80:]
     mafia_chat = [dict(c) for c in room["chat"] if c["ch"] == "mafia"][-80:] if me["role"] == "mafia" else []
-    return dict(code=room["code"], team=team, team_chat=list(room.get("team_chat", [])) if team_access else [], mode=room.get("mode", "online"), scenario=solo_story.public_case(room), chat=chat, chat_mode=mode if not friend else None, phase=room["phase"], day=room["day"], winner=room.get("winner"),
-                turn_background=turn_background(room), notices=room.get("notices", []), scores_settled=room.get("scores_settled", False),
+    art = case_art.backgrounds(room)
+    background = art.get('desktop') or turn_background(room)
+    return dict(code=room["code"], team=team, team_chat=list(room.get("team_chat", [])) if team_access else [], mode=room.get("mode", "online"), tutorial=bool(room.get('tutorial')), scenario=solo_story.public_case(room), chat=chat, chat_mode=mode if not friend else None, phase=room["phase"], day=room["day"], winner=room.get("winner"),
+                turn_background=background, turn_background_mobile=art.get('mobile') or background, notices=room.get("notices", []), scores_settled=room.get("scores_settled", False),
                 death_events=room.get("death_events", []), round_id=room.get("round_id"), settings=room["settings"], ended=room.get("ended", False), mafia_chat=mafia_chat,
                 mafia_chat_open=me["role"] == "mafia" and me["alive"] and room["phase"] in ("day", "night"),
                 discussion=dict(ready=len(set(alive(room)) & room.get("discussion_ready", set())),
@@ -581,6 +590,37 @@ def view(room, pid):
                 votes_left=len(alive(room)) - len(room["votes"]) if room["phase"] == "day" else 0, log=room["log"][::-1][:40])
 
 
+def prepare_solo_case(room, selected_case, tutorial=False):
+    """Replace the case, keeping the Detective team and its invitation intact."""
+    lead = room['players'][room['lead_pid']]
+    # A friend's alias can match a character in a later case. Rename the authored
+    # account consistently, reserving all cast names as well as team aliases.
+    team_names = {lead['name'].casefold()} | {f['name'].casefold() for f in room['friends'].values()}
+    reserved = team_names | {c['name'].casefold() for c in selected_case['cast']}
+    for character in selected_case['cast']:
+        name = character['name']
+        if name.casefold() in team_names:
+            alias, suffix = name + ' Vale', 2
+            while alias.casefold() in reserved:
+                alias = name + ' Vale ' + str(suffix)
+                suffix += 1
+            selected_case = solo_story.rename(selected_case, name, alias)
+            reserved.add(alias.casefold())
+    room.update(scenario=selected_case, tutorial=tutorial, players={room['lead_pid']: lead},
+                settings=dict(special_roles=True, mafia_count=1), phase='lobby', day=0,
+                log=[], votes={}, chat=[], chat_seq=0, said=set(), discussion_ready=set(),
+                voting_announced=False, solo_voting=False, winner=None, ended=False,
+                night=None, dawn=None, round_id=None, death_events=[], story_used={},
+                death_backgrounds_used=[], notices=[], scores_settled=False)
+    lead.update(role=None, brain=bot_brain.new_brain(), alive=True, death_background=None,
+                notes=[], last=0, pending_points=0, round_points=0, investigated=set(), investigation=None)
+    for character in room['scenario']['cast']:
+        npc = add_player(room, character['name'], bot=True)
+        room['players'][npc]['character'] = dict(character)
+    solo_story.initialize(room)
+
+
+@app.post("/api/tutorial")
 @app.post("/api/solo")
 @app.post("/api/create")
 def create():
@@ -589,7 +629,9 @@ def create():
     if not name:
         raise Bad("Enter your name first.")
     selected_case = None
-    if request.path == '/api/solo':
+    if request.path == '/api/tutorial':
+        selected_case = json.loads((Path(__file__).parent / 'data/tutorial_case.json').read_text())
+    elif request.path == '/api/solo':
         try:
             selected_case = solo_story.choose(d.get('previous_scenario'), d.get('scenario_id'))
         except ValueError as error:
@@ -604,20 +646,29 @@ def create():
                            settings=dict(special_roles=True, mafia_count=1))
         room = rooms[code]
         pid = add_player(room, name, host=True)
-        if request.path == '/api/solo':
+        if selected_case is not None:
             room['mode'] = 'solo'
             room.update(lead_pid=pid, friends={}, team_chat=[], invite_token=secrets.token_urlsafe(24))
-            room['scenario'] = selected_case
-            room['settings'] = dict(special_roles=True, mafia_count=1)
-            for character in room['scenario']['cast']:
-                if character['name'].casefold() == name.casefold():
-                    room['scenario'] = solo_story.rename(room['scenario'], character['name'], character['name'] + ' Vale')
-                    break
-            for character in room['scenario']['cast']:
-                npc = add_player(room, character['name'], bot=True)
-                room['players'][npc]['character'] = dict(character)
-            solo_story.initialize(room)
+            prepare_solo_case(room, selected_case, tutorial=request.path == '/api/tutorial')
     return jsonify(code=code, pid=pid)
+
+
+@app.post('/api/solo-next')
+def next_solo_case():
+    d = request.get_json(force=True)
+    with lock:
+        room, pid = ctx(d)
+        if room.get('mode') != 'solo' or pid != room.get('lead_pid'):
+            raise Bad('Only the lead Detective can choose the next story.', 403)
+        if room['phase'] not in ('lobby', 'over'):
+            raise Bad('Finish or end the current case before choosing another story.')
+        try:
+            selected_case = solo_story.choose(room['scenario']['id'], d.get('scenario_id'))
+        except ValueError as error:
+            raise Bad(str(error))
+        prepare_solo_case(room, selected_case)
+        team_message(room, '', 'The team opened a new case: ' + room['scenario']['title'] + '.', 'sys')
+        return jsonify(ok=True, code=room['code'], pid=pid)
 
 
 @app.post("/api/join")
@@ -678,7 +729,7 @@ def detective_team_chat():
         if time.time() - author.get('team_last', 0) < 0.8:
             raise Bad('Slow down a little.')
         author['team_last'] = time.time()
-        team_message(room, author['name'], text)
+        team_message(room, author['name'], text, speaker=viewer)
         return jsonify(ok=True)
 
 
@@ -721,11 +772,11 @@ def solo_influence():
     with lock:
         room, pid = solo_context(d)
         try:
-            solo_story.influence(room, pid, d.get('target'), d.get('stance'), story_publisher(room))
+            result = solo_story.influence(room, pid, d.get('target'), d.get('stance'), story_publisher(room))
         except (ValueError, TypeError) as error:
             raise Bad(str(error))
         run_bots(room)
-        return jsonify(ok=True)
+        return jsonify(ok=True, influence=result)
 
 
 @app.post('/api/solo-evidence')
@@ -753,6 +804,8 @@ def solo_proceed():
             if step == 'mafia':
                 nominees = sorted(set(room['night']['mafia'].values()))
                 room['night']['victim'] = random.choice(nominees) if nominees else None
+                if room.get('tutorial') and room['day'] == 1:
+                    room['night']['victim'] = None
             steps = tuple(role for role in STEPS if role == 'mafia' or any(p['role'] == role for p in room['players'].values()))
             index = steps.index(step)
             if index + 1 < len(steps):

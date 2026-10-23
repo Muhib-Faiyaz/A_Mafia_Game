@@ -1,0 +1,462 @@
+{
+  "id": "practice-dispatch",
+  "title": "The Missing Practice Dispatch",
+  "setting": "A volunteer hall during an announced training exercise",
+  "anchor": "the blue practice dispatch envelope",
+  "pressure": "A short, unscored rehearsal: find the moved envelope and support your first group vote.",
+  "opening": [
+    "You are leading an announced training exercise at a volunteer hall. A blue practice dispatch envelope has left its tray. Nobody is missing or hurt; the case and its watches are a simulation.",
+    "Six volunteers have signed accounts. One has secretly been assigned to move the envelope and conceal the route: this is the Mafia role used by the game controls. A Doctor can protect a witness during a watch, and your Detective team can check one person at night.",
+    "Begin with the accounts, ask one witness one selected question, then inspect the collection sheet. A comparison needs recorded sources. You can ask the group to Suspect someone, but the final vote is a separate action."
+  ],
+  "culprit": "ellis",
+  "doctor": "june",
+  "cast": [
+    {
+      "key": "theo",
+      "name": "Theo",
+      "occupation": "Hall caretaker",
+      "description": "Theo folds the last chair and leaves the walkway clear.",
+      "relationship": "A volunteer in the hall’s announced dispatch exercise.",
+      "account": "I stayed by the front doors while the practice envelope was being moved. Mara was sorting at the dispatch table.",
+      "observation": "There are two trays on the dispatch table. One is for arrival, the other for collection. Neither tray is locked.",
+      "secret": "I counted one stack of chairs twice on the setup sheet. I will correct the total before the hall opens.",
+      "defense": "Keep what I saw beside what the dispatch sheet records.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "correction": "I could see the dispatch table, but I was carrying chairs. I was not watching every hand."
+    },
+    {
+      "key": "mara",
+      "name": "Mara",
+      "occupation": "Volunteer sorter",
+      "description": "Mara leaves a space on the table where the blue envelope had been.",
+      "relationship": "A volunteer in the hall’s announced dispatch exercise.",
+      "account": "The blue practice envelope was in the dispatch tray before I moved the chairs. I returned to the same table.",
+      "observation": "I saw Ellis lift the blue practice envelope from Dispatch and carry it into the supply room. I saw his face. I did not see him bring it back.",
+      "secret": "I left my sorting station briefly without asking for cover. I wanted to finish the chairs before anyone noticed the delay.",
+      "defense": "Keep what I saw beside what the dispatch sheet records.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "correction": "I saw the envelope being carried into the supply room. I did not look inside the envelope or follow Ellis through the door."
+    },
+    {
+      "key": "ellis",
+      "name": "Ellis",
+      "occupation": "Dispatch volunteer",
+      "description": "Ellis straightens the welcome cards while the others check the empty tray.",
+      "relationship": "A volunteer in the hall’s announced dispatch exercise.",
+      "account": "I stayed at the welcome desk after setup. I did not handle the blue practice envelope.",
+      "observation": "The supply room is shared. Finding something there would not mean only one person could have put it there.",
+      "secret": "I asked to try the hidden saboteur part in a future exercise. That request does not tell you who was assigned it today.",
+      "defense": "Keep what I saw beside what the dispatch sheet records.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "correction": "I went through the supply doorway during setup. Saying I stayed at the desk was too broad. Check the collection sheet before deciding what I carried."
+    },
+    {
+      "key": "june",
+      "name": "June",
+      "occupation": "First-aid volunteer",
+      "description": "June checks the practice watch list beside a closed first-aid kit.",
+      "relationship": "A volunteer in the hall’s announced dispatch exercise.",
+      "account": "I was at the first-aid table during the dispatch exercise. No one has been hurt. Theo was moving chairs by the entrance.",
+      "observation": "The watch list assigns protection for the exercise. It is a game procedure, not a report of an injury.",
+      "secret": "I forgot to initial the kit checklist before we began. The kit was checked; the missing initial is mine.",
+      "defense": "Keep what I saw beside what the dispatch sheet records.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "correction": "I saw Theo by the entrance several times. I cannot turn those glimpses into an uninterrupted watch."
+    },
+    {
+      "key": "noah",
+      "name": "Noah",
+      "occupation": "Stock volunteer",
+      "description": "Noah keeps the supply cupboard open so its shelves can be checked together.",
+      "relationship": "A volunteer in the hall’s announced dispatch exercise.",
+      "account": "I prepared the supply shelves before the exercise, then joined June at the first-aid table.",
+      "observation": "The collection shelf was empty at setup. After the exercise began I saw Ellis place a blue envelope on it, behind the folded sign.",
+      "secret": "I used the wrong shelf label yesterday and corrected it this morning. Today’s shelf photograph shows the corrected arrangement.",
+      "defense": "Keep what I saw beside what the dispatch sheet records.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "correction": "I saw Ellis put a blue envelope on the collection shelf. The dispatch number, rather than its color alone, should identify it."
+    },
+    {
+      "key": "priya",
+      "name": "Priya",
+      "occupation": "Exercise recorder",
+      "description": "Priya clips the collection sheet to a board without filling in any missing lines.",
+      "relationship": "A volunteer in the hall’s announced dispatch exercise.",
+      "account": "I kept the dispatch sheet at the table. Each volunteer signed for anything they collected. The practice envelope was marked D-4.",
+      "observation": "The collection sheet has a return column as well as a collection column. An empty return line should not be silently filled from memory.",
+      "secret": "I misspelled a name on yesterday’s sheet and recopied it. I kept both pages so the correction could be checked.",
+      "defense": "Keep what I saw beside what the dispatch sheet records.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "correction": "My sheet records a signed collection. Mara’s sighting is the independent check on who actually carried the envelope."
+    }
+  ],
+  "clues": [
+    {
+      "id": "theo-account",
+      "source": "theo",
+      "kind": "account",
+      "title": "Theo · Account",
+      "text": "I stayed by the front doors while the practice envelope was being moved. Mara was sorting at the dispatch table.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "theo-observation",
+      "source": "theo",
+      "kind": "observation",
+      "title": "Theo · Observation",
+      "text": "There are two trays on the dispatch table. One is for arrival, the other for collection. Neither tray is locked.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "theo-admission",
+      "source": "theo",
+      "kind": "admission",
+      "title": "Theo · Private admission",
+      "text": "I counted one stack of chairs twice on the setup sheet. I will correct the total before the hall opens.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "mara-account",
+      "source": "mara",
+      "kind": "account",
+      "title": "Mara · Account",
+      "text": "The blue practice envelope was in the dispatch tray before I moved the chairs. I returned to the same table.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "mara-observation",
+      "source": "mara",
+      "kind": "observation",
+      "title": "Mara · Observation",
+      "text": "I saw Ellis lift the blue practice envelope from Dispatch and carry it into the supply room. I saw his face. I did not see him bring it back.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "mara-admission",
+      "source": "mara",
+      "kind": "admission",
+      "title": "Mara · Private admission",
+      "text": "I left my sorting station briefly without asking for cover. I wanted to finish the chairs before anyone noticed the delay.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "ellis-account",
+      "source": "ellis",
+      "kind": "account",
+      "title": "Ellis · Account",
+      "text": "I stayed at the welcome desk after setup. I did not handle the blue practice envelope.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "ellis-observation",
+      "source": "ellis",
+      "kind": "observation",
+      "title": "Ellis · Observation",
+      "text": "The supply room is shared. Finding something there would not mean only one person could have put it there.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "ellis-admission",
+      "source": "ellis",
+      "kind": "admission",
+      "title": "Ellis · Private admission",
+      "text": "I asked to try the hidden saboteur part in a future exercise. That request does not tell you who was assigned it today.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "june-account",
+      "source": "june",
+      "kind": "account",
+      "title": "June · Account",
+      "text": "I was at the first-aid table during the dispatch exercise. No one has been hurt. Theo was moving chairs by the entrance.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "june-observation",
+      "source": "june",
+      "kind": "observation",
+      "title": "June · Observation",
+      "text": "The watch list assigns protection for the exercise. It is a game procedure, not a report of an injury.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "june-admission",
+      "source": "june",
+      "kind": "admission",
+      "title": "June · Private admission",
+      "text": "I forgot to initial the kit checklist before we began. The kit was checked; the missing initial is mine.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "noah-account",
+      "source": "noah",
+      "kind": "account",
+      "title": "Noah · Account",
+      "text": "I prepared the supply shelves before the exercise, then joined June at the first-aid table.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "noah-observation",
+      "source": "noah",
+      "kind": "observation",
+      "title": "Noah · Observation",
+      "text": "The collection shelf was empty at setup. After the exercise began I saw Ellis place a blue envelope on it, behind the folded sign.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "noah-admission",
+      "source": "noah",
+      "kind": "admission",
+      "title": "Noah · Private admission",
+      "text": "I used the wrong shelf label yesterday and corrected it this morning. Today’s shelf photograph shows the corrected arrangement.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "priya-account",
+      "source": "priya",
+      "kind": "account",
+      "title": "Priya · Account",
+      "text": "I kept the dispatch sheet at the table. Each volunteer signed for anything they collected. The practice envelope was marked D-4.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "priya-observation",
+      "source": "priya",
+      "kind": "observation",
+      "title": "Priya · Observation",
+      "text": "The collection sheet has a return column as well as a collection column. An empty return line should not be silently filled from memory.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "priya-admission",
+      "source": "priya",
+      "kind": "admission",
+      "title": "Priya · Private admission",
+      "text": "I misspelled a name on yesterday’s sheet and recopied it. I kept both pages so the correction could be checked.",
+      "topics": [
+        "dispatch",
+        "envelope",
+        "hall"
+      ],
+      "day": 1
+    },
+    {
+      "id": "dispatch-log",
+      "source": null,
+      "kind": "document",
+      "day": 1,
+      "title": "The dispatch collection sheet",
+      "text": "D-4, blue practice envelope: collected by Ellis, signed at the dispatch table. The return column is blank. The sheet records a collection, not what happened inside the supply room.",
+      "topics": [
+        "dispatch",
+        "signature",
+        "collection"
+      ]
+    },
+    {
+      "id": "shelf-photo",
+      "source": null,
+      "kind": "document",
+      "day": 1,
+      "title": "The setup shelf photograph",
+      "text": "The facilitator’s setup photograph shows the collection shelf empty behind the folded sign. The envelope is found there after the exercise begins; its marked number is D-4.",
+      "topics": [
+        "supply",
+        "shelf",
+        "envelope"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "dispatch-route",
+      "requires": [
+        "ellis-account",
+        "mara-observation",
+        "dispatch-log"
+      ],
+      "speaker": "priya",
+      "subject": "ellis",
+      "text": "Ellis says he never handled the envelope. Mara saw him take it into Supply, and the collection sheet carries his signature for D-4 with no return. That gives us a supported case to discuss.",
+      "reply": "The sheet and the sighting need an answer. I cannot use a busy desk to account for an envelope I signed for.",
+      "effect": 2.2
+    },
+    {
+      "id": "supply-shelf",
+      "requires": [
+        "ellis-account",
+        "noah-observation",
+        "shelf-photo"
+      ],
+      "speaker": "noah",
+      "subject": "ellis",
+      "text": "The setup photograph shows an empty shelf. My sighting puts the envelope there in Ellis’s hands afterward. That is a second check on the journey missing from his account.",
+      "reply": "The photograph fixes the starting point. I need to explain the movement after it, not just who could use the room.",
+      "effect": 2.2
+    }
+  ],
+  "timeline": [
+    "Before the exercise, Priya marks the blue dispatch D-4 and Noah photographs an empty collection shelf.",
+    "The exercise facilitator privately assigns Ellis the saboteur role and June the Doctor role.",
+    "Ellis signs D-4 out from the dispatch tray while Mara is returning from the chairs.",
+    "Mara sees Ellis carry the envelope into Supply; Noah sees him set it behind the folded sign.",
+    "Ellis leaves the return column blank and gives an account denying that he handled the envelope.",
+    "The Detective team compares the signed collection with Mara’s observation before the practice ballot."
+  ],
+  "solution": "Ellis moved the practice dispatch D-4 into the supply room as the assigned saboteur. His signature and Mara’s direct sighting contradict his claim that he did not handle it. This was an exercise; no real crime or death occurred.",
+  "chapters": [
+    [
+      "A first supported case",
+      "Read the accounts before choosing one question. Mara was beside the dispatch route; the collection sheet can provide an independent check."
+    ]
+  ],
+  "ending_win": "The group identifies the assigned saboteur and returns D-4 to its tray. The exercise ends with the envelope, the signed sheet, and the witness’s limits kept together. Your practice result does not affect scores.",
+  "ending_loss": "The exercise is stopped and the assigned route is explained. The envelope returns to its tray. You can rehearse again; this practice result does not affect scores.",
+  "origin": {
+    "label": "Practice exercise · original training case",
+    "skills": [
+      "novel-writing",
+      "story-skills/genre-craft",
+      "story-skills/scene-craft"
+    ],
+    "combined_from": []
+  },
+  "reconstruction": [
+    "Ellis was assigned the hidden saboteur role for this announced exercise. He signed D-4 out, carried it into Supply, and placed it behind a folded sign.",
+    "Mara’s detail answer provides a direct sighting. The dispatch sheet provides an independent signed collection with no return. Together they contradict Ellis’s initial account.",
+    "A supported comparison adds public reasons for suspicion. Asking the group to Suspect adds the team’s position; it does not cast a ballot or guarantee a result. The Detective team still needs to vote."
+  ],
+  "practice": true,
+  "reasoning": {
+    "timing": [],
+    "interpretation": []
+  },
+  "incidents": {
+    "night": "{name} leaves this practice watch and waits with the facilitator. Nobody is hurt; the dispatch exercise continues with the recorded accounts.",
+    "vote": "{name} steps out of the exercise under the facilitator’s supervision. The collection sheet stays on the dispatch table for the practice verdict.",
+    "rescue": "{name} stays in the exercise after a protected watch. Nobody is hurt; the blue dispatch remains the question at the table.",
+    "leads": []
+  },
+  "complexity": {
+    "stars": 1,
+    "label": "Very easy",
+    "reason": "A short, direct chain joins witness testimony to a scene record.",
+    "factors": {
+      "clue_chain_length": 3,
+      "cross_source_joins": 2,
+      "timing_checks": 0,
+      "false_leads": 0,
+      "interpretation_checks": 0
+    }
+  }
+}

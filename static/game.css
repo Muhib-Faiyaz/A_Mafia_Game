@@ -599,6 +599,7 @@ dialog::backdrop {
   border-radius: 14px;
   max-width: calc(100% - 32px);
   width: max-content;
+  overflow-wrap: anywhere;
   z-index: 50;
   display: none;
 }
@@ -918,7 +919,7 @@ section.case-scene { padding: 22px; border: 1px solid var(--line); border-radius
 #case-journal .stack { gap: 16px; }
 #case-solution li { margin-block: 10px; }
 
-/* Solo is a deliberate, turn-based case with three focused panels. */
+/* Solo has five separate reading and action screens. */
 .bottom-nav a[aria-selected="true"] { background: #39252e; border-radius: 10px; color: #fff1d2; }
 .bottom-nav a[aria-selected="true"] span { color: #fff1d2; font-weight: 700; }
 .solo-tab-panel { min-width: 0; }
@@ -943,4 +944,33 @@ section.case-scene { padding: 22px; border: 1px solid var(--line); border-radius
 #recorded-evidence .stack { margin-top: 14px; }
 #case-reconstruction p, #case-solution p { margin-top: 14px; }
 .solo-game .phase-card > button { width: 100%; margin-top: 16px; }
-@media (max-width: 380px) { .bottom-nav a { min-width: 68px; } .bottom-nav span { font-size: 10px; } }
+/* Five tabs fit on a 320px phone without horizontal scrolling. */
+.bottom-nav[role="tablist"] { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; padding-inline: 6px; }
+.bottom-nav[role="tablist"] a { min-width: 0; padding: 5px 2px; text-align: center; align-content: center; }
+.bottom-nav .tab-icon { position: relative; font-size: 21px; color: var(--gold); line-height: 1.15; }
+.bottom-nav .unread-badge, .unread-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; min-height: 20px; padding: 1px 5px; border-radius: 12px; background: #e5bd81; color: #19121b; font: 700 11px/1.3 system-ui, sans-serif; vertical-align: middle; }
+.tab-icon .unread-badge { position: absolute; left: 13px; top: -5px; }
+.practice-guide { border-left: 4px solid var(--gold); background: #29201bf2; }
+.practice-guide h2 { font-size: 1.3rem; margin: 6px 0 10px; }
+.practice-guide p { max-width: 68ch; }
+.practice-guide button { margin-top: 14px; }
+.influence-feedback { min-height: 86px; border: 1px solid #85704c; border-radius: 10px; padding: 14px; background: #2d261f; }
+.influence-feedback p { margin: 8px 0 0; }
+.feedback-rejected { border-color: #bb6971; background: #3a2028; }
+.complexity-meter { margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: .85rem; color: var(--gold); }
+.complexity-meter p { flex-basis: 100%; margin: 2px 0 0; }
+.complexity-stars { font-size: 1.25rem; letter-spacing: 2px; white-space: nowrap; }
+.empty-stars { color: #c0a996; }
+#next-case-picker { scroll-margin-top: 88px; }
+.solo-tab-panel, .story-picker, .story-preview { width: 100%; }
+.solo-game :focus { scroll-margin-bottom: 100px; }
+@media (max-width: 700px) {
+  body[data-turn-background="true"]::before,
+  body[data-eliminated="true"]::before {
+    background-image: linear-gradient(#100e134d, #100e1373), var(--death-background, var(--turn-background-mobile, var(--turn-background)));
+  }
+}
+@media (max-width: 380px) {
+  .bottom-nav[role="tablist"] a > span:last-child { font-size: 10px; }
+  .practice-guide { padding: 16px; }
+}

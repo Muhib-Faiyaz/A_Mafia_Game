@@ -43,10 +43,12 @@ async function dismiss(page) {
   const speeches=first.chat.filter(c=>c.k==='msg').map(c=>c.t);
   for(let i=0;i<5;i++) await post('state',identity);
   assert.deepEqual((await post('state',identity)).chat.filter(c=>c.k==='msg').map(c=>c.t),speeches);
+  await click(page,'#nav [data-solo-tab="journal"]');
   await click(page,'#inspect-scene');
   await page.waitForFunction(()=>state.scenario.journal.some(e=>e.kind==='document'));
   await click(page,'#compare-accounts');
   assert.equal(await page.evaluate(()=>state.scenario.interrogation.used),false);
+  await click(page,'#nav [data-solo-tab="round"]');
   const witness=await page.evaluate(()=>state.scenario.cast.find(p=>p.alive && p.question_options.some(q=>q.id==='correction' && q.available)));
   const original=witness.statement;
   await page.locator('#question-target').selectOption(witness.id);
@@ -60,6 +62,7 @@ async function dismiss(page) {
   const other=await page.evaluate(id=>state.scenario.cast.find(p=>p.alive && p.id!==id).id,witness.id);
   await post('solo-question',{...identity,target:other,question:'motive'},400);
   await post('chat',{...identity,text:`@${witness.name}, another question?`},400);
+  await click(page,'#nav [data-solo-tab="influence"]');
   await page.locator('#influence-target').selectOption(witness.id);
   await click(page,'[data-solo-stance="suspect"]');
   await page.waitForFunction(name=>state.chat.some(c=>c.t.includes('case against '+name)),witness.name);
@@ -70,6 +73,7 @@ async function dismiss(page) {
   const entries=await page.evaluate(()=>state.scenario.journal.length);
   await page.reload();
   await page.waitForFunction(count=>state?.scenario.journal.length>=count && state.scenario.interrogation.used,entries);
+  await click(page,'#nav [data-solo-tab="round"]');
   assert.equal(await page.locator('[data-solo-question]:enabled').count(),0);
   assert.equal(await page.locator('#input-town').count(),0);
   for(const width of [320,390,1440]) {
@@ -77,6 +81,7 @@ async function dismiss(page) {
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }
   await page.setViewportSize({width:390,height:844});
+  await click(page,'#nav [data-solo-tab="journal"]');
   await page.locator('#case-journal').scrollIntoViewIfNeeded();
   await page.screenshot({path:'/tmp/mafia-structured-solo-journal.png'});
   await page.locator('#nav [data-solo-tab="chat"]').click();

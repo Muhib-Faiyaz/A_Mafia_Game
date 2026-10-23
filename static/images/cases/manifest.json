@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "stories": {
+    "ninth-photograph": {
+      "title": "The Ninth Photograph",
+      "scenes": {
+        "mafia": {
+          "desktop": "/static/images/cases/ninth-photograph/mafia-desktop.webp",
+          "mobile": "/static/images/cases/ninth-photograph/mafia-mobile.webp",
+          "location": "transmitter alcove with reel-to-reel recorder, analog radio racks and microphone, cold sea window; no visible recorded contents"
+        },
+        "doctor": {
+          "desktop": "/static/images/cases/ninth-photograph/doctor-desktop.webp",
+          "mobile": "/static/images/cases/ninth-photograph/doctor-mobile.webp",
+          "location": "first-aid alcove with cot, folded blanket, glass medicine cabinet, shaded amber lamp and enamel basin"
+        },
+        "detective": {
+          "desktop": "/static/images/cases/ninth-photograph/detective-desktop.webp",
+          "mobile": "/static/images/cases/ninth-photograph/detective-mobile.webp",
+          "location": "chart-room inspection desk with plain closed photograph envelope, unmarked chart sheets, an unspooled empty metal reel tin, magnifying glass and angled lamp; never show a photograph's contents"
+        },
+        "discussion": {
+          "desktop": "/static/images/cases/ninth-photograph/discussion-desktop.webp",
+          "mobile": "/static/images/cases/ninth-photograph/discussion-mobile.webp",
+          "location": "chart-room communal table, six empty mismatched chairs, softly lit wall map without readable markings, sea window"
+        },
+        "voting": {
+          "desktop": "/static/images/cases/ninth-photograph/voting-desktop.webp",
+          "mobile": "/static/images/cases/ninth-photograph/voting-mobile.webp",
+          "location": "the far end of the chart room, long table with closed plain folders, empty chairs and a brass shaded lamp near the rain-dark window"
+        }
+      }
+    },
+    "room-kept-warm": {
+      "title": "A Room Kept Warm",
+      "scenes": {
+        "mafia": {
+          "desktop": "/static/images/cases/room-kept-warm/mafia-desktop.webp",
+          "mobile": "/static/images/cases/room-kept-warm/mafia-mobile.webp",
+          "location": "quiet service-stair landing with timber banister, closed linen cupboard and cold snow window; no fallen objects, missing slipper, weapon or body"
+        },
+        "doctor": {
+          "desktop": "/static/images/cases/room-kept-warm/doctor-desktop.webp",
+          "mobile": "/static/images/cases/room-kept-warm/doctor-mobile.webp",
+          "location": "empty ward alcove with neatly made bed, cast-iron radiator below the snow window, enamel washstand and medicine trolley, no documents"
+        },
+        "detective": {
+          "desktop": "/static/images/cases/room-kept-warm/detective-desktop.webp",
+          "mobile": "/static/images/cases/room-kept-warm/detective-mobile.webp",
+          "location": "hospice office document table with a closed plain envelope, unmarked papers, reading lamp and a locked filing cabinet, no handwriting or signatures"
+        },
+        "discussion": {
+          "desktop": "/static/images/cases/room-kept-warm/discussion-desktop.webp",
+          "mobile": "/static/images/cases/room-kept-warm/discussion-mobile.webp",
+          "location": "hospice dining-room table with six empty chairs, plain crockery and a softly lit radiator beneath the frosted window"
+        },
+        "voting": {
+          "desktop": "/static/images/cases/room-kept-warm/voting-desktop.webp",
+          "mobile": "/static/images/cases/room-kept-warm/voting-mobile.webp",
+          "location": "far end of the dining room, communal oak table with closed folders and empty chairs, wall clock with no readable numerals, snow-dark window"
+        }
+      }
+    },
+    "carriage-six": {
+      "title": "The Witness in Carriage Six",
+      "scenes": {
+        "mafia": {
+          "desktop": "/static/images/cases/carriage-six/mafia-desktop.webp",
+          "mobile": "/static/images/cases/carriage-six/mafia-mobile.webp",
+          "location": "empty sleeping-compartment desk with shaded reading lamp and an ordinary cup, closed cabin door and rain window; no poison, body or suspicious contents"
+        },
+        "doctor": {
+          "desktop": "/static/images/cases/carriage-six/doctor-desktop.webp",
+          "mobile": "/static/images/cases/carriage-six/doctor-mobile.webp",
+          "location": "train's improvised first-aid berth with folded linen, closed plain medical case, washbasin and brass reading lamp"
+        },
+        "detective": {
+          "desktop": "/static/images/cases/carriage-six/detective-desktop.webp",
+          "mobile": "/static/images/cases/carriage-six/detective-mobile.webp",
+          "location": "small train writing desk with closed plain deposition envelope, unmarked loose papers and magnifying glass, curtain drawn back to the rain"
+        },
+        "discussion": {
+          "desktop": "/static/images/cases/carriage-six/discussion-desktop.webp",
+          "mobile": "/static/images/cases/carriage-six/discussion-mobile.webp",
+          "location": "train saloon with a communal table and six empty seats, muted burgundy upholstery and warm lamps reflected in wet windows"
+        },
+        "voting": {
+          "desktop": "/static/images/cases/carriage-six/voting-desktop.webp",
+          "mobile": "/static/images/cases/carriage-six/voting-mobile.webp",
+          "location": "the opposite end of the same train saloon with empty booths around a broad polished table, closed plain folders and distant red signal beyond rain"
+        }
+      }
+    },
+    "river-returned": {
+      "title": "What the River Returned",
+      "scenes": {
+        "mafia": {
+          "desktop": "/static/images/cases/river-returned/mafia-desktop.webp",
+          "mobile": "/static/images/cases/river-returned/mafia-mobile.webp",
+          "location": "archive drying-room aisle with damp pages hanging from drying racks and unmarked crates, rain window and clean empty central floor; no numbered door or hidden map details"
+        },
+        "doctor": {
+          "desktop": "/static/images/cases/river-returned/doctor-desktop.webp",
+          "mobile": "/static/images/cases/river-returned/doctor-mobile.webp",
+          "location": "archive staff first-aid nook with simple cot, folded blanket, closed medical case, sink and a task lamp, same shelving beyond"
+        },
+        "detective": {
+          "desktop": "/static/images/cases/river-returned/detective-desktop.webp",
+          "mobile": "/static/images/cases/river-returned/detective-mobile.webp",
+          "location": "upper archive reading desk with closed record box, unmarked map rolls, magnifying glass and drying blotter, no readable map boundaries"
+        },
+        "discussion": {
+          "desktop": "/static/images/cases/river-returned/discussion-desktop.webp",
+          "mobile": "/static/images/cases/river-returned/discussion-mobile.webp",
+          "location": "upper archive reading room, long communal timber table with six empty chairs, rows of closed record boxes and rain-lit windows"
+        },
+        "voting": {
+          "desktop": "/static/images/cases/river-returned/voting-desktop.webp",
+          "mobile": "/static/images/cases/river-returned/voting-mobile.webp",
+          "location": "far end of the upper reading room with an empty table, plain closed folders and six chairs, high shelves and an amber lamp overlooking the floodplain"
+        }
+      }
+    },
+    "last-rehearsal": {
+      "title": "The Last Dress Rehearsal",
+      "scenes": {
+        "mafia": {
+          "desktop": "/static/images/cases/last-rehearsal/mafia-desktop.webp",
+          "mobile": "/static/images/cases/last-rehearsal/mafia-mobile.webp",
+          "location": "empty backstage work-light corner with folded flat scenery, coiled ropes safely hung on the wall and a closed prompt desk; no fall, broken rigging or body"
+        },
+        "doctor": {
+          "desktop": "/static/images/cases/last-rehearsal/doctor-desktop.webp",
+          "mobile": "/static/images/cases/last-rehearsal/doctor-mobile.webp",
+          "location": "theatre dressing-room first-aid nook with plain cot, folded towels, closed medical case, washbasin and dim mirror bulbs, no faces in mirror"
+        },
+        "detective": {
+          "desktop": "/static/images/cases/last-rehearsal/detective-desktop.webp",
+          "mobile": "/static/images/cases/last-rehearsal/detective-mobile.webp",
+          "location": "locked-looking prompt-desk corner with plain closed account book, unmarked papers and shaded work lamp, curtain edge behind it; no financial contents"
+        },
+        "discussion": {
+          "desktop": "/static/images/cases/last-rehearsal/discussion-desktop.webp",
+          "mobile": "/static/images/cases/last-rehearsal/discussion-mobile.webp",
+          "location": "reinforced rehearsal room with a broad scuffed table and six empty chairs, burgundy rehearsal curtain and warm work lights"
+        },
+        "voting": {
+          "desktop": "/static/images/cases/last-rehearsal/voting-desktop.webp",
+          "mobile": "/static/images/cases/last-rehearsal/voting-mobile.webp",
+          "location": "opposite wall of the rehearsal room, empty chairs around table, a small ordinary brass interval bell far to one side, storm-dark high window"
+        }
+      }
+    },
+    "winter-seed": {
+      "title": "The Winter Seed",
+      "scenes": {
+        "mafia": {
+          "desktop": "/static/images/cases/winter-seed/mafia-desktop.webp",
+          "mobile": "/static/images/cases/winter-seed/mafia-mobile.webp",
+          "location": "empty preparation-room side bench with closed plain sample containers, seed tray seen from afar with indistinct contents and a cold-room door; no altered label, damage or body"
+        },
+        "doctor": {
+          "desktop": "/static/images/cases/winter-seed/doctor-desktop.webp",
+          "mobile": "/static/images/cases/winter-seed/doctor-mobile.webp",
+          "location": "repository staff first-aid corner with bench cot, folded thermal blanket, closed medical case, utility sink and amber emergency lamp"
+        },
+        "detective": {
+          "desktop": "/static/images/cases/winter-seed/detective-desktop.webp",
+          "mobile": "/static/images/cases/winter-seed/detective-mobile.webp",
+          "location": "sample-inspection bench with microscope, one fully closed plain sample packet and orderly tools, no legible labels and no seeds visible under magnification"
+        },
+        "discussion": {
+          "desktop": "/static/images/cases/winter-seed/discussion-desktop.webp",
+          "mobile": "/static/images/cases/winter-seed/discussion-mobile.webp",
+          "location": "repository break-room table with six empty practical chairs, thermos and closed sample case at side, snow window and emergency lamp"
+        },
+        "voting": {
+          "desktop": "/static/images/cases/winter-seed/voting-desktop.webp",
+          "mobile": "/static/images/cases/winter-seed/voting-mobile.webp",
+          "location": "opposite end of the repository break room, empty chairs around practical table with closed folders, insulated door and snow-dark window"
+        }
+      }
+    },
+    "quiet-sentence": {
+      "title": "The Quiet Sentence",
+      "scenes": {
+        "mafia": {
+          "desktop": "/static/images/cases/quiet-sentence/mafia-desktop.webp",
+          "mobile": "/static/images/cases/quiet-sentence/mafia-mobile.webp",
+          "location": "empty interview-room desk viewed from a quiet corner, closed door and unmarked papers beneath lamp; no doorstop, grey portfolio, weapon or body"
+        },
+        "doctor": {
+          "desktop": "/static/images/cases/quiet-sentence/doctor-desktop.webp",
+          "mobile": "/static/images/cases/quiet-sentence/doctor-mobile.webp",
+          "location": "small witness-house rest-room first-aid nook with neatly covered daybed, folded blanket, closed medical case and shaded lamp, rain-dark sash window"
+        },
+        "detective": {
+          "desktop": "/static/images/cases/quiet-sentence/detective-desktop.webp",
+          "mobile": "/static/images/cases/quiet-sentence/detective-mobile.webp",
+          "location": "statement-review desk with two plain face-down sheets and a closed plain folder beneath an angled lamp, no legible words or visible corrections"
+        },
+        "discussion": {
+          "desktop": "/static/images/cases/quiet-sentence/discussion-desktop.webp",
+          "mobile": "/static/images/cases/quiet-sentence/discussion-mobile.webp",
+          "location": "front-room communal table with six empty chairs, muted burgundy curtains and amber lamp, closed plain folder to one side"
+        },
+        "voting": {
+          "desktop": "/static/images/cases/quiet-sentence/voting-desktop.webp",
+          "mobile": "/static/images/cases/quiet-sentence/voting-mobile.webp",
+          "location": "the opposite end of the same front room, empty chairs and long oak table, closed plain folders and rain-dark sash window"
+        }
+      }
+    }
+  }
+}

@@ -486,7 +486,71 @@
       "On the review night Elias borrowed Ivo’s coupling wrench and used the supposed roof repair to approach the transmitter room. After Ada’s last sighting of Rook, Elias struck him with the wrench. He prepared a replacement reel by recording the old voice together with the island’s nine o’clock bell. Playing it at 21:17 would make Rook appear to have just spoken and would let the company dismiss the old recording as a recent reconstruction.",
       "Ivo’s speaking-tube observation breaks the uninterrupted roof alibi. Sera’s sighting places Elias on the route with the white-backed reel. The fresh leader and repeated bell explain the substitution. The photograph does not, by itself, prove tonight’s killing; it explains why discrediting the reel and controlling the rescue account mattered to Elias.",
       "The others had helped silence the past in different ways. Nell accepted credit for a cropped picture, Ada edited an arrival time and withheld the original, and Sera repeated a statement Elias had supplied. Ivo concealed his drinking and the limits of his memory. Mara signed Rook’s shifts to keep him employed. Those failings made suspicion plausible, but none explains the newly made reel and Elias’s omitted journey."
-    ]
+    ],
+    "reasoning": {
+      "timing": [
+        {
+          "requires": [
+            "mara-account",
+            "nell-observation"
+          ],
+          "note": "Distinguish the actual 21:00 bell from the bell embedded in the 21:17 playback."
+        },
+        {
+          "requires": [
+            "elias-account",
+            "ivo-observation"
+          ],
+          "note": "Check the claimed roof interval against the workshop reply at 21:04."
+        }
+      ],
+      "interpretation": [
+        {
+          "requires": [
+            "nell-account",
+            "nell-observation",
+            "splice"
+          ],
+          "note": "Separate an old voice from a newly assembled recording using the different openings and fresh stock."
+        },
+        {
+          "requires": [
+            "elias-account",
+            "service",
+            "sera-account"
+          ],
+          "note": "Join the old launch photograph to the present reel route without treating either sighting as a complete murder account."
+        }
+      ]
+    },
+    "incidents": {
+      "night": "{name} is found dead before the chart-room watch changes. Beyond the shut window the sea covers the slip. You leave the reel and the wider photograph together on the table and seal the account already given; the questions never asked remain unanswered.",
+      "vote": "{name} is placed under guard away from the chart-room table. The reel and uncropped photograph remain in the inquiry; the signed account can still be checked, but there will be no further answers from that chair.",
+      "rescue": "{name} returns alive to the chart room after the attack is interrupted. A dry blanket is laid over the chair. The reel and photograph remain under watch, and the person who intervened stays unnamed.",
+      "leads": [
+        {
+          "cause": "night",
+          "min_day": 1,
+          "requires": [
+            "nell-observation",
+            "splice"
+          ],
+          "text": "The recorded bell and fresh leader are already in the journal. Listen for what dates a recording, as well as whose voice it carries."
+        }
+      ]
+    },
+    "complexity": {
+      "stars": 4,
+      "label": "Difficult",
+      "reason": "Join up to 4 evidence items across 3 sources and compare separate time or disclosure sequences. Distinguish what a record shows from what it only suggests. An admitted wrongdoing also needs to be separated from the main accusation.",
+      "factors": {
+        "clue_chain_length": 4,
+        "cross_source_joins": 2,
+        "timing_checks": 2,
+        "false_leads": 1,
+        "interpretation_checks": 2
+      }
+    }
   },
   {
     "id": "room-kept-warm",
@@ -968,7 +1032,57 @@
       "Leonie borrowed Omar’s key at 18:10. After Hana left the trustee alive, she used the service passage, confronted him about the amendment, and pushed him down the office stairs when he would not surrender it. She removed the amendment from his open briefcase. Room Four provided an exit from the passage without crossing the dining room; its turned-up heat made the otherwise empty room look like a place in ordinary use. She returned the key at 18:40.",
       "Jules’s empty-chair sighting makes the dining-room alibi incomplete. Omar’s key loan and the return envelope show the passage remained available. Beth saw the case near the old wing, while the narrow wheel tracks give an independent detail to compare with that sighting. None is a complete account alone; together they explain the journey Leonie said a locked door made impossible.",
       "Beth had argued about the inheritance, but Ruth was with her during the later interval. Jules hid food taken for his father, Omar hid a false repair invoice, and Ruth delayed reporting the company because of her pension settlement. Hana refused an unauthorized copy of the amendment and blamed her own caution afterward. Their motives explain evasions; they do not explain Leonie’s missing journey or the changed land schedule."
-    ]
+    ],
+    "reasoning": {
+      "timing": [
+        {
+          "requires": [
+            "leonie-account",
+            "jules-account",
+            "key-envelope"
+          ],
+          "note": "Place an empty dining-room chair and the returned key inside the claimed continuous alibi."
+        }
+      ],
+      "interpretation": [
+        {
+          "requires": [
+            "hana-observation",
+            "beth-observation",
+            "case-track"
+          ],
+          "note": "Treat the heated room and wheel tracks as a possible route, not proof of an occupant or a unique bag."
+        }
+      ]
+    },
+    "incidents": {
+      "night": "{name} is found dead before the hospice watch is relieved. The dining-room table has one fewer voice around it, while the old wing keeps its uneven warmth. You preserve the signed account beside the transfer file; an unasked question cannot be recovered from a signature.",
+      "vote": "{name} is placed under guard outside the dining-room inquiry. The old-wing keys and transfer file remain on the table. Their signed account stays available for comparison, although the next question will have to go elsewhere.",
+      "rescue": "{name} survives the attack and returns to the dining room under a blanket. The medical supplies stay within reach and the old-wing watch resumes. The protector is not identified.",
+      "leads": [
+        {
+          "cause": "night",
+          "min_day": 1,
+          "requires": [
+            "hana-observation",
+            "key-envelope"
+          ],
+          "text": "The file already holds a changed heat setting and a key’s return. A room’s condition and a person’s journey are different questions."
+        }
+      ]
+    },
+    "complexity": {
+      "stars": 3,
+      "label": "Moderate",
+      "reason": "Join up to 3 evidence items across 3 sources and check the event order. Distinguish what a record shows from what it only suggests. An admitted wrongdoing also needs to be separated from the main accusation.",
+      "factors": {
+        "clue_chain_length": 3,
+        "cross_source_joins": 2,
+        "timing_checks": 1,
+        "false_leads": 1,
+        "interpretation_checks": 1
+      }
+    }
   },
   {
     "id": "carriage-six",
@@ -1450,7 +1564,65 @@
       "Pavel borrowed Esme’s spare key under the pretext of a parcel locked in an empty compartment. After she served the witness alive at 22:06, he entered Six through the service route, took the deposition, and smothered the witness during the struggle. The spilled tea, broken button, and displaced pillowcase belong to that disturbance. He returned to Three only after the emergency stop.",
       "The receipt was stamped while Pavel was already walking toward the train, then delivered by the porter. It dates paperwork rather than its owner. Dorian’s failed-whistle account exposes the rehearsed departure detail. Faye’s empty-seat interval and Esme’s admitted key loan turn those doubts into a route. The coat sighting supports that route without identifying a face by itself.",
       "Esme concealed a key loan, Mina concealed the inquiry into her registration, and Dorian concealed misuse of his travel pass. Luca had sold an instrument while telling the orchestra it remained in storage. Faye falsified a warning date after her real warning was ignored. Each had a reason to dislike scrutiny. Pavel alone needed the original deposition removed and had supplied a false journey for the interval in which it disappeared."
-    ]
+    ],
+    "reasoning": {
+      "timing": [
+        {
+          "requires": [
+            "pavel-account",
+            "dorian-account",
+            "porter-book"
+          ],
+          "note": "Test a claimed departure signal and stamped receipt against how the departure and delivery actually occurred."
+        },
+        {
+          "requires": [
+            "faye-account",
+            "esme-account",
+            "esme-admission"
+          ],
+          "note": "Place the empty-seat interval beside the last living sighting and service-key access."
+        }
+      ],
+      "interpretation": [
+        {
+          "requires": [
+            "pavel-account",
+            "porter-book",
+            "spare-tag"
+          ],
+          "note": "Distinguish a paper timestamp from its owner’s presence and a possible key route from a face identification."
+        }
+      ]
+    },
+    "incidents": {
+      "night": "{name} is found dead before the corridor watch changes. Carriage Six’s reading lamp still burns above the table where you keep the accounts. You secure this witness’s pre-watch notes with the deposition file; the train has lost an answer it cannot stop to replace.",
+      "vote": "{name} is placed under guard in a separate compartment. The corridor watch continues, and the deposition file stays on your table. Their signed account remains evidence even though their next answer will not be heard.",
+      "rescue": "{name} survives the attack and is brought back into the light of the carriage lamps. You keep the corridor clear while the watch is reset. The person who protected them remains unnamed.",
+      "leads": [
+        {
+          "cause": "night",
+          "min_day": 1,
+          "requires": [
+            "porter-book",
+            "pavel-account"
+          ],
+          "text": "The porter’s entry can date the movement of paper. The person’s missing minutes still need a separate account."
+        }
+      ]
+    },
+    "complexity": {
+      "stars": 3,
+      "label": "Moderate",
+      "reason": "Join up to 3 evidence items across 3 sources and compare separate time or disclosure sequences. Distinguish what a record shows from what it only suggests. An admitted wrongdoing also needs to be separated from the main accusation.",
+      "factors": {
+        "clue_chain_length": 3,
+        "cross_source_joins": 2,
+        "timing_checks": 2,
+        "false_leads": 1,
+        "interpretation_checks": 1
+      }
+    }
   },
   {
     "id": "river-returned",
@@ -1933,7 +2105,63 @@
       "At 16:10 the archivist opened Box K with twelve folded sheets. Silas argued with her about the boundary page while Jo fetched a frame. He struck the archivist with the square map weight, moved the weight toward the drying racks, and removed the original page in his document tube. Ren saw him leave with the tube open at 16:15. Jo later counted eleven folds; the backing impression survived the theft.",
       "The missing fold is not itself proof of its contents, and a damp sleeve is not proof of murder. The backing impression identifies the boundary the missing page carried. Jo’s argument, Ren’s departure sighting, and Silas’s denial of discussing the box establish the opportunity he tried to omit. His wrong-side loading bay identifies the false survey beneath the killing.",
       "Mae sent notices after noticing a discrepancy. Ren approved an inadequate pump. Arlan broke into the redevelopment office, Jo removed a letter from her own file, and Tess altered an evacuation allocation for her brother. Their admissions explain genuine wrongdoing around the disaster. None redraws the original boundary or accounts for the page taken from the archivist."
-    ]
+    ],
+    "reasoning": {
+      "timing": [
+        {
+          "requires": [
+            "jo-account",
+            "jo-observation",
+            "ren-account"
+          ],
+          "note": "Order the opening, argument, departure with an open tube, and later missing fold."
+        }
+      ],
+      "interpretation": [
+        {
+          "requires": [
+            "arlan-observation",
+            "ren-observation"
+          ],
+          "note": "Identify the surveyed building through independent bay and drain orientation, rather than a drifting house number."
+        },
+        {
+          "requires": [
+            "jo-observation",
+            "field-impression"
+          ],
+          "note": "Use the backing impression to identify a missing sheet’s boundary content, rather than inferring content from a count."
+        }
+      ]
+    },
+    "incidents": {
+      "night": "{name} is found dead before the archive watch returns upstairs. Below the reading room, the numbered door knocks against the shelving again. You keep the witness’s sealed notes above the flood line with the survey; no drying rack can restore an answer that was never recorded.",
+      "vote": "{name} is placed under guard away from the recovered records. The drying frames and survey stay under shared watch. Their account remains in the file, with its limits intact.",
+      "rescue": "{name} survives the attack and returns above the flood line. A clear place is made between the drying frames for the watch to regroup. The records remain together, and the protector remains unnamed.",
+      "leads": [
+        {
+          "cause": "night",
+          "min_day": 1,
+          "requires": [
+            "field-impression",
+            "ren-observation"
+          ],
+          "text": "The surviving impression and the independent drain plan are both in the file. Read their boundaries together before trusting a familiar address."
+        }
+      ]
+    },
+    "complexity": {
+      "stars": 4,
+      "label": "Difficult",
+      "reason": "Join up to 4 evidence items across 3 sources and check the event order. Distinguish what a record shows from what it only suggests. An admitted wrongdoing also needs to be separated from the main accusation.",
+      "factors": {
+        "clue_chain_length": 4,
+        "cross_source_joins": 2,
+        "timing_checks": 1,
+        "false_leads": 1,
+        "interpretation_checks": 2
+      }
+    }
   },
   {
     "id": "last-rehearsal",
@@ -2415,7 +2643,73 @@
       "Vera went to the gallery while claiming she remained in the foyer. During the blackout she lifted the bridge’s locking pin by hand and released the suspended scenery while the stage manager was beneath it. Reaching for the gallery work light afterward, she operated the curtain control and exposed the scene sooner than she intended. She then treated the death as a misunderstood cue and defective maintenance.",
       "Clio called for the bridge to be held, not released. Milo preserved that instruction on the rehearsal audio. Rafi had helped disconnect the foyer monitor, so Vera’s account of hearing the invented cue from there did not establish the location she claimed. Ben and Una place her on the gallery route; the missing pin distinguishes an action from a mistaken instruction.",
       "Ben had fitted an undocumented replacement part. Una inflated an invoice to pay an assistant, Clio copied a contact list while applying elsewhere, and Milo deleted an earlier failed cue. Rafi withdrew a safety complaint when another season was offered. These compromises explain why the company hesitated to speak. They do not explain the manually removed pin, Vera’s false location, or the benefit transfers she authorized."
-    ]
+    ],
+    "reasoning": {
+      "timing": [
+        {
+          "requires": [
+            "vera-account",
+            "rafi-observation",
+            "rehearsal-track"
+          ],
+          "note": "Compare the claimed heard cue with the disconnected monitor and the recorded blackout/hold sequence."
+        },
+        {
+          "requires": [
+            "ben-account",
+            "ben-observation",
+            "una-account"
+          ],
+          "note": "Order the pinned brake, gallery approach, and manually removed pin around the blackout."
+        }
+      ],
+      "interpretation": [
+        {
+          "requires": [
+            "vera-account",
+            "rafi-observation",
+            "rehearsal-track"
+          ],
+          "note": "Separate remembered instruction from an inference about a motor sound and check whether the claimed listening position works."
+        },
+        {
+          "requires": [
+            "ben-observation",
+            "una-admission",
+            "account-carbon"
+          ],
+          "note": "Separate deliberate mechanical intervention, an irregular repair, and a false invoice from the independent benefit-transfer trail."
+        }
+      ]
+    },
+    "incidents": {
+      "night": "{name} is found dead before the rehearsal-wing watch is relieved. Under the work lights, the empty chair and its brass interval bell no longer look like scenery. You seal the witness’s notes beside the benefit file; the next call will receive one fewer answer.",
+      "vote": "{name} is placed under guard beyond the rehearsal-room doors. The work lights stay on and the benefit file stays with you. Their signed account remains on the table, separate from the silence of their chair.",
+      "rescue": "{name} survives the attack and returns beneath the rehearsal-wing work lights. The interval bell remains untouched while the watch regroups. The protector’s name is withheld.",
+      "leads": [
+        {
+          "cause": "night",
+          "min_day": 1,
+          "requires": [
+            "rehearsal-track",
+            "ben-observation"
+          ],
+          "text": "The recorded instruction and the removed pin describe different kinds of event. Keep the words beside the physical action they could not perform."
+        }
+      ]
+    },
+    "complexity": {
+      "stars": 4,
+      "label": "Difficult",
+      "reason": "Join up to 3 evidence items across 3 sources and compare separate time or disclosure sequences. Distinguish what a record shows from what it only suggests. An admitted wrongdoing also needs to be separated from the main accusation.",
+      "factors": {
+        "clue_chain_length": 3,
+        "cross_source_joins": 2,
+        "timing_checks": 2,
+        "false_leads": 1,
+        "interpretation_checks": 2
+      }
+    }
   },
   {
     "id": "winter-seed",
@@ -2898,7 +3192,65 @@
       "Soren took the spare label from Niko’s desk, signed into Cass’s generator room, and left before the fuel check was complete. After Leila’s last sighting of the auditor, he entered the preparation room and tried to replace the reference packet. When she challenged the handover, he used the transport-satchel strap to strangle her. He applied the duplicate number to a blue-seamed dispatch packet and authorized an unrecorded replacement at 14:31. Dara saw him leave with that packet at 14:32.",
       "The arrival signature did not account for the whole interval. Anika’s original envelope, Dara’s packet sighting, Niko’s backing paper, and Soren’s own dispatch authorization trace a replacement the auditor never recorded. Packaging alone cannot identify a seed species. It can establish that the object sent onward is not the uninterrupted sealed object its label claims it is. Soren kept the original among his papers.",
       "Cass stole reserve fuel, Niko entered estimated results as completed tests, and Dara inflated the family count after her first complaint was ignored. Anika hid an unauthorized duplicate collection; Leila offered reassurance before test results existed. Those choices mattered to the crisis. They do not explain the substituted reference or Soren’s false use of Cass’s inspection interval."
-    ]
+    ],
+    "reasoning": {
+      "timing": [
+        {
+          "requires": [
+            "soren-account",
+            "cass-account",
+            "cass-observation",
+            "dispatch-copy"
+          ],
+          "note": "Test an arrival-only generator signature against the missing interval and signed 14:31 handover."
+        }
+      ],
+      "interpretation": [
+        {
+          "requires": [
+            "anika-observation",
+            "dara-account",
+            "envelope-stock"
+          ],
+          "note": "Distinguish packaging identity from seed-species identity; a blue seam is not a laboratory result."
+        },
+        {
+          "requires": [
+            "niko-observation",
+            "dispatch-copy"
+          ],
+          "note": "Distinguish continuity of a copied label number from authorized continuity of the sealed reference packet."
+        }
+      ]
+    },
+    "incidents": {
+      "night": "{name} is found dead before the repository watch is relieved. The generator carries on behind the wall while you keep the sealed reference in view on the preparation bench. Their pre-watch notes go beside it; the labels will outlast another voice.",
+      "vote": "{name} is placed under guard away from the preparation bench. The reference packet and its paperwork stay together. Their signed account remains part of the sample’s history, although no further answer can be added by them.",
+      "rescue": "{name} survives the attack and returns to the preparation room. You clear a place beside the bench while the generator holds its one cold room. The reference stays under watch; the protector stays unnamed.",
+      "leads": [
+        {
+          "cause": "night",
+          "min_day": 1,
+          "requires": [
+            "envelope-stock",
+            "niko-observation"
+          ],
+          "text": "The stock comparison and duplicate backing are already recorded. A number can remain unchanged while the object carrying it changes."
+        }
+      ]
+    },
+    "complexity": {
+      "stars": 4,
+      "label": "Difficult",
+      "reason": "Join up to 4 evidence items across 4 sources and check the event order. Distinguish what a record shows from what it only suggests. An admitted wrongdoing also needs to be separated from the main accusation.",
+      "factors": {
+        "clue_chain_length": 4,
+        "cross_source_joins": 3,
+        "timing_checks": 1,
+        "false_leads": 1,
+        "interpretation_checks": 2
+      }
+    }
   },
   {
     "id": "quiet-sentence",
@@ -3359,7 +3711,7 @@
     "chapters": [
       [
         "The word on the page",
-        "You place the old sentence beside the new one. A correction can change responsibility without changing a single name."
+        "The rejected draft stays on the front-room table; the clean correction remains sealed until inspection. You keep the objection, the final wording, and the moment each was heard as separate questions."
       ],
       [
         "Protection and control",
@@ -3385,6 +3737,73 @@
       "Everett borrowed the service key at 17:12. After Inez muted the listening link and Amal left Calder briefly to use the washroom, he entered through the inner corridor and demanded that the old wording stand. Calder refused. Everett struck him with the brass doorstop, hid it in the grey portfolio, and used a clean canvas cloth to handle it on the return route. The felt caught in the portfolio and the bare base left behind show why the household object needed explanation.",
       "Sorin saw the portfolio leave by the route Everett omitted. Joel’s key book gives access, while Inez’s muted-link account and the corrected page establish which wording was private. Everett’s reference to “ordered to return” contradicts his claim that he had neither visited nor seen a corrected page. It is significant beside the route evidence, not because knowing a phrase alone makes someone a murderer.",
       "Inez had softened a threat in an earlier translation; Amal signed a safer account to protect her brother. Joel hid a camera gap to permit a private call, Maeve overstated readiness to preserve funding, and Sorin kept unauthorized copies for a wage claim. These choices compromised the protection process. Everett exploited those weaknesses to make an independently chosen correction sound like confusion."
-    ]
+    ],
+    "reasoning": {
+      "timing": [
+        {
+          "requires": [
+            "everett-account",
+            "sorin-account",
+            "key-book"
+          ],
+          "note": "Order the key loan and portfolio return inside the claimed continuous front-room interval."
+        },
+        {
+          "requires": [
+            "everett-observation",
+            "inez-account",
+            "corrected-page",
+            "amal-observation"
+          ],
+          "note": "Establish who used the final wording before it was publicly opened and after the listening link was muted."
+        }
+      ],
+      "interpretation": [
+        {
+          "requires": [
+            "inez-account",
+            "corrected-page",
+            "amal-observation"
+          ],
+          "note": "Distinguish awareness of an objection from access to the exact final private wording."
+        },
+        {
+          "requires": [
+            "joel-observation",
+            "maeve-observation",
+            "sorin-account"
+          ],
+          "note": "Keep routes for hearing, physical entry, and a carried object separate; none is a complete journey alone."
+        }
+      ]
+    },
+    "incidents": {
+      "night": "{name} is found dead before the house watch changes. The front-room table still holds the rejected draft, with each signed account kept beside it. You close the witness’s file without completing the sentences they had not yet chosen to give you.",
+      "vote": "{name} is placed under guard beyond the front-room inquiry. The rejected draft and the sealed exhibits stay with you. Their signed account remains available, but they will no longer help decide how the next question is worded.",
+      "rescue": "{name} survives the attack and returns to the front-room table. A glass of water is set beside the accounts without moving any page. The watch resumes; the protector remains unnamed.",
+      "leads": [
+        {
+          "cause": "night",
+          "min_day": 1,
+          "requires": [
+            "corrected-page",
+            "joel-observation"
+          ],
+          "text": "The printed correction and the muted-link check are in the file. Keep the possible routes for words separate from the possible routes for a person."
+        }
+      ]
+    },
+    "complexity": {
+      "stars": 5,
+      "label": "Very difficult",
+      "reason": "Join up to 4 evidence items across 4 sources and compare separate time or disclosure sequences. Distinguish what a record shows from what it only suggests. An admitted wrongdoing also needs to be separated from the main accusation.",
+      "factors": {
+        "clue_chain_length": 4,
+        "cross_source_joins": 3,
+        "timing_checks": 2,
+        "false_leads": 1,
+        "interpretation_checks": 2
+      }
+    }
   }
 ]

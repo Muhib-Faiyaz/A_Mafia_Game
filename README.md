@@ -50,6 +50,12 @@ thriller cases and a **Random story** option. Random avoids your most recent
 case; choosing a title explicitly can replay it. The picker lists each story's
 writing sources. See [the catalog](docs/story-catalog.md) for the full list.
 
+The selector, briefing, and Dossier show each case's **complexity out of five
+stars**, measured from its evidence chains and reasoning checks. See
+[rating criteria](docs/story-complexity.md). Choose **Practice tutorial** from
+the solo entry screen for a short, guided case using the real controls. Its first
+night is safe, it awards no points, and it is separate from the seven mysteries.
+
 Solo has **one Mafia**, one Doctor, four Villagers, and your Detective seat.
 Its culprit, accounts, and timeline are fixed so the clues remain consistent.
 There are **no countdowns**: use **Proceed** through the Mafia, Doctor, and
@@ -71,9 +77,13 @@ questions use the buttons. Private team chat remains editable.
 
 The bottom tabs explain their jobs:
 
-- **Case journal:** current turn, investigations, one selected question, evidence,
-  statement changes, persuasion, and the final ballot.
+- **Round:** current turn, private investigations, one selected question, and the
+  final ballot.
+- **Case journal:** recorded accounts, evidence, statement changes, inspection,
+  and comparisons.
 - **Dossier:** opening, cast, story source, context, and the final reconstruction.
+- **Influence:** Suspect, Defend, or Withdraw a stance, with feedback showing
+  whether witnesses changed their current voting preferences.
 - **Chat:** public accounts and changes, plus private Detective team chat.
 
 **Inspect the scene** adds exhibits and can recover an inactive witness's sealed
@@ -83,6 +93,9 @@ to influence how witnesses weigh the case. One supported comparison plus the
 team's suspicion can persuade the group; an unsupported accusation alone cannot.
 Repeated support does not stack. These controls are not the final ballot: proceed
 to voting, choose a suspect in the roster, and confirm the team's one vote.
+Influence is available during discussion, before voting opens. Acceptance does
+not guarantee persuasion: the feedback compares actual current witness choices,
+which can change again when new evidence appears.
 
 At the end, including a host-ended case, the Dossier explains how the killing
 happened, who acted, their motives, the chronology, and the innocent secrets.
@@ -103,6 +116,10 @@ one question per round, investigation, readiness vote, ballot, score, and privat
 case file. Team chat never reaches bots. Lead controls start, restart, and close;
 friends can participate in the shared decisions. A friend leaving frees a seat.
 The lead closing the case ends it for everyone. Treat the invite link as private.
+After a case ends, **Choose another story** keeps the same room, invitation,
+friends, private conversation, and Detective score. New teammate messages show an
+unread badge and a brief notification when their chat is out of view; opening and
+reading the chat clears the badge. Own messages and polling repeats do not alert.
 
 No external AI service or credentials are required. Browser reloads resume state;
 a server restart ends in-memory runs. See [solo design](docs/solo-story-design.md)
@@ -170,6 +187,11 @@ The uploaded recording is hosted locally and converted to 128 kbps MP3 for brows
 
 Every turn has its own background: crimson Mafia, teal Doctor, blue Detective,
 amber discussion, and purple voting, plus distinct ending screens.
+The seven solo cases additionally have five setting-specific role locations,
+each with a desktop landscape and mobile portrait adaptation. Their files and
+composition rules are documented in [the visual guide](docs/visual-guide.md).
+Solo death and rescue notices use the current story's setting; quiet leads only
+refer back to evidence already published in the case file.
 
 Each actual elimination creates a shared, randomly selected sad, goofy, or eerie
 story. A blood-red notification names the victim and plays a synthesized impact
@@ -235,6 +257,8 @@ node scripts/check-bot-chat.cjs
 node scripts/check-solo.cjs
 node scripts/check-solo-team.cjs
 node scripts/check-solo-journal.cjs
+node scripts/check-gameplay-features.cjs
+node scripts/check-case-art.cjs
 ```
 
 The regression suite covers settings, role counts, split and unanimous votes,

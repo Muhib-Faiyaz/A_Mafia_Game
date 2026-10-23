@@ -1,0 +1,1197 @@
+{
+  "version": 1,
+  "generated_on": "2026-10-23",
+  "assets": [
+    {
+      "path": "ninth-photograph/mafia-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 103022,
+      "sha256": "69d452ae6f11377d3f24056f7ed3080c33ea3609a42b00dc8a15e743e9c2e714",
+      "source": "_sources/ninth-photograph-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/mafia-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 99110,
+      "sha256": "c743c7b0c1442a90b748fd7928ecba65b9bfb56159a05c83c26954342bcb4b42",
+      "source": "_sources/ninth-photograph-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/doctor-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 92282,
+      "sha256": "bdc48007b972bebb263c25f1dd4b9971de4b32af0be42bf5ddea12da5ff53bf9",
+      "source": "_sources/ninth-photograph-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/doctor-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 104826,
+      "sha256": "bf3e8e81cfb58da41e5b9a8ada6653b4c292baf13400675b8bb3e23580567157",
+      "source": "_sources/ninth-photograph-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/detective-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 126700,
+      "sha256": "46ca3f29c4c7d9f4eb4f821790e6350d7cd7359e7268b2d4faf65f63dc2502d3",
+      "source": "_sources/ninth-photograph-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/detective-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 119908,
+      "sha256": "9faf0f0f5cac1b7066a27a6c03d222117a779149ce718adedbb2b2cd9a84805a",
+      "source": "_sources/ninth-photograph-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/discussion-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 105292,
+      "sha256": "09621871da36f20d5c1074e384642ffa3bc5c1fd1733dbbac9c658069a99251c",
+      "source": "_sources/ninth-photograph-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/discussion-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 109906,
+      "sha256": "a81a8483747eaecf1cf9c6fb6a1749c0788f7f75113d963d5e0ce600e3da40e2",
+      "source": "_sources/ninth-photograph-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/voting-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 198712,
+      "sha256": "0bfd7077f40b86ac9026bcfe03911a7df4b308178c558d0fba7210c8e9690356",
+      "source": "_sources/ninth-photograph-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        4,
+        2,
+        1664,
+        936
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "ninth-photograph/voting-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 76450,
+      "sha256": "0b2155e708537969c19e8f83615457e226a8262adc030c6be8d054532a1e81af",
+      "source": "_sources/ninth-photograph-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        575,
+        6,
+        522,
+        928
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/mafia-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 74740,
+      "sha256": "0e64ac2686ddcd4d661375e3163461bfc130f733603fadb75cc3049fae0c15a3",
+      "source": "_sources/room-kept-warm-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/mafia-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 79722,
+      "sha256": "a88b3baabd8bf805021e046e4b9bd24ac3538a3b5955802eba1df0692caf8115",
+      "source": "_sources/room-kept-warm-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/doctor-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 97420,
+      "sha256": "5e5af64f1dca81bae89b64d66c50e0aab44e923ef7f2eb66dad236a3825f1419",
+      "source": "_sources/room-kept-warm-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/doctor-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 91652,
+      "sha256": "2f8c12a48dd106c7b8f2205d521c6119d8343887b2061c574c789a09adb23a74",
+      "source": "_sources/room-kept-warm-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/detective-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 82682,
+      "sha256": "ea6aee042b76f8a1ecc7588948efd3ca3298ea3ac24ff77eac3003506c1ee3cc",
+      "source": "_sources/room-kept-warm-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/detective-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 80712,
+      "sha256": "038e5ad614a062c13b7ca4048774fb9bfbc3b6974b3cdf35bd93dcc29e5b7810",
+      "source": "_sources/room-kept-warm-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/discussion-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 107772,
+      "sha256": "bbd6b6a2b05d20aff6677392268d0da4d3a21945c6f8eeeb0b986c65f5a5ee0e",
+      "source": "_sources/room-kept-warm-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/discussion-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 99342,
+      "sha256": "9cc6e1ad0f9a35054a39edbb100a3d04ec8c640f356715e4fab2a4dc7001c870",
+      "source": "_sources/room-kept-warm-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/voting-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 176688,
+      "sha256": "387e1ade669197f1fe523a8881fd334f05e58287dad66e061bc24aba7d8a9fd6",
+      "source": "_sources/room-kept-warm-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        4,
+        2,
+        1664,
+        936
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "room-kept-warm/voting-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 88054,
+      "sha256": "c47dd0d003df79c8ffd7481e8762f565384028ce61c72c5374e18ea0978f3024",
+      "source": "_sources/room-kept-warm-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        575,
+        6,
+        522,
+        928
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/mafia-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 101526,
+      "sha256": "a4675fad4e0aebdf33ce60dcadd3a226e2e869f92ab1c2e21981fdfb691c1e7e",
+      "source": "_sources/carriage-six-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/mafia-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 95378,
+      "sha256": "2b0631de2d7a08a5240b734ba0d7e71b7adf7d19c709e4e19941df45fb6fb11a",
+      "source": "_sources/carriage-six-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/doctor-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 104020,
+      "sha256": "9709110b33f1a0772a2f3cc8e9c9c7ba849f5b291955a16e7dcd7ac8acb9ddbf",
+      "source": "_sources/carriage-six-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/doctor-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 108922,
+      "sha256": "58387ba099a7b2b8542bce8b2e818338120a827c8233ac8c6438c065f4b6926c",
+      "source": "_sources/carriage-six-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/detective-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 115412,
+      "sha256": "5a9bea3bc0f62d4bf724bea0dbe5fd7b9b7893daedc2231ad82a9ac733a34b0d",
+      "source": "_sources/carriage-six-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/detective-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 107352,
+      "sha256": "17b876b6415902a6aea68084a211f39905bb1a0029c8cd1c7e3edaca3f0d1eae",
+      "source": "_sources/carriage-six-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/discussion-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 110542,
+      "sha256": "f5c2376357b601e31126b4e4a7b017b3199ee836bce88fa8f528364439d0036d",
+      "source": "_sources/carriage-six-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/discussion-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 115580,
+      "sha256": "c49eaaad8472fc4ba9fcb5eef3b18c8457ba34c60d58229bab3411be4e4b5396",
+      "source": "_sources/carriage-six-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/voting-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 205780,
+      "sha256": "6d438bd2f9b655a6bbb298f9082b01e47be25d6619b57cb172b1a698d60ba8e0",
+      "source": "_sources/carriage-six-03.webp",
+      "source_width": 1672,
+      "source_height": 940,
+      "source_region_xywh": [
+        4,
+        2,
+        1664,
+        936
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "carriage-six/voting-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 80678,
+      "sha256": "2822edec9522f13fa59a5fb22ce5c5a489df7f9ee8f1b5c64225c32522a36cbd",
+      "source": "_sources/carriage-six-03.webp",
+      "source_width": 1672,
+      "source_height": 940,
+      "source_region_xywh": [
+        575,
+        6,
+        522,
+        928
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/mafia-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 119852,
+      "sha256": "2d444add9d13879df979cc6cfbf9f0870d65bb8ea6fa51f7263b1e7e532f1721",
+      "source": "_sources/river-returned-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/mafia-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 128204,
+      "sha256": "b4666ffcfe7641c1060f469db6c610c9b981ce714e1e5df6c8d53f8ea31eaaec",
+      "source": "_sources/river-returned-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/doctor-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 111426,
+      "sha256": "f45f4e28cc85c6f21570a1bf86532283af75ffa6f77e9f7baab4d3fb8352e6f1",
+      "source": "_sources/river-returned-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/doctor-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 122382,
+      "sha256": "faef84e5b746666a3752a6b3778eee786a9365d47365da53474b271e0a600819",
+      "source": "_sources/river-returned-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/detective-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 135560,
+      "sha256": "2bc01ffe33a2e68614d75f87f1f6d01255acfdd4e7f995f5e749aed60e34b3aa",
+      "source": "_sources/river-returned-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/detective-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 126878,
+      "sha256": "72453b124f60a19a86a176a79f2c509ec502866df41c44a390fae81abe911ae3",
+      "source": "_sources/river-returned-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/discussion-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 126226,
+      "sha256": "ff0f3c6308e2fb05043c22e29540bce192bb7acaf9d6966f5e66ab0dbcc77062",
+      "source": "_sources/river-returned-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/discussion-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 126036,
+      "sha256": "030b60dd5bfdde698b3bc6399acd7798165058046ae934d264d9e6863b40890f",
+      "source": "_sources/river-returned-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/voting-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 214788,
+      "sha256": "e63ae5622c1d42cd48ecee43282047277f71fc836ebe13f6049ed9f50376684f",
+      "source": "_sources/river-returned-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        4,
+        2,
+        1664,
+        936
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "river-returned/voting-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 85674,
+      "sha256": "85007105f64f99ae01b5ddf651798e5c0a2cd00204d02d540402bba00826d2f2",
+      "source": "_sources/river-returned-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        575,
+        6,
+        522,
+        928
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/mafia-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 96938,
+      "sha256": "1a2f1bbdc714e0734a3c36b8c33eb905ebd39204102e315bd5343f360675bd33",
+      "source": "_sources/last-rehearsal-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/mafia-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 99658,
+      "sha256": "641544323f5418696db68e6c1ad16f997640743ef3e8bff89eb503f46514f2dc",
+      "source": "_sources/last-rehearsal-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/doctor-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 86438,
+      "sha256": "f9aa9a2134c10fb9583fb3ff3276fe5b10919e7c4d276a65c241e6cff87dcca6",
+      "source": "_sources/last-rehearsal-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/doctor-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 86474,
+      "sha256": "98cd0f378e2f8e22ea8faf205d94163a7ed0a3afadbad5434dca1db069c95311",
+      "source": "_sources/last-rehearsal-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/detective-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 103660,
+      "sha256": "4fbb5ce913fe6f6e23728f4b5841af947239b242f2a5e54e622689137303d85d",
+      "source": "_sources/last-rehearsal-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/detective-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 97962,
+      "sha256": "1e9d00476671314803639fdd2c4e7efa71b702b610c7206e885e10abdd011d14",
+      "source": "_sources/last-rehearsal-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/discussion-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 107840,
+      "sha256": "e80c012664ec0b5a15c88dfdfc782b839385c9951edce35e576e6d94b315fb83",
+      "source": "_sources/last-rehearsal-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/discussion-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 101326,
+      "sha256": "43120c8934fd37e62f9659f1ee839162e3d3fd9dcac0244c568dd23327b68ad3",
+      "source": "_sources/last-rehearsal-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/voting-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 178652,
+      "sha256": "e303b03b05182a28772bafa43558ea99061e592926aa59a7765bb22b50abdc28",
+      "source": "_sources/last-rehearsal-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        4,
+        2,
+        1664,
+        936
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "last-rehearsal/voting-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 60150,
+      "sha256": "d5401d702c4f932b6e077cd2c2fe19ee8dfe04135461708fe9f810793c6a3a2d",
+      "source": "_sources/last-rehearsal-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        575,
+        6,
+        522,
+        928
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/mafia-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 91372,
+      "sha256": "d4ee247abbb5bfb2e4e8c81a27bde438ca113c774c442ce497c5926a03c37963",
+      "source": "_sources/winter-seed-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/mafia-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 76100,
+      "sha256": "9b8e40d3935cc3978145839f21377547ab68f83ac24cbd05cf3cb29e8fd74c45",
+      "source": "_sources/winter-seed-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/doctor-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 81344,
+      "sha256": "f2fe4500730cc6dec9c48b16d32a1bd3e2974db264b21fb573856622ffb5f84d",
+      "source": "_sources/winter-seed-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/doctor-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 85544,
+      "sha256": "f8a43e65bd7ac41747d1f0d75a4330cc4e9d198cfb389952069ba4bd5133abed",
+      "source": "_sources/winter-seed-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/detective-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 101130,
+      "sha256": "f92d7daaa297a26522f34d3ccf3750daf4ab35b918d7adaad5c7da09ed303d8b",
+      "source": "_sources/winter-seed-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/detective-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 84454,
+      "sha256": "932609ef41e49c6f58497333bcd2eec192a5cc06ffea3459ccd50b20471050b7",
+      "source": "_sources/winter-seed-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/discussion-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 86890,
+      "sha256": "9446d8a2fd42e8ad7e611c8cf3927edc89fca89b86efddf23d16f57e77b80c05",
+      "source": "_sources/winter-seed-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/discussion-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 88664,
+      "sha256": "ae95cb9cf49a8466320c33fdf5fbc8bb4c99aee2149c0a9a1b7673f59b3e741c",
+      "source": "_sources/winter-seed-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/voting-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 132312,
+      "sha256": "7eafcdec3c936dcdd2157d8509c5e8369e5c47247469e562358f419c4d4977e9",
+      "source": "_sources/winter-seed-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        4,
+        2,
+        1664,
+        936
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "winter-seed/voting-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 55710,
+      "sha256": "fdb9aff74af1c18135586da68847dd1a77d72449288838843316e656a6c54246",
+      "source": "_sources/winter-seed-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        575,
+        6,
+        522,
+        928
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/mafia-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 80778,
+      "sha256": "8b371108a5524d69320637844340db0d7413a0d659873485803f1e4c5f47b209",
+      "source": "_sources/quiet-sentence-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/mafia-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 80982,
+      "sha256": "e4c3587e3ea124075181158a3a634eb9175899f57a993e69d02c576fc497502d",
+      "source": "_sources/quiet-sentence-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/doctor-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 98966,
+      "sha256": "ac19a5db5ce0a2fe3aa64ffcea2d5dc71d0268fca5082930f62c8fb3a9cec441",
+      "source": "_sources/quiet-sentence-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/doctor-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 103472,
+      "sha256": "6af09d8644c760f38f1bcda656d33b0b54e50fe5430673181947b6dfbf31a34b",
+      "source": "_sources/quiet-sentence-01.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/detective-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 91806,
+      "sha256": "d8b3587cd0c81a64cb7b8fcd1a8b1ffb043dea51ffe036af4dc6f1f14e80b3b3",
+      "source": "_sources/quiet-sentence-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        0,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/detective-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 101634,
+      "sha256": "6b64de9683f3075e2e299dc6307163432a8c55b5f096803dcddc19228721a1db",
+      "source": "_sources/quiet-sentence-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        96,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/discussion-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 102122,
+      "sha256": "439c99e63ef641038c640a8c901352a92ffc1088595f8016caa2750a7cd5c875",
+      "source": "_sources/quiet-sentence-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        768,
+        344,
+        768,
+        432
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/discussion-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 101200,
+      "sha256": "6e5e834cb2dc0ba0ba7390e546eedf4ff050e6f93f939599981d29706cb617e6",
+      "source": "_sources/quiet-sentence-02.webp",
+      "source_width": 1536,
+      "source_height": 1024,
+      "source_region_xywh": [
+        864,
+        0,
+        576,
+        1024
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/voting-desktop.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 158424,
+      "sha256": "2c1457175d9d2ea4aee3e31015c2b4256ebadd5500de0eee3f65b62729fe0ebe",
+      "source": "_sources/quiet-sentence-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        4,
+        2,
+        1664,
+        936
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    },
+    {
+      "path": "quiet-sentence/voting-mobile.webp",
+      "width": 540,
+      "height": 960,
+      "bytes": 72482,
+      "sha256": "869953530677fd8c51bad5fb271b1f5f780ceef08b6c0d76acc1f34b214fab00",
+      "source": "_sources/quiet-sentence-03.webp",
+      "source_width": 1672,
+      "source_height": 941,
+      "source_region_xywh": [
+        575,
+        6,
+        522,
+        928
+      ],
+      "origin": "OpenAI image_gen.imagegen; generated case environment"
+    }
+  ],
+  "total_delivery_bytes": 7451692
+}

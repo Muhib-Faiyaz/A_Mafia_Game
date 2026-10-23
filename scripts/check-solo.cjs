@@ -62,13 +62,15 @@ async function dismiss(page) {
   await dismiss(page);
   assert.equal(await page.evaluate(()=>state.phase),'day');
   assert.equal(await page.locator('#input-town').count(),0);
-  assert.deepEqual(await page.locator('#nav [data-solo-tab]').evaluateAll(els=>els.map(el=>el.textContent.trim().replace(/^[^A-Za-z]+/,''))),['Case journal','Dossier','Chat']);
-  for (const tab of ['dossier','chat','journal']) {
+  assert.deepEqual(await page.locator('#nav [data-solo-tab]').evaluateAll(els=>els.map(el=>el.dataset.soloTab)),['round','journal','dossier','influence','chat']);
+  for (const tab of ['round','journal','dossier','influence','chat']) {
     await page.locator(`#nav [data-solo-tab="${tab}"]`).click();
     assert.equal(await page.locator(`#solo-tab-${tab}`).isVisible(),true);
   }
+  await page.locator('#nav [data-solo-tab="round"]').click();
   await page.locator('.solo-tab-help > summary').click();
   assert.match(await page.locator('.solo-tab-help').textContent(),/Type privately/);
+  await page.locator('#nav [data-solo-tab="influence"]').click();
   await page.locator('#solo-voting-help > summary').click();
   assert.match(await page.locator('#solo-voting-help').textContent(),/unsupported accusation alone is not enough/);
   for(const width of [320,390,1440]) {
@@ -85,12 +87,15 @@ async function dismiss(page) {
   assert.ok((await page.locator('#case-solution li').count())>0);
   await click(page,'#new-case');
   await page.waitForFunction(()=>storyCatalog.length===7);
-  await page.locator('#story-choice').selectOption('random');
-  await click(page,'#entry button[type=submit]');
+  const previousIdentity={...identity};
+  await page.locator('#next-case-picker #story-choice').selectOption('random');
+  await click(page,'#confirm-next-case');
   identity=await page.evaluate(()=>session);
+  assert.deepEqual(identity,previousIdentity);
   assert.notEqual(await page.evaluate(()=>state.scenario.id),chosen.id);
   await click(page,'#leave'); identity=null;
   await page.locator('#online-play').click();
+  await page.locator('#name').fill('Online Reader');
   await click(page,'#entry button[type=submit]');
   identity=await page.evaluate(()=>session);
   assert.equal(await page.evaluate(()=>state.mode),'online');
